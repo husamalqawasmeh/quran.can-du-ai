@@ -1,0 +1,11 @@
+import { AutoProcessor, AutoModel } from '@huggingface/transformers';
+import { execFileSync } from 'node:child_process';
+const id = 'Xenova/wavlm-base-plus-sv';
+const proc = await AutoProcessor.from_pretrained(id);
+const model = await AutoModel.from_pretrained(id, { dtype: 'q8' });
+const load = (f, a, d) => { const raw = execFileSync('ffmpeg', ['-v','error','-ss',String(a),'-t',String(d),'-i',f,'-ac','1','-ar','16000','-f','f32le','-'],{maxBuffer:1<<28}); return new Float32Array(raw.buffer.slice(raw.byteOffset, raw.byteOffset+raw.byteLength)); };
+const emb = async (pcm) => { const t=Date.now(); const i = await proc(pcm); const o = await model(i); const e = Array.from(o.embeddings.data); console.log('dim', e.length, (Date.now()-t)+'ms'); const n=Math.hypot(...e); return e.map(x=>x/n); };
+const cos=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+const A1 = await emb(load('samples/Alafasy_128kbps/001001.mp3',0,5)), A2 = await emb(load('samples/Alafasy_128kbps/055001.mp3',0,5));
+const H1 = await emb(load('samples/Husary_128kbps/001001.mp3',0,5)), H2 = await emb(load('samples/Husary_128kbps/055001.mp3',0,5));
+console.log('same A', cos(A1,A2).toFixed(3), 'same H', cos(H1,H2).toFixed(3), 'diff', cos(A1,H1).toFixed(3), cos(A2,H2).toFixed(3));

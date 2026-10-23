@@ -1,0 +1,12 @@
+{
+  "name": "qreaders",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-01-01",
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/"] },
+  "d1_databases": [{ "binding": "DB", "database_name": "qreaders", "database_id": "879863fd-860c-4b96-b357-69637c02c126" }],
+  "triggers": { "crons": ["0 6 * * 5"] },
+  "routes": [
+    { "pattern": "quran.can-du-ai.com", "custom_domain": true },
+    { "pattern": "qreaders.can-du-ai.com", "custom_domain": true }
+  ]
+}

@@ -1,0 +1,11 @@
+.env
+.env.*
+.dev.vars
+node_modules/
+samples/
+samples3/
+*.log
+data/clean/
+data/opus/
+.wrangler/
+.claude/
