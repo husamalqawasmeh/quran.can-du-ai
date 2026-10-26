@@ -44,14 +44,16 @@ const pmi = (c, a, b) => Math.log2((c * NV) / (df.get(a) * df.get(b)));
 
 /* 1. strongest word pairs in the same verse: co-count x PMI (frequent AND more together than chance) */
 const pairs = [...co].filter(([, c]) => c >= 10).map(([k, c]) => { const [a, b] = k.split('|'); return { a, b, c, p: pmi(c, a, b) }; }).filter((x) => x.p > 1);
-const strongPairs = pairs.sort((x, y) => y.c * y.p - x.c * x.p).slice(0, 40).map((x) => [show(x.a), show(x.b), x.c, +x.p.toFixed(1)]);
+const strongPairs = pairs.sort((x, y) => y.c * y.p - x.c * x.p).slice(0, 40).map((x) => [show(x.a), show(x.b), x.c, +x.p.toFixed(1), df.get(x.a), df.get(x.b)]);   // + verses with each word
 
 /* 2. companions of key words: the lemmas that come with them in the same verse more than chance */
 const KEYS = ['الله', 'رب', 'جنة', 'نار', 'رحمة', 'صبر', 'علم', 'قلب', 'ارض', 'سماء', 'رسول', 'كتاب', 'شيطان', 'نور', 'حق', 'ماء', 'دنيا', 'اخرة', 'مال', 'ولد'];
+const lemVerses = new Map(); for (const [vk, set] of verseSets) for (const l of set) (lemVerses.get(l) || lemVerses.set(l, []).get(l)).push(vk);   // in Quran order
+const together = (a, b) => { const B = new Set(lemVerses.get(b)); return lemVerses.get(a).filter((k) => B.has(k)); };
 const companions = KEYS.filter((k) => df.has(k)).map((k) => {
   const list = [];
-  for (const [l, n] of df) { if (l === k) continue; const c = co.get(k < l ? k + '|' + l : l + '|' + k) || 0; if (c >= 4 && n >= 4) list.push([show(l), c, pmi(c, k, l)]); }
-  return [show(k), df.get(k), list.sort((a, b) => b[1] * b[2] - a[1] * a[2]).slice(0, 8).map(([l, c]) => [l, c])];
+  for (const [l, n] of df) { if (l === k) continue; const c = co.get(k < l ? k + '|' + l : l + '|' + k) || 0; if (c >= 4 && n >= 4) list.push([show(l), c, pmi(c, k, l), l]); }
+  return [show(k), df.get(k), list.sort((a, b) => b[1] * b[2] - a[1] * a[2]).slice(0, 8).map(([l, c, , raw]) => [l, c, together(k, raw).slice(0, 30)])];   // + the verses where both come (first 30)
 });
 
 /* 3. words that never appear without another word (every verse that has A also has B) */
@@ -115,6 +117,7 @@ for (let a = 1; a <= 114; a++) for (let b = a + 1; b <= 114; b++) {
   let d = 0; for (const [l, x] of A.v) { const y = B.v.get(l); if (y) d += x * y; }
   sim.push([a, b, d / (A.nn * B.nn)]);
 }
+const nextSim = sim.filter(([a, b]) => b === a + 1).sort((x, y) => x[0] - y[0]).map(([, , c]) => Math.round(c * 100));   // surah n vs surah n+1, n = 1..113
 const similar = sim.sort((x, y) => y[2] - x[2]).slice(0, 25).map(([a, b, c]) => [SUR[a].ar, SUR[b].ar, Math.round(c * 100)]);
 
 /* 12. words found in only one surah: which surahs have the most */
@@ -177,6 +180,6 @@ const opposites = OPP.map(([an, al, bn, bl]) => {
   return [an, a, bn, b, both, Math.min(va.size, vb.size), +((both * NV) / (va.size * vb.size || 1)).toFixed(1)];   // last: times more than chance
 });
 
-const out = { opposites, totals: { words: W.length, lemmas: V, verses: NV, makkah: placeTotal.makkah, madinah: placeTotal.madinah }, strongPairs, companions, always, repeatedVerses, phrases, longest, verseEnds, verseEnds2, verseStarts, roots, makki, madani, concentrated, similar, exclusive };
+const out = { nextSim, opposites, totals: { words: W.length, lemmas: V, verses: NV, makkah: placeTotal.makkah, madinah: placeTotal.madinah }, strongPairs, companions, always, repeatedVerses, phrases, longest, verseEnds, verseEnds2, verseStarts, roots, makki, madani, concentrated, similar, exclusive };
 writeFileSync('public/deep.json', JSON.stringify(out));
 console.log(Object.fromEntries(Object.entries(out).map(([k, v]) => [k, Array.isArray(v) ? v.length : v])));
