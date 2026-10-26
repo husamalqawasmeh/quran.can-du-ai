@@ -7,7 +7,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const arName = (x) => (x.name_ar || x.name).replace(/^شيخ\s+/, '');
 
 /* ---------- التنقل ---------- */
-const VIEWS = ['names', 'jews', 'jesus', 'prophets', 'others', 'duasp', 'duasb', 'numbers', 'animals', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'memorize', 'learn', 'about', 'miracles'];
+const VIEWS = ['jannah2', 'names', 'qiyamah', 'hafiz', 'jews', 'jesus', 'prophets', 'others', 'duasp', 'duasb', 'numbers', 'animals', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'memorize', 'learn', 'about', 'miracles'];
 let leaveHooks = [];
 /* title row on every inner screen: heading + description, with the green back button */
 document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
@@ -16,17 +16,21 @@ document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
   const head = document.createElement('div'), box = document.createElement('div');
   head.className = 'vhead'; box.className = 'vtitle';
   t.before(head); box.append(t); if (d) box.append(d); head.append(box);
-  head.insertAdjacentHTML('beforeend', '<a class="back" href="#home">الرجوع إلى القائمة الرئيسية <span aria-hidden="true">→</span></a>');
+  head.insertAdjacentHTML('beforeend', '<a class="back" href="#home"><span class="tri" aria-hidden="true">▶</span> الرجوع إلى القائمة الرئيسية</a>');
 });
+/* surahs screen: its two buttons sit next to the back button */
+{ const back = document.querySelector('#v-surahs .vhead .back'), wrap = document.createElement('div');
+  wrap.className = 'vactions'; back.replaceWith(wrap); wrap.append(back, $('sToggle'), $('sJuz'));
+  wrap.closest('.vhead').insertAdjacentHTML('afterend', '<div class="slegend" id="sLegend" hidden><span><i class="sw share"></i>سورة تبدأ في جزء وتنتهي في الجزء الذي يليه</span><span><i class="sw one"></i>سورة تبدأ وتنتهي في الجزء نفسه</span></div>'); }
 /* expand all / collapse all, under the back button, on the pages made of expandable cards */
-['miracles', 'jannah', 'animals', 'management', 'jesus', 'jews', 'prophets', 'others', 'duasp', 'duasb', 'numbers', 'learn', 'stats', 'names'].forEach((v) => {
+['miracles', 'qiyamah', 'hafiz', 'jannah', 'jannah2', 'animals', 'management', 'jesus', 'jews', 'prophets', 'others', 'duasp', 'duasb', 'numbers', 'learn', 'stats', 'names'].forEach((v) => {
   const view = document.getElementById('v-' + v), head = view && view.querySelector('.vhead'), back = head && head.querySelector('.back');
   if (!back) return;
   const wrap = document.createElement('div'); wrap.className = 'vactions'; back.replaceWith(wrap); wrap.append(back);
   const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'back'; wrap.append(btn);
   const cards = () => [...view.querySelectorAll('.lesson')];
   const allOpen = () => { const c = cards(); return c.length > 0 && c.every((x) => x.open); };
-  const label = () => { btn.textContent = allOpen() ? '▴ طيّ الكل' : '▾ فتح الكل'; };
+  const label = () => { btn.innerHTML = allOpen() ? '<span class="tri" aria-hidden="true">▲</span> طيّ الكل' : '<span class="tri" aria-hidden="true">▼</span> فتح الكل'; };
   let token = 0;
   btn.onclick = () => {
     const c = cards(); if (!c.length) return;
@@ -134,7 +138,7 @@ function renderSurahs() {
   const q = $('ssearch').value.trim().replace(/[ً-ٟ]/g, '').replace(/[إأآٱ]/g, 'ا');
   const sections = juzOn && !q;
   $('sgrid').classList.toggle('juz', sections);
-  const card = (s, shared, style) => `<details class="sr${shared ? ' jshare' : ''}"${style ? ` style="${style}"` : ''} data-n="${s.id}"><summary><span class="n">${nA(s.id)}</span><span class="nm">${esc(s.ar)}</span><span class="m">${s.place === 'makkah' ? 'مكية' : 'مدنية'} · ${nA(s.verses)} آية</span></summary>
+  const card = (s, shared, style) => `<details class="sr${shared ? ' jshare' : ''}"${style ? ` style="${style}"` : ''} data-n="${s.id}"><summary><span class="n">${nA(s.id)}</span><span class="nm">${esc(s.ar)}</span><span class="m">${s.place === 'makkah' ? 'مكية' : 'مدنية'} # ${nA(s.verses)} آية</span></summary>
      <div class="body"><a class="tag" href="https://quran.com/${s.id}" target="_blank" rel="noopener noreferrer" style="color:var(--acc)">📖 افتح السورة في المصحف (Quran.com)</a><br>
      <select aria-label="القارئ">${readerOptions()}</select><div class="tag msg"></div><audio controls preload="none" hidden></audio>
      <details class="vs" data-n="${s.id}"><summary>📜 نص السورة (${nA(s.verses)} آية)</summary><div class="vtext"><span class="tag">جارٍ التحميل…</span></div></details></div></details>`;
@@ -142,25 +146,13 @@ function renderSurahs() {
     const count = {}; for (let j = 1; j <= 30; j++) juzSurahs(j).forEach((s) => { count[s.id] = (count[s.id] || 0) + 1; });
     $('sgrid').innerHTML = Array.from({ length: 30 }, (_, k) => k + 1).map((j) => {
       // surahs in reading order, four to a row; a short row is stretched to its end: the extra columns go to the surahs that continue into another juz (else to the last one)
-      const list = juzSurahs(j), pos = {};
-      for (let i = 0; i < list.length; i += 4) {
-        const row = list.slice(i, i + 4), r = i / 4 + 1, extra = 4 - row.length, spans = row.map(() => 1);
-        let rec = row.map((s, k) => k).filter((k) => count[row[k].id] > 1); if (!rec.length) rec = [row.length - 1];
-        for (let e = 0; e < extra; e++) spans[rec[rec.length - 1 - (e % rec.length)]]++;
-        if (row.length === 2 && j !== 1) spans[0] = spans[1] = 2;                       // two surahs: half the row each
-        if (row.some((s) => s.id === 19)) row.forEach((s, k) => { spans[k] = s.id === 20 ? 2 : 1; });      // طه double, الكهف and مريم single
-        if (row.some((s) => s.id === 23)) row.forEach((s, k) => { spans[k] = s.id === 23 ? 2 : 1; });      // المؤمنون double, النور and الفرقان single
-        [26, 28].forEach((d) => { if (row.length === 3 && row.some((s) => s.id === d)) row.forEach((s, k) => { spans[k] = s.id === d ? 2 : 1; }); });   // الشعراء and القصص double
-        if (row.length === 3 && row.some((s) => s.id === 40)) row.forEach((s, k) => { spans[k] = s.id === 40 ? 2 : 1; });   // غافر double, فصلت single
-        row.forEach((s, k) => { if ([45, 66, 77, 114].includes(s.id)) spans[k] = 1; });      // الجاثية, التحريم, المرسلات and الناس keep a quarter-row box
-        if (row.some((s) => s.id === 10)) row.forEach((s, k) => { spans[k] = s.id === 10 ? 2 : 1; });   // يونس double, its neighbours single
-        let c = 1; row.forEach((s, k) => { pos[s.id] = [c, spans[k], r]; c += spans[k]; });
-      }
-      return `<div class="jsec${j === 10 || j === 20 ? ' jbig' : ''}"><span class="jnum" title="الجزء ${nA(j)}">${nA(j)}</span><div class="jgrid">${list.map((s) => card(s, count[s.id] > 1, `--c:${pos[s.id][0]};--s:${pos[s.id][1]};--r:${pos[s.id][2]}`)).join('')}</div></div>`;
+      const list = juzSurahs(j), pos = {}, five = true, nCols = 6;              // every juz: same-width boxes, six per row
+      list.forEach((s, k) => { pos[s.id] = [k % nCols + 1, 1, Math.floor(k / nCols) + 1]; });
+      return `<div class="jsec${j % 5 === 0 && j < 30 ? ' jbig' : ''}${five ? ' j6' : ''}"${five ? ` style="--n:${nCols}"` : ''}><span class="jnum" title="الجزء ${nA(j)}">${nA(j)}</span><div class="jgrid">${list.map((s) => card(s, count[s.id] > 1, `--c:${pos[s.id][0]};--s:${pos[s.id][1]};--r:${pos[s.id][2]}`)).join('')}</div></div>`;
     }).join('');
     return;
   }
-  $('sgrid').innerHTML = surahs.filter((s) => !q || s.ar.replace(/[إأآٱ]/g, 'ا').includes(q) || String(s.id) === q || s.en.toLowerCase().includes(q.toLowerCase())).map((s) => card(s, false) + (!q && s.id % 20 === 0 && s.id < 114 ? '<div class="jgap s20"></div>' : '')).join('')
+  $('sgrid').innerHTML = surahs.filter((s) => !q || s.ar.replace(/[إأآٱ]/g, 'ا').includes(q) || String(s.id) === q || s.en.toLowerCase().includes(q.toLowerCase())).map((s) => card(s, false) + (!q && s.id % 24 === 0 && s.id < 114 ? '<div class="jgap s20"></div>' : '')).join('')
     || '<p class="hint">لا توجد نتائج.</p>';
 }
 async function loadSurahs() {
@@ -169,10 +161,72 @@ async function loadSurahs() {
   try { surahs = await (await fetch('/api/surahs')).json(); if (!Array.isArray(surahs)) throw 0; renderSurahs(); }
   catch { surahs = null; $('sgrid').innerHTML = '<p class="hint">تعذّر تحميل قائمة السور.</p>'; }
 }
-$('sJuz').onclick = (e) => { juzOn = !juzOn; e.currentTarget.setAttribute('aria-pressed', juzOn); if (surahs) renderSurahs(); };
+$('sJuz').onclick = (e) => { juzOn = !juzOn; $('sLegend').hidden = !juzOn; e.currentTarget.setAttribute('aria-pressed', juzOn); if (surahs) renderSurahs(); };
 $('ssearch').oninput = () => surahs && renderSurahs();
-$('sOpen').onclick = () => document.querySelectorAll('#sgrid .sr').forEach((d) => (d.open = true));
-$('sClose').onclick = () => document.querySelectorAll('#sgrid .sr').forEach((d) => { d.open = false; d.querySelectorAll('.vs').forEach((v) => (v.open = false)); });
+/* ---------- search boxes on the surahs screen: a surah by name, a text in the Quran, a subject in the Quran ---------- */
+const qNorm = (t) => String(t).replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g, '').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/\s+/g, ' ').trim();
+let qText = null;
+const qShow = (title, html) => { const b = $('qres'); b.innerHTML = `<div class="qh"><span>${title}</span><button type="button" class="qx">✕ إغلاق</button></div>${html}`; b.hidden = false; };
+$('qres').addEventListener('click', (e) => { if (e.target.closest('.qx')) $('qres').hidden = true; });
+const surahName = (n) => (surahs && surahs[n - 1] ? surahs[n - 1].ar : String(n));
+async function searchText(q) {
+  const words = qNorm(q).split(' ').filter((w) => w.length > 1);
+  if (!words.length) return;
+  qShow('جارٍ البحث…', '');
+  try { if (!qText) qText = await (await fetch('/quran_text.json')).json(); } catch { qShow('تعذّر تحميل نص القرآن.', ''); return; }
+  if (!surahs) try { surahs = await (await fetch('/api/surahs')).json(); } catch { /* names fall back to numbers */ }
+  const hits = Object.entries(qText).filter(([, t]) => { const n = qNorm(t); return words.every((w) => n.includes(w)); })
+    .sort(([a], [b]) => { const [s1, a1] = a.split(':').map(Number), [s2, a2] = b.split(':').map(Number); return s1 - s2 || a1 - a2; });
+  const re = new RegExp('(' + words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
+  const rows = hits.slice(0, 200).map(([k, t]) => { const [sn, an] = k.split(':'); return `<div class="qr"><span class="tag">سورة ${esc(surahName(+sn))} — الآية ${nA(an)}:</span>${esc(qNorm(t)).replace(re, '<mark>$1</mark>')} <a class="qt" href="https://quran.com/${sn}/${an}" target="_blank" rel="noopener noreferrer">↗</a></div>`; });
+  qShow(`نتائج البحث عن «${esc(q)}» في نص القرآن: ${nA(hits.length)} آية${hits.length > 200 ? ' (تظهر أول ٢٠٠)' : ''}`, rows.join('') || '<div class="qr">لا توجد آية تحتوي على هذه الكلمات.</div>');
+}
+const TOPIC_PAGES = () => [...Object.keys(TOPICS).filter((k) => VIEWS.includes(k) && k !== 'jannah2' && k !== 'others').map((k) => [k, TOPICS[k].items]), ['others', TOPICS.others ? TOPICS.others.items : []], ['miracles', MIRACLES]];
+const pageName = (v) => { const b = document.querySelector(`#v-home .tile[href="#${v}"] b`); return b ? b.textContent : v; };
+function searchTopic(q) {
+  const words = qNorm(q).split(' ').filter((w) => w.length > 1);
+  if (!words.length) return;
+  const hits = [];
+  for (const [page, items] of TOPIC_PAGES()) for (const m of items) {
+    const tt = qNorm(m.t), nn = qNorm(m.note || '');
+    if (words.every((w) => tt.includes(w) || nn.includes(w))) hits.push({ page, t: m.t, note: m.note || '', score: words.filter((w) => tt.includes(w)).length });
+  }
+  hits.sort((a, b) => b.score - a.score);
+  const rows = hits.slice(0, 100).map((h) => `<div class="qr"><a class="qt" href="#${h.page}" data-t="${esc(h.t)}">${esc(h.t)}</a> <small>— ${esc(pageName(h.page))}</small><br><small>${esc(h.note.slice(0, 160))}${h.note.length > 160 ? '…' : ''}</small></div>`);
+  qShow(`نتائج البحث عن الموضوع «${esc(q)}»: ${nA(hits.length)}`, rows.join('') || '<div class="qr">لا توجد نتائج في موضوعات الموقع؛ جرّب البحث في نص القرآن.</div>');
+}
+/* a subject result opens its page and the matching box */
+$('qres').addEventListener('click', async (e) => {
+  const a = e.target.closest('a.qt[data-t]'); if (!a) return;
+  e.preventDefault(); const page = a.getAttribute('href').slice(1), t = a.dataset.t;
+  location.hash = '#' + page;
+  for (let i = 0; i < 40; i++) {
+    const d = [...document.querySelectorAll(`#v-${page} .lesson`)].find((x) => x.querySelector('summary').textContent.startsWith(t));
+    if (d) { d.open = true; d.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    await new Promise((res) => setTimeout(res, 150));
+  }
+});
+$('qtext').addEventListener('keydown', (e) => { if (e.key === 'Enter') searchText(e.target.value); });
+$('qtopic').addEventListener('keydown', (e) => { if (e.key === 'Enter') searchTopic(e.target.value); });
+/* the magnifying-glass button at the end of each box runs that box's search */
+document.querySelectorAll('#v-surahs .sfield .gbtn').forEach((b) => b.addEventListener('click', () => {
+  const f = b.closest('.sfield'), inp = f.querySelector('input'), kind = f.dataset.g;
+  if (kind === 'surah') { if (surahs) renderSurahs(); else loadSurahs(); }
+  else if (kind === 'text') searchText(inp.value);
+  else searchTopic(inp.value);
+  inp.focus();
+}));
+
+/* one button: opens every surah's details, or folds them all when they are all open */
+const sAllOpen = () => { const c = [...document.querySelectorAll('#sgrid .sr')]; return c.length > 0 && c.every((d) => d.open); };
+const sLabel = () => { $('sToggle').innerHTML = sAllOpen() ? '<span class="tri" aria-hidden="true">▲</span> طيّ تفاصيل السور' : '<span class="tri" aria-hidden="true">▼</span> فتح تفاصيل السور'; };
+$('sToggle').onclick = () => {
+  if (sAllOpen()) document.querySelectorAll('#sgrid .sr').forEach((d) => { d.open = false; d.querySelectorAll('.vs').forEach((v) => (v.open = false)); });
+  else document.querySelectorAll('#sgrid .sr').forEach((d) => (d.open = true));
+  sLabel();
+};
+$('sgrid').addEventListener('toggle', (e) => { if (e.target.classList.contains('sr')) sLabel(); }, true);
+sLabel();
 $('sgrid').addEventListener('toggle', async (e) => {
   const d = e.target; if (!d.classList.contains('vs') || !d.open || d.dataset.done) return; d.dataset.done = 1;
   const n = +d.dataset.n, box = d.querySelector('.vtext');
@@ -601,7 +655,7 @@ const MIRACLES = [
   { g: 0, t: 'قلبان في جوف الرجل', note: 'خصّت الآية «الرجل» بالذكر ولم تقل «الإنسان»؛ ويلاحظ بعضهم أن الرجل لا يكون في جوفه إلا قلب واحد، بخلاف المرأة الحامل التي يكون في جوفها قلبان: قلبها وقلب جنينها. والمعنى الظاهر عند المفسرين أن الله لم يجعل للرجل قلبين، ردّاً على من زعم ذلك وعلى عادات جاهلية كالتبنّي والظهار؛ ويرى آخرون أن «القلب» هنا مجاز لا يدخل في الإعجاز العلمي.', keys: ['33:4'] },
   { g: 1, t: 'الخُنَّس الجواري الكُنَّس', note: 'يرى بعض المعاصرين في الخنّس (التي تختفي) الجواري (التي تجري) الكنّس (التي تكنس وتبتلع ما حولها) إشارة إلى الثقوب السوداء. أما المفسرون القدامى فحملوها على الكواكب أو النجوم التي تختفي نهاراً وتجري وتغيب، وقيل غير ذلك؛ فهو اجتهاد محتمل لا قطعي.', keys: ['81:15', '81:16'] },
   { g: 1, t: 'الشمس تجري لمستقرّ لها', note: 'يرى بعضهم أن للشمس حركة في الفضاء نحو وجهة معينة وفي مدارها حول مركز المجرة. وفسّرها المفسرون القدامى بأن مستقرها نهاية أجلها أو موضع انتهاء سيرها يوم القيامة.', keys: ['36:38'] },
-  { g: 4, t: 'قالت نملة: لا يحطمنّكم سليمان', note: 'جمعت النملة في كلامها: نداءً لقومها، وأمراً بالاحتماء («ادخلوا مساكنكم»)، وسبب التحذير («لا يحطمنّكم»)، وإعذاراً لسليمان («وهم لا يشعرون»: أي لا يقصدون أذاكم لأنهم لا يرونكم). ويلاحظ بعضهم دقة الفعل «يحطمنّكم»: فالحَطْم في اللغة كسرُ الشيء اليابس الصلب وتفتيتُه إلى قطع (ومنه «الحُطام»)، لا سحقُ الجسم الرخو. وهذا يوافق ما يُعرف عن النمل من أن جسمه مغطى بهيكل خارجي صلب من الكيتين يشبه الدرع الهشّ، فإذا وقع عليه ثِقَل تحطّم وتشقّق كالزجاج الرقيق. كما يلاحظ المهتمون بعلم الحشرات أن النمل يتواصل بالإشارات الكيميائية (الفيرمونات) واللمس والاهتزازات لإنذار المستعمرة، وأن العاملات إناث، وفي تأنيث «قالت نملة» ما يوافق ذلك. والمعنى الظاهر عند المفسرين أن الله علّم سليمان عليه السلام منطق الطير والنمل، فسمع قولها حقيقةً فتبسّم ضاحكاً من قولها، وهي من معجزات سليمان عليه السلام.', keys: ['27:18', '27:19'] },
+  { g: 4, t: 'قالت نملة', note: 'جمعت النملة في كلامها: نداءً لقومها، وأمراً بالاحتماء («ادخلوا مساكنكم»)، وسبب التحذير («لا يحطمنّكم»)، وإعذاراً لسليمان («وهم لا يشعرون»: أي لا يقصدون أذاكم لأنهم لا يرونكم). ويلاحظ بعضهم دقة الفعل «يحطمنّكم»: فالحَطْم في اللغة كسرُ الشيء اليابس الصلب وتفتيتُه إلى قطع (ومنه «الحُطام»)، لا سحقُ الجسم الرخو. وهذا يوافق ما يُعرف عن النمل من أن جسمه مغطى بهيكل خارجي صلب من الكيتين يشبه الدرع الهشّ، فإذا وقع عليه ثِقَل تحطّم وتشقّق كالزجاج الرقيق. كما يلاحظ المهتمون بعلم الحشرات أن النمل يتواصل بالإشارات الكيميائية (الفيرمونات) واللمس والاهتزازات لإنذار المستعمرة، وأن العاملات إناث، وفي تأنيث «قالت نملة» ما يوافق ذلك. والمعنى الظاهر عند المفسرين أن الله علّم سليمان عليه السلام منطق الطير والنمل، فسمع قولها حقيقةً فتبسّم ضاحكاً من قولها، وهي من معجزات سليمان عليه السلام.', keys: ['27:18', '27:19'] },
   { g: 4, t: 'وادي النمل', note: 'سمّت الآية الموضع «وادي النمل» لكثرة النمل فيه. ويلاحظ المهتمون بعلم الحشرات أن النمل يعيش في مستعمرات منظمة قد تمتد على مساحات واسعة، وأن بعض أنواعه يكوّن مستعمرات ضخمة تضمّ ملايين الأفراد، فيصحّ أن يُنسب وادٍ إليه. أما تحديد مكان هذا الوادي فقد اختلف فيه المفسرون (قيل في الشام وقيل في غيرها)، ولا يُجزم فيه بشيء.', keys: ['27:18'] },
   { g: 4, t: 'بيت العنكبوت', note: 'يتأمل بعضهم في «اتخذت» بصيغة المؤنث إشارةً إلى أن الأنثى هي التي تنسج البيت، وفي هشاشة بيت العنكبوت كمسكن وفي علاقات أفراده. والمعنى الظاهر مَثَلٌ لضعف من اتخذ من دون الله أولياء.', keys: ['29:41'] },
   { g: 5, t: 'هامان وزير فرعون', note: 'يذكر القرآن هامان بوصفه من خاصة فرعون ومن أهل البناء: يأمره فرعون أن يوقد على الطين (يحرق الطوب) ويبني له صرحاً. ويرى بعضهم أن في ذلك دقة تاريخية، لأن القرآن نزل قبل فكّ رموز الكتابة الهيروغليفية (عام ١٨٢٢م)، وقد ظنّ بعض المستشرقين قديماً أن اسم هامان مأخوذ من قصة أستير الفارسية، ثم ذكر آخرون أن اسماً قريباً من «هامان» ورد في نقش مصري بوصفه رئيس عمّال المحاجر والبناء (يُشار إلى لوحة في متحف فيينا). ويُنازع بعض علماء المصريات في قراءة هذا النقش وفي نسبته إلى هذا الاسم، فهو مما يُذكر ولا يُجزم به. والمعنى الظاهر عند المفسرين أن هامان وزير فرعون وعونه في طغيانه.', keys: ['28:6', '28:38', '40:36'] },
@@ -660,7 +714,7 @@ const MIRACLES = [
   { g: 7, t: 'التحدي بحديث مثله', note: 'أخفّ مراتب التحدي: «فليأتوا بحديث مثله»، فهو لا يشترط عدداً من الآيات ولا سورة كاملة. ويستدل به بعضهم على أن الإعجاز لا يقتصر على الطول، وهو من مواضع بحث العلماء في أقل ما يتحقق به التحدي.', keys: ['52:33', '52:34'] },
   { g: 7, t: 'تحدي أن يُسلم أبو لهب', note: 'نزلت سورة المسد في مكة تُخبر بأن أبا لهب سيصلى ناراً ذات لهب وأن امرأته كذلك، أي أنهما سيموتان على الكفر. ويرى كثير من العلماء أن في ذلك إخباراً بالغيب وتحدياً: فقد عاش أبو لهب بعد نزولها سنوات (وتوفي بعد غزوة بدر)، وكان يكفيه أن يُظهر الإسلام ولو نفاقاً لينقض ما أخبرت به السورة، ولم يفعل ذلك هو ولا امرأته. ويُذكر هذا في باب الإعجاز بالإخبار بالغيب. ويراعي من يناقشه أنه يعتمد على أخبار التاريخ والسيرة في تحديد زمن نزول السورة وموت أبي لهب.', keys: ['111:1', '111:2', '111:3', '111:4', '111:5'] },
   { g: 7, t: 'ذلك الكتاب لا ريب فيه', note: 'يفتتح القرآن سورة البقرة بعد الحروف المقطعة بوصف الكتاب بأنه «لا ريب فيه» (لا شك في صدقه ولا في كونه من عند الله)، وكأن الحروف المقطعة (الم) تذكّر بأنه مؤلَّف من حروف العرب نفسها ثم عجزوا عن مثله. ويستنبط العلماء من هذا الوصف أنه كتاب تام لا يحتاج إلى مراجعة ولا تنقيح ولا تعديل ولا إصدار جديد: فالكتب البشرية تُراجَع وتُصحَّح وتصدر منها طبعات منقّحة كلما ظهر فيها نقص أو خطأ، أما القرآن فنصه ثابت كما نزل، وقد وصفه الله بأنه «غير ذي عوج» (لا اعوجاج فيه ولا خلل)، وأنه «لا يأتيه الباطل من بين يديه ولا من خلفه» فلا يدخله تبديل ولا زيادة ولا نقصان. ويتحقق ذلك عملياً بتواتر نقله بالحفظ والكتابة، فالنص المتداول اليوم واحد. وقد فهم المفسرون «لا ريب فيه» بمعنى أنه حق في نفسه لا يتطرق إليه الشك عند التأمل، وإن ارتاب فيه من ارتاب.', keys: ['2:1', '2:2', '18:1', '39:28', '41:42'] },
-  { g: 7, t: 'تحدي سلامة القرآن من الاختلاف', note: 'تدعو الآية إلى تدبّر القرآن وتقول: لو كان من عند غير الله لوجدوا فيه اختلافاً كثيراً. ويلاحظ العلماء أن القرآن نزل منجَّماً على نحو ثلاث وعشرين سنة في أحوال مختلفة ثم هو متسق لا تناقض فيه. وقد أُثيرت شبهات حول تعارض بعض الآيات، وأجاب عنها العلماء في كتب «مشكل القرآن» و«دفع إيهام الاضطراب».', keys: ['4:82'] },
+  { g: 7, t: 'سلامة القرآن من الاختلاف', note: 'تدعو الآية إلى تدبّر القرآن وتقول: لو كان من عند غير الله لوجدوا فيه اختلافاً كثيراً. ويلاحظ العلماء أن القرآن نزل منجَّماً على نحو ثلاث وعشرين سنة في أحوال مختلفة ثم هو متسق لا تناقض فيه. وقد أُثيرت شبهات حول تعارض بعض الآيات، وأجاب عنها العلماء في كتب «مشكل القرآن» و«دفع إيهام الاضطراب».', keys: ['4:82'] },
   { g: 7, t: 'حفظ القرآن من التبديل', note: 'يخبر القرآن أن الله تولّى حفظ الذِّكر، وأنه «لا يأتيه الباطل من بين يديه ولا من خلفه». ويرى العلماء أن هذا الحفظ تحقق بتواتر القراءة والحفظ في الصدور والكتابة في المصاحف عبر القرون، حتى إن المصاحف في مختلف البلاد تتفق في النص. وهو مما يذكره العلماء في الإعجاز بالغيب لأنه وعدٌ بالحفظ تحقق.', keys: ['15:9', '41:41', '41:42'] },
 
   { g: 0, t: 'فكسونا العظام لحماً', note: 'تذكر الآية أن الله خلق المضغة عظاماً ثم كسا العظام لحماً. يرى المؤيدون أن الهيكل الغضروفي يتكوّن نموذجاً أولياً ثم تتجمع حوله الأنسجة التي تصير عضلات، وأن الفاء تدل على سرعة التتابع، وأن العضلة لا تتصل بعظم لم يتكوّن بعد، وأن الآية لا تنفي وجود خلايا مبكرة للعضلات. ويرى المنتقدون أن العظام والعضلات تنشأ من الطبقة الجنينية نفسها (الأديم المتوسط) وتبدآن في التكوّن معاً تقريباً، فلا يصحّ عندهم الحديث عن عظام تتكوّن أولاً ثم يُكسوها لحم، ويعتمد الطرفان في الحُكم على ما يُقصد بـ«العظام» وبـ«اللحم» ومتى يبدأ تكوّن كلٍّ منهما. ولم أجد في المصادر مرجعاً علمياً محكّماً يحسم المسألة، فهي من أكثر المسائل جدلاً في هذا الباب. والمعنى الظاهر عند المفسرين بيان تدرّج خلق الإنسان وكمال قدرة الله فيه.', keys: ['23:14'] },
@@ -669,25 +723,33 @@ const MIRACLES = [
   { g: 3, t: 'السراب', note: 'يرى بعضهم في تشبيه الآية للسراب بقيعة (أرض منبسطة) يحسبه العطشان ماءً إشارةً إلى ظاهرة بصرية تنشأ من انكسار الضوء في الهواء الحار فوق الأرض المنبسطة. والمعنى الظاهر عند المفسرين تشبيه لأعمال الكافرين التي لا تنفعهم.', keys: ['24:39'] },
   { g: 1, t: 'الشهب والحرس الشديد', note: 'يلاحظ بعضهم أن الآيات تذكر الشهب تتبع من يستمع في السماء، ويربطونها بالشهب والنيازك التي تحترق عند دخول الغلاف الجوي. والمعنى الظاهر عند المفسرين أن الشهب تُرجَم بها الشياطين التي تسترق السمع.', keys: ['72:8', '72:9', '37:10'] },
   { g: 0, t: 'مَنِيّ يُمنى', note: 'يتأمل بعضهم في قوله «من مني يُمنى» (يُدفق ويُصَبّ)، ويرون فيه إشارة إلى أن الذي يُدفق هو مادة منها قليل جداً يخلق الإنسان (حيوان منوي واحد من ملايين). والمعنى الظاهر عند المفسرين بيان أصل الإنسان من نطفة تُصبّ في الرحم دليلاً على البعث.', keys: ['75:37', '75:38'] },
-  { g: 1, t: 'سنريهم آياتنا في الآفاق وفي أنفسهم', note: 'تذكر الآية وعداً بأن يُري الله الناس آياته في الآفاق (الكون) وفي أنفسهم حتى يتبيّن لهم أنه الحق. ويجعلها كثيرون أصلاً لباب النظر في الآيات الكونية والنفسية، ويذكرها المؤيدون عند الحديث عن الإعجاز العلمي. ويبقى ما يُعدّ آيةً في الآفاق وفي الأنفس موضع اجتهاد.', keys: ['41:53', '51:21'] },
+  { g: 1, fit: true, t: 'سنريهم آياتنا في الآفاق وفي أنفسهم', note: 'تذكر الآية وعداً بأن يُري الله الناس آياته في الآفاق (الكون) وفي أنفسهم حتى يتبيّن لهم أنه الحق. ويجعلها كثيرون أصلاً لباب النظر في الآيات الكونية والنفسية، ويذكرها المؤيدون عند الحديث عن الإعجاز العلمي. ويبقى ما يُعدّ آيةً في الآفاق وفي الأنفس موضع اجتهاد.', keys: ['41:53', '51:21'] },
 ];
 let miInit = false;
 async function initMiracles() {
   if (miInit) return; miInit = true;
   try {                                                  // items approved from the weekly research agent
     const extra = await (await fetch('/api/miracles-extra')).json();
-    if (Array.isArray(extra)) for (const e of extra) if (e.g >= 0 && e.g < MIRACLE_GROUPS.length && e.keys?.length) MIRACLES.push({ g: e.g, t: e.t, note: e.note, keys: e.keys });
+    if (Array.isArray(extra)) {
+      const pg = MIRACLE_GROUPS.length, pend = extra.filter((e) => e.pending && e.keys?.length);   // pending items: one group at the bottom, marked, until the admin decides
+      for (const e of extra) if (!e.pending && e.g >= 0 && e.g < pg && e.keys?.length) MIRACLES.push({ g: e.g, t: e.t, note: e.note, keys: e.keys });
+      if (pend.length) { MIRACLE_GROUPS.push({ ic: '⏳', g: 'اقتراحات قيد المراجعة' }); pend.forEach((e) => MIRACLES.push({ g: pg, t: e.t, note: e.note, keys: e.keys, pending: true })); }
+    }
   } catch { /* the built-in items are enough */ }
-  $('mirList').innerHTML = MIRACLE_GROUPS.map((G, gi) => `<div class="mgroup" id="mg-${gi}"><h3><span>${G.ic}</span>${esc(G.g)} <small class="cnt">(${nA(MIRACLES.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
-    MIRACLES.map((m, i) => [m, i]).filter(([m]) => m.g === gi).map(([m, i]) => `<details class="lesson" data-i="${i}"><summary>${esc(m.t)}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
+  { const i = MIRACLES.findIndex((m) => m.t === 'تحدي أن يُسلم أبو لهب'); if (i >= 0) MIRACLES.push(MIRACLES.splice(i, 1)[0]); }   // last in its group
+  const FIRST_G = [7, 6, 5];                                                       // shown first: التحدي، النبات والزراعة، التاريخ والآثار
+  const gOrder = [...FIRST_G, ...MIRACLE_GROUPS.map((_, i) => i).filter((i) => !FIRST_G.includes(i))];
+  $('mirList').innerHTML = gOrder.map((gi) => [MIRACLE_GROUPS[gi], gi]).map(([G, gi]) => `<div class="mgroup" id="mg-${gi}"><h3><span>${G.ic}</span>${esc(G.g)} <small class="cnt">(${nA(MIRACLES.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
+    MIRACLES.map((m, i) => [m, i]).filter(([m]) => m.g === gi).map(([m, i]) => `<details class="lesson${m.pending ? ' pending' : ''}" data-i="${i}"><summary${m.fit ? ' class="fit"' : ''}>${esc(m.t)}${m.pending ? '<span class="pend">قيد المراجعة</span>' : ''}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
   $('mirList').addEventListener('toggle', async (e) => {
     const d = e.target; if (!d.open || d.dataset.done) return; d.dataset.done = 1;
     const m = MIRACLES[+d.dataset.i], box = d.querySelector('.exs');
     try {
       const vs = await (await fetch('/api/ayat?keys=' + m.keys.join(','))).json();
-      box.innerHTML = vs.map((v) => `<div class="ex"><div class="vt">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
+      box.innerHTML = vs.map((v) => `<div class="ex"><div class="vt"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${esc(v.text)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);
+  panelize($('mirList'));
 }
 
 /* ---------- إحصاءات لغوية ---------- */
@@ -793,9 +855,9 @@ const TOPICS = {
       { g: 2, t: 'الخيل والبغال والحمير', note: 'خلقها الله للركوب والزينة، وذكرها القرآن ضمن نعمه على الناس.', keys: ['16:8'] },
       { g: 2, t: 'الأنعام ومنافعها', note: 'خلق الله الأنعام لكم فيها دفء ومنافع ومنها تأكلون، ولكم فيها جمال حين تريحون وحين تسرحون، وتحمل أثقالكم.', keys: ['16:5', '16:6', '16:7'] },
       { g: 2, t: 'تذليل الأنعام', note: 'ذكّر الله الناس بأنه خلق لهم الأنعام فهم لها مالكون، وذلّلها لهم فمنها ركوبهم ومنها يأكلون.', keys: ['36:71', '36:72', '36:73'] },
-      { g: 3, t: 'الذئب في قصة يوسف', note: 'احتجّ إخوة يوسف بأن الذئب أكله، وهي حجة كاذبة جاؤوا عليها بدم كذب، وكان جواب يعقوب: بل سوّلت لكم أنفسكم أمراً.', keys: ['12:13', '12:17', '12:18'] },
+      { g: 3, t: 'ذئب يوسف', note: 'احتجّ إخوة يوسف بأن الذئب أكله، وهي حجة كاذبة جاؤوا عليها بدم كذب، وكان جواب يعقوب: بل سوّلت لكم أنفسكم أمراً.', keys: ['12:13', '12:17', '12:18'] },
       { g: 3, t: 'الفيل', note: 'أصحاب الفيل: أرادوا هدم الكعبة فجعل الله كيدهم في تضليل. وسُمّيت السورة باسم الفيل.', keys: ['105:1', '105:2'] },
-      { g: 3, t: 'الحوت (قصة يونس)', note: 'التقم الحوت يونس عليه السلام وهو مليم، فنادى في الظلمات أن لا إله إلا أنت سبحانك إني كنت من الظالمين فنجّاه الله.', keys: ['37:142', '21:87', '68:48'] },
+      { g: 3, t: 'حوت يونس', note: 'التقم الحوت يونس عليه السلام وهو مليم، فنادى في الظلمات أن لا إله إلا أنت سبحانك إني كنت من الظالمين فنجّاه الله.', keys: ['37:142', '21:87', '68:48'] },
       { g: 3, t: 'ناقة صالح', note: 'ناقة الله آية لثمود، أُمروا أن يذروها تأكل في أرض الله ولا يمسّوها بسوء، فعقروها.', keys: ['7:73'] },
       { g: 3, t: 'فداء إسماعيل', note: 'فدى الله إسماعيل عليه السلام بذبح عظيم بعد أن أسلم هو وأبوه لأمر الله.', keys: ['37:107'] },
       { g: 3, t: 'عصا موسى حيّة', note: 'ألقى موسى عصاه فإذا هي حية تسعى، آيةً أيّد الله بها نبيه، ثم أمره ألا يخاف.', keys: ['20:20', '20:21'] },
@@ -820,7 +882,7 @@ const TOPICS = {
       { g: 5, t: 'الأزواج المطهّرة', note: 'ولهم فيها أزواج مطهّرة وهم فيها خالدون، ويدخلها من صلح من آبائهم وأزواجهم وذرياتهم.', keys: ['2:25', '13:23'] },
       { g: 5, t: 'نزع الغلّ', note: 'ونزعنا ما في صدورهم من غلّ إخواناً على سرر متقابلين، لا يمسّهم فيها نصب وما هم منها بمخرجين.', keys: ['15:47', '15:48'] },
       { g: 5, t: 'السلام', note: 'لا يسمعون فيها لغواً ولا تأثيماً إلا قيلاً سلاماً سلاماً، وتحيتهم فيها سلام.', keys: ['56:25', '56:26', '10:10'] },
-      { g: 6, t: 'رضوان الله أكبر', note: 'ورضوان من الله أكبر، ذلك هو الفوز العظيم؛ فأعلى من نعيم المساكن رضا الله عن أهل الجنة.', keys: ['9:72'] },
+      { g: 6, t: 'رضوان الله', note: 'ورضوان من الله أكبر، ذلك هو الفوز العظيم؛ فأعلى من نعيم المساكن رضا الله عن أهل الجنة.', keys: ['9:72'] },
       { g: 6, t: 'النظر إلى وجه الله', note: 'وجوه يومئذ ناضرة إلى ربها ناظرة، وللذين أحسنوا الحسنى وزيادة، وقد فسّر العلماء «الزيادة» بالنظر إلى وجه الله الكريم.', keys: ['75:22', '75:23', '10:26'] },
       { g: 6, t: 'ما أُخفي لهم', note: 'فلا تعلم نفس ما أُخفي لهم من قرة أعين جزاءً بما كانوا يعملون؛ فنعيم الجنة أعظم مما يخطر على البال.', keys: ['32:17'] },
       { g: 7, t: 'سعة الجنة', note: 'وسارعوا إلى مغفرة من ربكم وجنة عرضها السماوات والأرض أُعدّت للمتقين.', keys: ['3:133', '57:21'] },
@@ -914,41 +976,93 @@ TOPICS.numbers = {
   groups: [['1️⃣', 'من الواحد إلى العشرة'], ['⏳', 'أعداد في الزمن والمدد'], ['📖', 'أعداد في القصص والأحداث'], ['⚖️', 'أعداد في الأحكام'], ['🌌', 'أعداد كبيرة']],
   items: [
     { g: 0, t: 'واحد', note: 'أصل التوحيد: الله أحد، وإلهكم إله واحد.', keys: ['112:1', '2:163'] },
-    { g: 0, t: 'اثنان', note: 'نهى الله عن اتخاذ إلهين اثنين، وذكر خلق الأزواج: ومن كل شيء خلقنا زوجين.', keys: ['16:51', '51:49'] },
-    { g: 0, t: 'ثلاثة', note: 'من مواضعه: إمهال ثمود ثلاثة أيام، ولبث أهل الكهف ثلاثمائة سنين.', keys: ['11:65', '18:25'] },
-    { g: 0, t: 'أربعة', note: 'من مواضعه: تربّص الذين يؤلون من نسائهم أربعة أشهر، وكون الأشهر الحرم أربعة.', keys: ['2:226', '9:36'] },
-    { g: 0, t: 'خمسة', note: 'أمدّ الله المؤمنين بخمسة آلاف من الملائكة مسوّمين.', keys: ['3:125'] },
-    { g: 0, t: 'ستة', note: 'خلق الله السماوات والأرض في ستة أيام.', keys: ['7:54'] },
-    { g: 0, t: 'سبعة', note: 'أكثر الأعداد تكراراً: سبع سماوات، وسبع سنابل، وسبع بقرات، وسبعة أبحر، والسبع المثاني.', keys: ['2:29', '2:261', '12:43', '31:27', '15:87'] },
-    { g: 0, t: 'ثمانية', note: 'ثمانية أزواج من الأنعام، وثمانية أيام حسوماً على عاد.', keys: ['6:143', '69:7'] },
+    { g: 0, t: 'اثنين / شهرين', note: 'نهى الله عن اتخاذ إلهين اثنين، وذكر خلق الأزواج: ومن كل شيء خلقنا زوجين. وشهرين: في كفارة القتل الخطأ وكفارة الظهار: فصيام شهرين متتابعين.', keys: ['16:51', '51:49', '4:92', '58:4'] },
+    { g: 0, t: 'ثلاثة / ثلاثة أشهر', note: 'من مواضعه: إمهال ثمود ثلاثة أيام، ولبث أهل الكهف ثلاثمائة سنين. وفي عدد أصحاب الكهف: سيقولون ثلاثة رابعهم كلبهم، أي ثلاثة رجال ورابعهم الكلب. وثلاثة أشهر: عدة المطلقات اللائي يئسن من المحيض واللائي لم يحضن: فعدتهن ثلاثة أشهر.', keys: ['11:65', '18:25', '18:22', '65:4'] },
+    { g: 0, t: 'أربعة', note: 'من مواضعه: تربّص الذين يؤلون من نسائهم أربعة أشهر، وكون الأشهر الحرم أربعة. وفي أصحاب الكهف: ثلاثة رابعهم كلبهم، فيكون العدد أربعة بالكلب.', keys: ['2:226', '9:36', '18:22'] },
+    { g: 0, t: 'خمسة', note: 'أمدّ الله المؤمنين بخمسة آلاف من الملائكة مسوّمين، وما يكون من نجوى ثلاثة إلا هو رابعهم ولا خمسة إلا هو سادسهم. وفي أصحاب الكهف: ويقولون خمسة سادسهم كلبهم، أي خمسة رجال.', keys: ['3:125', '18:22', '58:7'] },
+    { g: 0, t: 'ستة', note: 'خلق الله السماوات والأرض في ستة أيام. وفي أصحاب الكهف: خمسة سادسهم كلبهم، فيكون العدد ستة بالكلب.', keys: ['7:54', '18:22'] },
+    { g: 0, t: 'سبع وسبعة', note: 'أكثر الأعداد تكراراً: سبع سماوات، وسبع سنابل، وسبع بقرات، وسبعة أبحر، والسبع المثاني. وفي أصحاب الكهف: ويقولون سبعة وثامنهم كلبهم، أي سبعة رجال. وفي قصة يوسف: رؤيا ملك مصر: سبع بقرات سمان يأكلهن سبع عجاف، وسبع سنبلات خضر وأخر يابسات. ففسّرها يوسف عليه السلام: تزرعون سبع سنين دأباً فما حصدتم فذروه في سنبله إلا قليلاً مما تأكلون، ثم يأتي سبع شداد يأكلن ما قدّمتم لهن، ثم عام فيه يغاث الناس وفيه يعصرون.', keys: ['2:29', '2:261', '12:43', '31:27', '15:87', '18:22', '12:43', '12:47', '12:48', '12:49'] },
+    { g: 0, t: 'ثمانية', note: 'ثمانية أزواج من الأنعام، وثمانية أيام حسوماً على عاد. وفي أصحاب الكهف: سبعة وثامنهم كلبهم، فيكون العدد ثمانية بالكلب.', keys: ['6:143', '69:7', '18:22'] },
     { g: 0, t: 'تسعة', note: 'تسع آيات بيّنات أوتيها موسى، وتسعة رهط يفسدون في الأرض.', keys: ['17:101', '27:48'] },
     { g: 0, t: 'عشرة', note: 'من مواضعه: صيام عشرة كاملة، والتحدي بعشر سور، وليالٍ عشر.', keys: ['2:196', '11:13', '89:2'] },
-    { g: 1, t: 'اثنا عشر شهراً', note: 'إن عدة الشهور عند الله اثنا عشر شهراً في كتاب الله منها أربعة حرم.', keys: ['9:36'] },
+    { g: 1, t: 'اثنا عشر شهراً / اثنتا عشرة عيناً', note: 'إن عدة الشهور عند الله اثنا عشر شهراً في كتاب الله منها أربعة حرم. وفي قصة موسى: انفجرت من الحجر اثنتا عشرة عيناً لما استسقى موسى لقومه، وبعث الله منهم اثني عشر نقيباً.', keys: ['9:36', '2:60', '5:12'] },
     { g: 1, t: 'ثلاثمائة وتسع سنين', note: 'لبث أصحاب الكهف في كهفهم ثلاثمائة سنين وازدادوا تسعاً.', keys: ['18:25'] },
-    { g: 1, t: 'ألف شهر', note: 'ليلة القدر خير من ألف شهر.', keys: ['97:3'] },
-    { g: 1, t: 'ألف سنة', note: 'وإن يوماً عند ربك كألف سنة مما تعدّون، ومثله ألف سنة إلا خمسين عاماً لنوح في قومه.', keys: ['22:47', '29:14'] },
-    { g: 1, t: 'خمسون ألف سنة', note: 'تعرج الملائكة والروح إليه في يوم كان مقداره خمسين ألف سنة.', keys: ['70:4'] },
-    { g: 1, t: 'مائة عام', note: 'قصة الذي مرّ على قرية فأماته الله مائة عام ثم بعثه.', keys: ['2:259'] },
+    { g: 1, t: 'ألف شهر / ألف سنة', note: 'ليلة القدر خير من ألف شهر. وإن يوماً عند ربك كألف سنة مما تعدّون، ومثله ألف سنة إلا خمسين عاماً لنوح في قومه.', keys: ['97:3', '22:47', '29:14'] },
+    { g: 1, t: 'مائة عام / مائة حبة', note: 'قصة الذي مرّ على قرية فأماته الله مائة عام ثم بعثه. ومثل الذين ينفقون أموالهم في سبيل الله: كمثل حبة أنبتت سبع سنابل في كل سنبلة مائة حبة.', keys: ['2:259', '2:261'] },
     { g: 2, t: 'تسعة عشر', note: 'عليها تسعة عشر: عدد خزنة سقر.', keys: ['74:30'] },
-    { g: 2, t: 'أربعون ليلة', note: 'ميقات ربه أربعين ليلة، وهي ثلاثون ليلة أُتمّت بعشر.', keys: ['7:142'] },
-    { g: 2, t: 'أربعون سنة', note: 'التيه أربعين سنة على بني إسرائيل، وبلوغ الإنسان أشدّه وأربعين سنة.', keys: ['5:26', '46:15'] },
-    { g: 2, t: 'اثنتا عشرة عيناً', note: 'انفجرت من الحجر اثنتا عشرة عيناً لما استسقى موسى لقومه، وبعث الله منهم اثني عشر نقيباً.', keys: ['2:60', '5:12'] },
+    { g: 2, t: 'أربعون ليلة / أربعون سنة', note: 'ميقات ربه أربعين ليلة، وهي ثلاثون ليلة أُتمّت بعشر. وأربعون سنة: التيه أربعين سنة على بني إسرائيل، وبلوغ الإنسان أشدّه وأربعين سنة.', keys: ['7:142', '5:26', '46:15'] },
     { g: 2, t: 'تسع وتسعون نعجة', note: 'في قصة الخصمين اللذين تسوّرا المحراب على داود: إن هذا أخي له تسع وتسعون نعجة.', keys: ['38:23'] },
-    { g: 2, t: 'سبع سنين دأباً (قصة يوسف)', note: 'فسّر يوسف عليه السلام رؤيا الملك: تزرعون سبع سنين دأباً فما حصدتم فذروه في سنبله إلا قليلاً مما تأكلون، ثم يأتي سبع شداد يأكلن ما قدّمتم لهن، ثم عام فيه يغاث الناس وفيه يعصرون.', keys: ['12:47', '12:48', '12:49'] },
-    { g: 2, t: 'سبع بقرات سمان وسبع سنبلات (قصة يوسف)', note: 'رؤيا ملك مصر: سبع بقرات سمان يأكلهن سبع عجاف، وسبع سنبلات خضر وأخر يابسات، وكانت تأويلها سنوات الرخاء ثم القحط.', keys: ['12:43'] },
-    { g: 2, t: 'بضع سنين في السجن (قصة يوسف)', note: 'قال لصاحبه الذي ظن أنه ناج: اذكرني عند ربك، فأنساه الشيطان ذكر ربه، فلبث في السجن بضع سنين. والبضع من ثلاث إلى تسع.', keys: ['12:42'] },
-    { g: 2, t: 'أحد عشر كوكباً (قصة يوسف)', note: 'رؤيا يوسف عليه السلام وهو صغير: إني رأيت أحد عشر كوكباً والشمس والقمر رأيتهم لي ساجدين.', keys: ['12:4'] },
-    { g: 2, t: 'سبعون رجلاً', note: 'اختار موسى من قومه سبعين رجلاً لميقاتنا.', keys: ['7:155'] },
+    { g: 2, t: 'بضع سنين (قصة يوسف)', note: 'قال لصاحبه الذي ظن أنه ناج: اذكرني عند ربك، فأنساه الشيطان ذكر ربه، فلبث في السجن بضع سنين. والبضع من ثلاث إلى تسع.', keys: ['12:42'] },
+    { g: 2, t: 'أحد عشر كوكباً', note: 'رؤيا يوسف عليه السلام وهو صغير: إني رأيت أحد عشر كوكباً والشمس والقمر رأيتهم لي ساجدين.', keys: ['12:4'] },
     { g: 2, t: 'مائة ألف', note: 'وأرسلناه إلى مائة ألف أو يزيدون: في قصة يونس عليه السلام.', keys: ['37:147'] },
     { g: 3, t: 'ثمانون جلدة', note: 'حدّ القذف: فاجلدوهم ثمانين جلدة.', keys: ['24:4'] },
     { g: 3, t: 'ستون مسكيناً', note: 'من كفارة الظهار: فإطعام ستين مسكيناً.', keys: ['58:4'] },
-    { g: 3, t: 'أجزاء الميراث', note: 'ذكر القرآن الأنصبة: النصف والثلث والربع والسدس والثمن في آيات المواريث.', keys: ['4:11', '4:12'] },
-    { g: 3, t: 'عشرون ومئتان', note: 'إن يكن منكم عشرون صابرون يغلبوا مائتين، تخفيفاً بعد ذلك وتقدير النسبة بحسب الصبر.', keys: ['8:65', '8:66'] },
-    { g: 4, t: 'مائة حبة', note: 'مثل الذين ينفقون أموالهم في سبيل الله: كمثل حبة أنبتت سبع سنابل في كل سنبلة مائة حبة.', keys: ['2:261'] },
-    { g: 4, t: 'سبعون مرة', note: 'إن تستغفر لهم سبعين مرة فلن يغفر الله لهم: جاء في المنافقين.', keys: ['9:80'] },
-    { g: 4, t: 'سبعون ذراعاً', note: 'في صفة العذاب: في سلسلة ذرعها سبعون ذراعاً.', keys: ['69:32'] },
+    { g: 3, wide: true, t: 'أجزاء الميراث : النصف والثلث والربع والسدس والثمن', note: 'ذكر القرآن الأنصبة: النصف والثلث والربع والسدس والثمن في آيات المواريث.', keys: ['4:11', '4:12'] },
+    { g: 3, t: 'عشرون', note: 'إن يكن منكم عشرون صابرون يغلبوا مائتين، تخفيفاً بعد ذلك وتقدير النسبة بحسب الصبر.', keys: ['8:65', '8:66'] },
+    { g: 3, t: 'مائتان', note: 'إن يكن منكم عشرون صابرون يغلبوا مائتين، تخفيفاً بعد ذلك وتقدير النسبة بحسب الصبر.', keys: ['8:65', '8:66'] },
+    { g: 3, t: 'ألف يغلبون ألفين', note: 'فإن يكن منكم مائة صابرة يغلبوا مائتين وإن يكن منكم ألف يغلبوا ألفين بإذن الله، والله مع الصابرين.', keys: ['8:66'] },
+    { g: 4, t: 'سبعون :  مرة / ذراعاً/رجلاً', note: 'إن تستغفر لهم سبعين مرة فلن يغفر الله لهم: جاء في المنافقين. وفي صفة العذاب: في سلسلة ذرعها سبعون ذراعاً. وفي قصة موسى: اختار موسى من قومه سبعين رجلاً لميقاتنا.', keys: ['9:80', '69:32', '7:155'] },
+    { g: 4, t: 'خُمس', note: 'واعلموا أنما غنمتم من شيء فأن لله خمسه وللرسول: خمس الغنيمة لله وللرسول ولذي القربى واليتامى والمساكين وابن السبيل.', keys: ['8:41'] },
+    { g: 4, t: 'خمسون / خمسون ألف سنة', note: 'لبث نوح في قومه ألف سنة إلا خمسين عاماً. وفي يوم القيامة: تعرج الملائكة والروح إليه في يوم كان مقداره خمسين ألف سنة.', keys: ['29:14', '70:4'] },
   ],
 };
+// jannah: one flat list of boxes (no category column), still in category order
+{ const J = TOPICS.jannah; J.items = J.items.map((m, i) => [m, i]).sort((a, b) => a[0].g - b[0].g || a[1] - b[1]).map(([m]) => ({ ...m, g: 0 }));
+  const FIRST = ['أبواب الجنة', 'الخلود', 'النظر إلى وجه الله', 'رضوان الله', 'السلام', 'سعة الجنة', 'الظلّ الظليل', 'المساكن الطيبة', 'نزع الغلّ'];                  // shown first, in this order
+  J.items = [...FIRST.map((t) => J.items.find((m) => m.t === t)), ...J.items.filter((m) => !FIRST.includes(m.t))];
+  J.groups = [['', '']]; }
+TOPICS.jannah2 = { groups: TOPICS.jannah.groups, items: [...TOPICS.jannah.items] };   // #jannah2: preview of the jannah page with five boxes per row
+// يوم القيامة / فضل حافظ القرآن: one flat list of boxes each
+TOPICS.qiyamah = { groups: [['', '']], items: [
+    { g: 0, t: 'أسماء يوم القيامة', note: 'سمّى القرآن يوم القيامة بأسماء كثيرة تدل على أهواله، منها: القارعة، والحاقة، والطامة الكبرى، والصاخّة، والغاشية، ويوم الدين، ويوم التغابن.', keys: ['101:1', '69:1', '79:34', '80:33', '88:1', '1:4', '64:9'] },
+    { g: 0, t: 'علم الساعة عند الله', note: 'يسألونك عن الساعة أيّان مرساها، قل إنما علمها عند ربي لا يجلّيها لوقتها إلا هو، وإن الله عنده علم الساعة.', keys: ['7:187', '31:34'] },
+    { g: 0, t: 'أشراط الساعة', note: 'فقد جاء أشراطها، ومنها في القرآن: انشقاق القمر، وخروج يأجوج ومأجوج، وخروج دابة من الأرض تكلّم الناس.', keys: ['47:18', '54:1', '21:96', '27:82'] },
+    { g: 0, t: 'النفخ في الصور', note: 'ونُفخ في الصور فصعق من في السماوات ومن في الأرض إلا من شاء الله، ثم نُفخ فيه أخرى فإذا هم قيام ينظرون.', keys: ['39:68', '36:51'] },
+    { g: 0, t: 'زلزلة الأرض', note: 'إذا زُلزلت الأرض زلزالها وأخرجت الأرض أثقالها، إن زلزلة الساعة شيء عظيم تذهل فيه كل مرضعة عما أرضعت.', keys: ['99:1', '99:2', '22:1', '22:2'] },
+    { g: 0, t: 'تغيّر الكون', note: 'إذا الشمس كُوّرت، وإذا النجوم انكدرت، وإذا السماء انفطرت، وإذا الكواكب انتثرت، وخسف القمر وجُمع الشمس والقمر.', keys: ['81:1', '81:2', '82:1', '82:2', '75:8', '75:9'] },
+    { g: 0, t: 'نسف الجبال', note: 'ويسألونك عن الجبال فقل ينسفها ربي نسفاً، وتكون الجبال كالعهن المنفوش، وسُيّرت الجبال فكانت سراباً.', keys: ['20:105', '101:5', '78:20', '81:3'] },
+    { g: 0, t: 'البعث من القبور', note: 'إذا بُعثر ما في القبور، يخرجون من الأجداث كأنهم جراد منتشر، فإذا هم من الأجداث إلى ربهم ينسلون.', keys: ['100:9', '54:7', '36:51'] },
+    { g: 0, t: 'الحشر', note: 'وحشرناهم فلم نغادر منهم أحداً، يوم نحشر المتقين إلى الرحمن وفداً ونسوق المجرمين إلى جهنم ورداً.', keys: ['18:47', '19:85', '19:86', '20:102'] },
+    { g: 0, t: 'طول ذلك اليوم', note: 'في يوم كان مقداره خمسين ألف سنة، تعرج الملائكة والروح إليه.', keys: ['70:4', '32:5'] },
+    { g: 0, t: 'مجيء الرب والملائكة صفاً', note: 'وجاء ربك والملك صفاً صفاً، يوم يقوم الروح والملائكة صفاً لا يتكلمون إلا من أذن له الرحمن.', keys: ['89:21', '89:22', '78:38'] },
+    { g: 0, t: 'يفرّ المرء من أخيه', note: 'يوم يفرّ المرء من أخيه وأمه وأبيه وصاحبته وبنيه، لكل امرئ منهم يومئذ شأن يغنيه، يوم لا ينفع مال ولا بنون إلا من أتى الله بقلب سليم.', keys: ['80:34', '80:35', '80:36', '80:37', '26:88', '26:89'] },
+    { g: 0, t: 'لا تجزي نفس عن نفس', note: 'واتقوا يوماً لا تجزي نفس عن نفس شيئاً، يوم لا تملك نفس لنفس شيئاً والأمر يومئذ لله.', keys: ['2:48', '82:19'] },
+    { g: 0, t: 'الشفاعة', note: 'من ذا الذي يشفع عنده إلا بإذنه، ولا تنفع الشفاعة إلا من أذن له الرحمن ورضي له قولاً.', keys: ['2:255', '20:109', '53:26'] },
+    { g: 0, t: 'الكتاب وتطاير الصحف', note: 'ونُخرج له يوم القيامة كتاباً يلقاه منشوراً: اقرأ كتابك، فأما من أوتي كتابه بيمينه، وأما من أوتي كتابه بشماله أو وراء ظهره.', keys: ['17:13', '17:14', '69:19', '69:25', '84:7', '84:10'] },
+    { g: 0, t: 'شهادة الجوارح', note: 'اليوم نختم على أفواههم وتكلّمنا أيديهم وتشهد أرجلهم، وشهد عليهم سمعهم وأبصارهم وجلودهم بما كانوا يعملون.', keys: ['36:65', '41:20', '24:24'] },
+    { g: 0, t: 'الميزان', note: 'ونضع الموازين القسط ليوم القيامة فلا تُظلم نفس شيئاً، فأما من ثقلت موازينه فهو في عيشة راضية، وأما من خفّت موازينه فأمه هاوية.', keys: ['21:47', '101:6', '101:8'] },
+    { g: 0, t: 'مثقال ذرة', note: 'فمن يعمل مثقال ذرة خيراً يره، ومن يعمل مثقال ذرة شراً يره، وإن الله لا يظلم مثقال ذرة.', keys: ['99:7', '99:8', '4:40'] },
+    { g: 0, t: 'الورود على النار', note: 'وإن منكم إلا واردها كان على ربك حتماً مقضياً، ثم ننجّي الذين اتقوا ونذر الظالمين فيها جثياً.', keys: ['19:71', '19:72'] },
+    { g: 0, t: 'وجوه يومئذ', note: 'يوم تبيضّ وجوه وتسودّ وجوه، وجوه يومئذ مسفرة ضاحكة مستبشرة، ووجوه يومئذ عليها غبرة ترهقها قترة.', keys: ['3:106', '80:38', '80:39', '80:40', '80:41'] },
+    { g: 0, t: 'أصحاب الأعراف', note: 'وبينهما حجاب وعلى الأعراف رجال يعرفون كلاً بسيماهم، ونادوا أصحاب الجنة أن سلام عليكم.', keys: ['7:46'] },
+    { g: 0, t: 'الحسرة والندم', note: 'يقول الكافر يا ليتني كنت تراباً، ويقول يا ليتني قدّمت لحياتي، ويوم يعضّ الظالم على يديه يقول يا ليتني اتخذت مع الرسول سبيلاً.', keys: ['78:40', '89:24', '25:27'] },
+] };
+TOPICS.hafiz = { groups: [['', '']], items: [
+    { g: 0, t: 'حفظ الله للقرآن', note: 'إنا نحن نزّلنا الذكر وإنا له لحافظون؛ وحفّاظ القرآن من أسباب هذا الحفظ الذي تكفّل الله به.', keys: ['15:9'] },
+    { g: 0, t: 'في صدور الذين أوتوا العلم', note: 'بل هو آيات بيّنات في صدور الذين أوتوا العلم؛ فوصف القرآن بأنه محفوظ في الصدور.', keys: ['29:49'] },
+    { g: 0, t: 'تيسير القرآن للذكر', note: 'ولقد يسّرنا القرآن للذكر فهل من مدّكر؛ تكررت في سورة القمر أربع مرات، ومن معانيها تيسيره للحفظ والتلاوة.', keys: ['54:17', '54:22', '54:32', '54:40'] },
+    { g: 0, t: 'سنقرئك فلا تنسى', note: 'وعد الله نبيه ﷺ بحفظ القرآن في صدره: سنقرئك فلا تنسى، إن علينا جمعه وقرآنه.', keys: ['87:6', '75:16', '75:17', '75:18'] },
+    { g: 0, t: 'ورثة الكتاب', note: 'ثم أورثنا الكتاب الذين اصطفينا من عبادنا؛ فحملة القرآن ممن اصطفاهم الله لوراثة كتابه.', keys: ['35:32'] },
+    { g: 0, t: 'تجارة لن تبور', note: 'إن الذين يتلون كتاب الله وأقاموا الصلاة وأنفقوا يرجون تجارة لن تبور، ليوفّيهم أجورهم ويزيدهم من فضله.', keys: ['35:29', '35:30'] },
+    { g: 0, t: 'يتلونه حق تلاوته', note: 'الذين آتيناهم الكتاب يتلونه حق تلاوته أولئك يؤمنون به.', keys: ['2:121'] },
+    { g: 0, t: 'ترتيل القرآن', note: 'ورتّل القرآن ترتيلاً، فاقرؤوا ما تيسّر من القرآن.', keys: ['73:4', '73:20'] },
+    { g: 0, t: 'قيام الليل بالقرآن', note: 'من أهل الكتاب أمة قائمة يتلون آيات الله آناء الليل وهم يسجدون، وأُمر النبي ﷺ وأصحابه بقيام الليل وقراءة ما تيسر.', keys: ['3:113', '73:20'] },
+    { g: 0, t: 'الخشوع وزيادة الإيمان', note: 'إذا تُليت عليهم آياته زادتهم إيماناً، ويخرّون للأذقان يبكون ويزيدهم خشوعاً، تقشعرّ منه جلود الذين يخشون ربهم.', keys: ['8:2', '17:107', '17:109', '39:23'] },
+    { g: 0, t: 'التدبّر', note: 'كتاب أنزلناه إليك مبارك ليدّبّروا آياته وليتذكر أولو الألباب، أفلا يتدبرون القرآن.', keys: ['38:29', '47:24'] },
+    { g: 0, t: 'شفاء ورحمة', note: 'وننزّل من القرآن ما هو شفاء ورحمة للمؤمنين، وشفاء لما في الصدور وهدى ورحمة.', keys: ['17:82', '10:57'] },
+    { g: 0, t: 'الاستماع والإنصات', note: 'وإذا قُرئ القرآن فاستمعوا له وأنصتوا لعلكم تُرحمون.', keys: ['7:204'] },
+    { g: 0, t: 'يهدي للتي هي أقوم', note: 'إن هذا القرآن يهدي للتي هي أقوم ويبشّر المؤمنين الذين يعملون الصالحات أن لهم أجراً كبيراً.', keys: ['17:9'] },
+    { g: 0, t: 'رفعة أهل العلم', note: 'يرفع الله الذين آمنوا منكم والذين أوتوا العلم درجات؛ وأولى العلم علم كتاب الله.', keys: ['58:11'] },
+    { g: 0, t: 'الماهر بالقرآن مع السفرة', note: 'حديث متفق عليه: «الماهر بالقرآن مع السفرة الكرام البررة، والذي يقرأ القرآن ويتتعتع فيه وهو عليه شاق له أجران». والسفرة الكرام البررة هم الملائكة المذكورون في سورة عبس.', keys: ['80:15', '80:16'] },
+    { g: 0, t: 'خيركم من تعلّم القرآن وعلّمه', note: 'حديث رواه البخاري: «خيركم من تعلّم القرآن وعلّمه».', keys: [] },
+    { g: 0, t: 'اقرأ وارتقِ', note: 'حديث رواه أبو داود والترمذي وصحّحه: «يُقال لصاحب القرآن: اقرأ وارتقِ ورتّل كما كنت ترتّل في الدنيا، فإن منزلتك عند آخر آية تقرؤها».', keys: [] },
+    { g: 0, t: 'شفيعاً لأصحابه', note: 'حديث رواه مسلم: «اقرؤوا القرآن فإنه يأتي يوم القيامة شفيعاً لأصحابه».', keys: [] },
+] };
+// numbers: one flat list, smallest value to largest (the value each box stands for, in item order)
+{ const V = [1,2,3,4,5,6,7,8,9,10,12,309,1000,100,19,40,99,7,11,100000,80,60,0.5,20,200,1000,70,0.75,50];
+  const N = TOPICS.numbers; N.items.forEach((m, i) => { m.v = V[i]; m.g = 0; });
+  N.items = N.items.map((m, i) => [m, i]).sort((a, b) => a[0].v - b[0].v || a[1] - b[1]).map(([m]) => m);
+  N.groups = [['', '']]; }
 TOPICS.names = {
   groups: [["🌟", "الذات والتنزيه"], ["💚", "الرحمة والمغفرة"], ["👑", "العظمة والقوة"], ["🧠", "العلم والحكمة والإحاطة"], ["🌍", "الخلق والتدبير والرزق"], ["🤲", "الولاية والإجابة والنصرة"]],
   items: [
@@ -1003,7 +1117,7 @@ TOPICS.names = {
     { g: 2, t: "شديد العقاب", note: "شديد العقوبة لمن عصاه", keys: ['2:196'] },
     { g: 2, t: "سريع الحساب", note: "الذي لا يشغله حساب أحد عن حساب آخر", keys: ['2:202'] },
     { g: 2, t: "ذو انتقام", note: "ينتقم ممن عصاه وتجاوز حدوده", keys: ['3:4'] },
-    { g: 2, t: "الرفيع الدرجات", note: "رفيع الصفات ويرفع درجات عباده", keys: ['40:15'] },
+    { g: 2, t: "رفيع الدرجات", note: "رفيع الصفات ويرفع درجات عباده", keys: ['40:15'] },
     { g: 3, t: "العليم", note: "الذي أحاط علمه بكل شيء", keys: ['2:32'] },
     { g: 3, t: "الحكيم", note: "الذي يضع الأمور في مواضعها", keys: ['2:32'] },
     { g: 3, t: "الخبير", note: "العالم ببواطن الأمور", keys: ['6:18'] },
@@ -1046,11 +1160,11 @@ TOPICS.names = {
 
 /* people screen split into prophets / others */
 TOPICS.prophets = {
-  groups: [['⭐', 'أولو العزم من الرسل'], ['🕊️', 'بقية الأنبياء والرسل المذكورين بأسمائهم']],
+  groups: [['⭐', 'أولو العزم من الرسل'], ['🕊️', 'بقية الأنبياء والرسل المذكورين بأسمائهم عليهم السلام']],
   items: TOPICS.people.items.filter((i) => i.g === 0).map((i) => ({ ...i, g: ['نوح', 'إبراهيم', 'موسى', 'عيسى', 'محمد ﷺ'].includes(i.t) ? 0 : 1 })),
 };
 TOPICS.jesus = {
-  groups: [['👶', 'ميلاد عيسى ورسالته'], ['✨', 'معجزاته ودعوته'], ['☁️', 'رفعه وما يُقال فيه'], ['🌺', 'مريم عليها السلام'], ['❤️', 'محبة المسلمين لعيسى ومريم والإيمان بهما']],
+  groups: [['👶', 'ميلاد عيسى ورسالته'], ['✨', 'معجزاته ودعوته'], ['☁️', 'رفعه وما يُقال فيه'], ['🌺', 'مريم عليها السلام'], ['❤️', 'الإيمان بعيسى ومريم ومحبتهما']],
   items: [
     { g: 0, t: 'بشارة الملائكة بمولده', note: 'بشّرت الملائكة مريم بكلمة من الله اسمه المسيح عيسى ابن مريم، وجيهاً في الدنيا والآخرة ومن المقرّبين.', keys: ['3:45', '3:47', '19:21'] },
     { g: 0, t: 'كلامه في المهد', note: 'تكلّم عيسى عليه السلام وهو في المهد صبياً فقال: إني عبد الله آتاني الكتاب وجعلني نبياً، وجعلني مباركاً أينما كنت.', keys: ['19:29', '19:30', '19:31', '19:33', '3:46'] },
@@ -1071,8 +1185,8 @@ TOPICS.jesus = {
     { g: 3, t: 'الولادة وجذع النخلة', note: 'جاءها المخاض إلى جذع النخلة، فناداها من تحتها ألا تحزني قد جعل ربك تحتك سرياً، وهزي إليك بجذع النخلة تساقط عليك رطباً جنياً.', keys: ['19:23', '19:24', '19:25', '19:26'] },
     { g: 3, t: 'اتهامها وبراءتها', note: 'أتت به قومها تحمله فاتهموها، فأشارت إلى المولود فتكلّم، وبذلك ظهرت براءتها. وردّ القرآن على من رماها بالبهتان.', keys: ['19:27', '19:28', '19:29', '4:156'] },
     { g: 3, t: 'مثل المؤمنين وآية للعالمين', note: 'جعلها الله مثلاً للذين آمنوا: أحصنت فرجها وصدّقت بكلمات ربها وكتبه وكانت من القانتين، وجعلها وابنها آية للعالمين.', keys: ['66:12', '21:91', '23:50'] },
-    { g: 4, t: 'لا يكتمل إيمان المسلم إلا بالإيمان بعيسى وبجميع الرسل', note: 'المسلم يؤمن بعيسى وبجميع الأنبياء والرسل إيماناً لا يصحّ الإسلام بدونه، ولا يفرّق بين أحد منهم. ومن كفر برسل الله فقد ضلّ ضلالاً بعيداً.', keys: ['2:285', '2:136', '3:84', '4:136', '4:152'] },
-    { g: 4, t: 'نحب عيسى عليه السلام: عبد الله ورسوله وكلمته', note: 'نحب عيسى ونوقّره ونصلّي ونسلّم عليه كما نفعل مع سائر الأنبياء؛ فهو عبد الله ورسوله وكلمته ألقاها إلى مريم وروح منه، وجيه في الدنيا والآخرة ومن المقرّبين، ومن الصالحين.', keys: ['4:171', '3:45', '3:46', '6:85'] },
+    { g: 4, t: 'إيمان المسلم بعيسى والرسل', note: 'المسلم يؤمن بعيسى وبجميع الأنبياء والرسل إيماناً لا يصحّ الإسلام بدونه، ولا يفرّق بين أحد منهم. ومن كفر برسل الله فقد ضلّ ضلالاً بعيداً.', keys: ['2:285', '2:136', '3:84', '4:136', '4:152'] },
+    { g: 4, t: 'عيسى عبد الله ورسوله وكلمته', note: 'نحب عيسى ونوقّره ونصلّي ونسلّم عليه كما نفعل مع سائر الأنبياء؛ فهو عبد الله ورسوله وكلمته ألقاها إلى مريم وروح منه، وجيه في الدنيا والآخرة ومن المقرّبين، ومن الصالحين.', keys: ['4:171', '3:45', '3:46', '6:85'] },
     { g: 4, t: 'أنبياء إخوة', note: 'ورد في الحديث الصحيح (البخاري ومسلم) قول النبي ﷺ: «أنا أولى الناس بعيسى ابن مريم في الدنيا والآخرة، والأنبياء إخوة لعلّات، أمهاتهم شتى ودينهم واحد».', keys: [] },
     { g: 4, t: 'الشهادة التي تشمل عيسى', note: 'جاء في الصحيحين قوله ﷺ: «من شهد أن لا إله إلا الله وحده لا شريك له، وأن محمداً عبده ورسوله، وأن عيسى عبد الله ورسوله وكلمته ألقاها إلى مريم وروح منه، وأن الجنة حق والنار حق، أدخله الله الجنة على ما كان من العمل».', keys: [] },
     { g: 4, t: 'السلام على عيسى', note: 'قال عيسى عليه السلام: «والسلام عليّ يوم ولدت ويوم أموت ويوم أبعث حياً»، وهو مبارك أينما كان، وأوصاه الله بالصلاة والزكاة ما دام حياً.', keys: ['19:33', '19:31'] },
@@ -1121,7 +1235,7 @@ TOPICS.duasp = {
     { g: 1, t: "لوط: انصرني", note: "رب انصرني على القوم المفسدين، ورب نجّني وأهلي مما يعملون.", keys: ['29:30', '26:169'] },
     { g: 1, t: "يعقوب: أشكو بثي", note: "قال: إنما أشكو بثي وحزني إلى الله وأعلم من الله ما لا تعلمون.", keys: ['12:86'] },
     { g: 1, t: "موسى: إني لما أنزلت إليّ من خير فقير", note: "دعاء الحاجة بعد أن سقى للمرأتين: رب إني لما أنزلت إليّ من خير فقير.", keys: ['28:24'] },
-    { g: 1, t: "يوسف: السجن أحب إلي", note: "رب السجن أحب إليّ مما يدعونني إليه وإلا تصرف عني كيدهن أصبُ إليهن.", keys: ['12:33'] },
+    { g: 1, t: "يوسف: إِلَّا تَصْرِفْ عَنِّى كَيْدَهُنَّ", note: "رب السجن أحب إليّ مما يدعونني إليه وإلا تصرف عني كيدهن أصبُ إليهن.", keys: ['12:33'] },
     { g: 2, t: "إبراهيم: رب اجعلني مقيم الصلاة", note: "رب اجعلني مقيم الصلاة ومن ذريتي ربنا وتقبل دعاء.", keys: ['14:40'] },
     { g: 2, t: "إبراهيم: بلداً آمناً", note: "رب اجعل هذا البلد آمناً وارزق أهله من الثمرات من آمن منهم بالله واليوم الآخر.", keys: ['2:126'] },
     { g: 2, t: "إبراهيم: هب لي من الصالحين", note: "رب هب لي من الصالحين، فبشّره الله بغلام حليم.", keys: ['37:100'] },
@@ -1170,7 +1284,7 @@ TOPICS.duasb = {
     { g: 5, t: "اللهم مالك الملك", note: "من الثناء والدعاء الذي علّمه الله نبيه: قل اللهم مالك الملك تؤتي الملك من تشاء وتنزع الملك ممن تشاء.", keys: ['3:26'] },
   ],
 };
-TOPICS.names.groups.push(['📋', 'من الأسماء المتداولة (٩٩) التي لم يرد لفظها اسماً في القرآن']);
+TOPICS.names.groups.push(['📋', 'الأسماء المتداولة (٩٩) التي لم يرد لفظها اسماً في القرآن']);
 TOPICS.names.items.push(
     { g: 6, t: "القابض", note: "لم يرد «القابض» اسماً في القرآن؛ ورد معناه فعلاً: «والله يقبض ويبسط وإليه ترجعون».", keys: ['2:245'] },
     { g: 6, t: "الباسط", note: "لم يرد «الباسط» اسماً؛ ورد معناه فعلاً في قوله: «والله يقبض ويبسط».", keys: ['2:245'] },
@@ -1203,13 +1317,47 @@ TOPICS.names.items.push(
     { g: 6, t: "الرشيد", note: "لم يرد «الرشيد» وصفاً لله؛ ورد في الآية على لسان قوم شعيب وصفاً له: «إنك لأنت الحليم الرشيد».", keys: ['11:87'] },
     { g: 6, t: "الصبور", note: "لم يرد «الصبور» وصفاً لله في القرآن؛ ورد: «إن الله مع الصابرين».", keys: ['2:153'] },
 );
+/* numbers page: number words inside a verse are coloured */
+const NUMW = /^(?:[وفبلك]|ال|لل|وال|فال|بال)?(?:واحد|وحد|احد|اثنت|اثن|ثنت|ثلث|ثلاث|اربع|خمس|ست|سبع|ثمني|ثمن|ثمان|تسع|عشر|مائت|مائ|ميه|مايه|الف|الاف|نصف|ربع|سدس|بضع|زوج|شهرين|شهران)(?:ه|ا|ي|ان|ين|ون|ات)?$/;
+const hlNum = (t) => t.split(/\s+/).map((w) => {
+  const n = w.replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g, '').replace(/[ٱأإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
+  return NUMW.test(n) ? `<span class="nw">${esc(w)}</span>` : esc(w);
+}).join(' ');
+/* an opened box stays in place (highlighted); its explanation opens as a full-width panel under its row */
+function panelize(list) {
+  const place = (d) => {
+    const top = d.offsetTop; let last = d;
+    for (let n = d.nextElementSibling; n; n = n.nextElementSibling) if (n.classList.contains('lesson') && n.offsetTop === top) last = n;
+    last.after(d._p);
+    const col = d.parentNode, wide = col.classList.contains('gcards') && col.closest('.ncols');   // a card in a narrow column: the panel spans all the columns
+    if (wide) { const W = wide.getBoundingClientRect(), C = col.getBoundingClientRect(); d._p.style.width = W.width + 'px'; d._p.style.marginRight = (C.right - W.right) + 'px'; }
+  };
+  list.addEventListener('toggle', (e) => {
+    const d = e.target; if (!d.classList || !d.classList.contains('lesson')) return;
+    if (!d._p) { d._p = document.createElement('div'); d._p.className = 'npanel'; [...d.children].slice(1).forEach((c) => d._p.append(c)); }
+    if (d.open) place(d); else d._p.remove();
+  }, true);
+  addEventListener('resize', () => list.querySelectorAll('.lesson[open]').forEach((d) => d._p && place(d)));
+}
+const PANEL_TOPICS = ['numbers', 'jannah', 'jannah2', 'jesus', 'qiyamah', 'hafiz', 'names'];      // topic pages whose boxes open as a full-width panel, verses as «سورة … — الآية …: text»
 const topicInit = {};
 async function initTopic(name) {
   if (topicInit[name]) return; topicInit[name] = true;
   const T = TOPICS[name], list = $('t-' + name);
+  if (name === 'jannah' || name === 'jannah2') {           // researched items: approved ones, and pending ones (marked) until the admin decides
+    try { const x = await (await fetch('/api/topic-extra?topic=jannah')).json(); if (Array.isArray(x)) for (const e of x) if (e.keys?.length) T.items.push({ g: 0, t: e.t, note: e.note, keys: e.keys, pending: e.pending }); } catch { /* the built-in items are enough */ }
+    const AFTER = [['الحور العين', 'الأزواج المطهّرة'], ['الغرف', 'المساكن الطيبة'], ['الأرائك والسرر', 'الغرف'], ['أسماء الجنة', null], ['الفُرُش والرفرف والعبقري', 'الغرف']];    // [item, the item it follows (null: first)]
+    for (const [t, prev] of AFTER) { const i = T.items.findIndex((m) => m.t === t); if (i < 0) continue; const [m] = T.items.splice(i, 1); const j = T.items.findIndex((x) => x.t === prev); T.items.splice(prev === null ? 0 : j < 0 ? T.items.length : j + 1, 0, m); }
+    // final order: the promise and who enters it, then what its people see and enjoy, then food and drink last (anything not listed sits before the food)
+    const PROMISE = ['من صفات الوارثين للفردوس', 'نهي النفس عن الهوى', 'السابقون وأصحاب اليمين', 'بشارة الملائكة ونُزُل الجنة', 'النور والبشرى', 'إزلاف الجنة', 'أبواب الجنة', 'ميراث الجنة ومعرفتها', 'رَوح وريحان', 'أسماء الجنة', 'سعة الجنة', 'درجات الجنة', 'الجنتان ومن دونهما جنتان', 'الخلود', 'لا موت فيها'];
+    const ENJOY = ['النظر إلى وجه الله', 'رضوان الله', 'ما أُخفي لهم', 'لهم ما يشاؤون ولدينا مزيد', 'السلام', 'نزع الغلّ', 'الأمن في الجنة', 'لا نَصَب ولا لُغوب', 'نضرة النعيم', 'حمد أهل الجنة', 'شغل أهل الجنة', 'تساؤل أهل الجنة', 'المؤمن وقرينه', 'الوعد الحق', 'لحاق الذرية بالآباء', 'الأزواج المطهّرة', 'الحور العين', 'الولدان المخلّدون', 'المساكن الطيبة', 'الغرف', 'الفُرُش والرفرف والعبقري', 'الأرائك والسرر', 'الحلي والثياب', 'الظلّ الظليل', 'السدر المخضود والطلح المنضود', 'خير مستقرّ وأحسن مقيل', 'النعيم المقيم والملك الكبير'];
+    const FOOD = ['أنهار الجنة', 'عيون الجنة', 'الفاكهة', 'ثمار متشابهة', 'قطوفها دانية', 'الطعام واللحم', 'الشراب', 'الرحيق المختوم والتسنيم', 'كأس لا لغو فيها'];
+    const rank = (t) => { const k = [...PROMISE, ...ENJOY].indexOf(t); if (k >= 0) return k; const f = FOOD.indexOf(t); return f >= 0 ? 1000 + f : 999; };
+    T.items = T.items.map((m, i) => [m, i]).sort(([a, i], [b, j]) => rank(a.t) - rank(b.t) || i - j).map(([m]) => m);
+  }
   const NC = name === 'names' ? await loadNameCounts() : null;      // how many times each name's word occurs (see the statistics screen)
   list.innerHTML = T.groups.map((G, gi) => `<div class="mgroup"><h3><span>${G[0]}</span>${esc(G[1])} <small class="cnt">(${nA(T.items.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
-    T.items.map((m, i) => [m, i]).filter(([m]) => m.g === gi).map(([m, i]) => `<details class="lesson" data-i="${i}"><summary>${esc(m.t)}${NC && m.g < 6 && NC[m.t] ? `<span class="nc" title="عدد مرات ورود اللفظ في القرآن${AMBIGUOUS.has(m.t) ? ' (يرد اللفظ لغير الله أيضاً)' : ''}">${AMBIGUOUS.has(m.t) ? '<span class="warn">⚠</span>' : ''}${nA(NC[m.t].n)}</span>` : ''}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
+    T.items.map((m, i) => [m, i]).filter(([m]) => m.g === gi).sort(([a], [b]) => name === 'names' ? AMBIGUOUS.has(a.t) - AMBIGUOUS.has(b.t) : 0).map(([m, i]) => `<details class="lesson${m.wide ? ' wide' : ''}${m.pending ? ' pending' : ''}" data-i="${i}"><summary${name === 'names' && m.t.length > 11 ? ' class="fit"' : ''}>${name === 'prophets' ? `${esc(m.t.replace(' ﷺ', ''))}<span class="hon">${m.t.includes('ﷺ') ? 'ﷺ' : '﵇'}</span>` : esc(m.t)}${m.pending ? '<span class="pend">قيد المراجعة</span>' : ''}${NC && m.g < 6 && NC[m.t] ? `<span class="nc" title="عدد مرات ورود اللفظ في القرآن${AMBIGUOUS.has(m.t) ? ' (يرد اللفظ لغير الله أيضاً)' : ''}">${AMBIGUOUS.has(m.t) ? '<span class="warn">⚠</span>' : ''}${nA(NC[m.t].n)}</span>` : ''}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
   if (name === 'names') {                                   // last group on top (collapsed); the six main groups become vertical, collapsible columns
     const groups = [...list.querySelectorAll('.mgroup')];
     const make = (g, cls, open) => {
@@ -1218,9 +1366,16 @@ async function initTopic(name) {
       cards.className = cls === 'ggroup' ? 'mgrid' : 'gcards'; d.append(s, cards); return d;
     };
     const extra = groups.pop(), cols = document.createElement('div');
-    cols.className = 'ncols'; groups.forEach((g) => cols.append(make(g, 'gcol', true)));
+    cols.className = 'ncols'; [0, 2, 4, 1, 3, 5].forEach((k) => groups[k] && cols.append(make(groups[k], 'gcol', true)));   // column order (right to left)
     const countsNote = document.getElementById('countsNote');            // order: note about the 99 names, THEN this collapsible group, THEN the note about the counts, then the columns
-    list.innerHTML = ''; list.append(make(extra, 'ggroup', false), ...(countsNote ? [countsNote] : []), cols);
+    const top = make(extra, 'ggroup', false), n99 = document.getElementById('n99Note');      // the note about the 99-name list goes inside this group, above its cards
+    if (n99) top.querySelector('summary').after(n99);
+    const inQ = document.createElement('details');                                // the names found in the Quran: one collapsible box with the note about the counts and the six columns
+    inQ.className = 'ggroup qgroup'; inQ.open = true;
+    inQ.innerHTML = `<summary><span>📖</span>الأسماء الواردة بلفظها في القرآن <small class="cnt">(${nA(T.items.filter((m) => m.g < 6).length)})</small></summary>`;
+    if (countsNote) inQ.append(countsNote);
+    inQ.append(cols);
+    list.innerHTML = ''; list.append(top, inQ);
   }
   list.addEventListener('toggle', async (e) => {
     const d = e.target; if (!d.open || d.dataset.done || !d.dataset.i) return; d.dataset.done = 1;
@@ -1229,10 +1384,25 @@ async function initTopic(name) {
       if (!m.keys.length) { box.innerHTML = '<div class="tag">لا موضع قرآني لهذا اللفظ؛ مصدره السنة.</div>'; return; }
       let vs = [];
       for (let k = 0; k < m.keys.length; k += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + m.keys.slice(k, k + 8).join(','))).json());
-      box.innerHTML = vs.map((v) => `<div class="ex"><div class="vt">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
+      box.innerHTML = vs.map((v) => PANEL_TOPICS.includes(name) ? `<div class="ex"><div class="vt"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${name === 'numbers' ? hlNum(v.text) : esc(v.text)}</div></div>` : `<div class="ex"><div class="vt">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);
+  if (PANEL_TOPICS.includes(name)) panelize(list);
+  if (['jannah', 'jannah2', 'qiyamah'].includes(name)) {  // a little space after every five rows of boxes
+    const grid = list.querySelector('.mgrid');
+    const gaps = () => {
+      grid.querySelectorAll('.rgap').forEach((g) => g.remove());
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length, cards = [...grid.querySelectorAll(':scope > .lesson')];
+      for (let k = cols * 5; k < cards.length; k += cols * 5) { const g = document.createElement('div'); g.className = 'rgap'; cards[k - 1].after(g); }
+    };
+    gaps(); addEventListener('resize', gaps);
+  }
 }
+$('mgInfo').onclick = (e) => {
+  const b = e.target.closest('.ig'); if (!b) return;
+  const g = document.querySelectorAll('#t-management .mgroup')[+b.dataset.g]; if (!g) return;
+  g.scrollIntoView({ behavior: 'smooth', block: 'start' }); g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash');
+};
 /* generic lazy loader for <details data-keys="s:a,s:a"> panels (verse texts straight from Quran.com) */
 document.addEventListener('toggle', async (e) => {
   const d = e.target;
@@ -1262,11 +1432,11 @@ async function renderNameCounts(box) {
   if (ncSort === 'most') rows.sort((a, b) => b.n - a.n); else if (ncSort === 'least') rows.sort((a, b) => a.n - b.n); else rows.sort((a, b) => a.g - b.g || a.idx - b.idx);
   const max = Math.max(...rows.map((r) => r.n));
   const flagged = all.filter((r) => AMBIGUOUS.has(r.t)).length;
-  const disclaimer = `<div class="disc"><b>تنبيه — طريقة العدّ:</b> عُدّ اللفظ نفسه في نص القرآن، بالألف واللام أو بدونهما، ومع حروف «و ف ب ل ك» الملتصقة بأوله؛ فمثلاً تُعدّ «للرحمن» من «الرحمن». والأسماء المركّبة مثل «ذو الجلال والإكرام» تُعدّ عند ورود العبارة كاملة.<br><b>تحفّظ:</b> لا يستطيع العدّ أن يعرف هل يُراد باللفظ الله أم غيره، فبعض الأعداد أكبر من الحقيقة. وقد وُضعت علامة <span class="wsign">⚠︎</span> على هذه الألفاظ (${nA(flagged)} من ${nA(all.length)})، ومنها «الملك» و«الحق» و«المؤمن» و«العظيم»، وتوضّح اللوحة ذلك في أعلاها. وقائمة <span class="wsign">⚠︎</span> اجتهاد بعد مراجعة الاستعمال القرآني، فيُرجى عرضها على أحد أهل العلم قبل الاعتماد على الأرقام الدقيقة.</div>`;
+  const disclaimer = `<div class="disc"><b>تنبيه — طريقة العدّ:</b> عُدّ اللفظ نفسه في نص القرآن، بالألف واللام أو بدونهما، ومع حروف «و، ف، ب، ل، ك» الملتصقة بأوله؛ فمثلاً تُعدّ «للرحمن» من «الرحمن». والأسماء المركّبة مثل «ذو الجلال والإكرام» تُعدّ عند ورود العبارة كاملة.<br><b>تحفّظ:</b> لا يستطيع العدّ أن يعرف هل يُراد باللفظ الله أم غيره، فبعض الأعداد أكبر من الحقيقة. وقد وُضعت علامة <span class="wsign">⚠︎</span> على هذه الألفاظ (${nA(flagged)} من ${nA(all.length)})، ومنها «الملك» و«الحق» و«المؤمن» و«العظيم»، وتوضّح اللوحة ذلك في أعلاها. وقائمة <span class="wsign">⚠︎</span> اجتهاد بعد مراجعة الاستعمال القرآني، فيُرجى عرضها على أحد أهل العلم قبل الاعتماد على الأرقام الدقيقة.</div>`;
   const sorters = [['group', 'حسب المجموعات'], ['most', 'الأكثر ورودًا'], ['least', 'الأقل ورودًا']];
   let lastG = -1;
   box.innerHTML = `${allah ? `<div class="allah"><span class="nm">الله</span><span class="num">${nA(allah.n)}</span></div>` : ''}
-    <p class="how">العدد هو مرات ورود <b>لفظ</b> الاسم في نص القرآن (بالألف واللام أو بدونهما، ومع حروف «و ف ب ل ك» الملتصقة بأوله)، والأسماء المركّبة تُعدّ بورود العبارة كاملة. والعدّ لا يفرّق بين ما يُراد به الله وغيره، فعلامة <span class="wsign">⚠︎</span> على الألفاظ التي ترد في القرآن لغير الله أيضاً (كالملك والحق والحي والمؤمن والعظيم)، فعددها يزيد عن عدد ورودها اسماً لله. وهذه العلامة من اجتهادي في مراجعة الاستعمال القرآني. وطول الشريط يتناسب مع العدد، ويُعرض لفظ الجلالة وحده فوق الجدول. ويظهر العدد نفسه على بطاقة كل اسم في شاشة «أسماء الله الحسنى».</p>
+    <p class="how">العدد هو مرات ورود <b>لفظ</b> الاسم في نص القرآن (بالألف واللام أو بدونهما، ومع حروف «و، ف، ب، ل، ك» الملتصقة بأوله)، والأسماء المركّبة تُعدّ بورود العبارة كاملة. والعدّ لا يفرّق بين ما يُراد به الله وغيره، فعلامة <span class="wsign">⚠︎</span> على الأسماء التي ترد في القرآن لغير الله أيضاً (كالملك والحق والحي والمؤمن والعظيم)، فعددها يزيد عن عدد ورودها اسماً لله. وهذه العلامة من اجتهادي في مراجعة الاستعمال القرآني. وطول الشريط يتناسب مع العدد، ويُعرض لفظ الجلالة وحده فوق الجدول. ويظهر العدد نفسه على بطاقة كل اسم في شاشة «أسماء الله الحسنى».</p>
     <div class="nsort">${sorters.map(([k, n]) => `<button class="btn${ncSort === k ? ' on' : ''}" data-s="${k}">${n}</button>`).join('')}</div>
     <div class="key"><span class="wsign">⚠︎</span> = هذا اللفظ يرد في القرآن لغير الله أيضاً، فالعدد يشمل كل ورود اللفظ وليس وروده اسماً لله فقط.</div>
     <div class="cr head"><span>الاسم</span><span></span><span style="text-align:end">مرات الورود</span><span style="text-align:end">في آيات</span></div>` +
