@@ -3,8 +3,19 @@ import { chat, transcribe } from './ai.js';
 import { advise } from './advisor.js';
 import { discover } from './discover.js';
 import { findVerse, getChapters, verseByKey, normAr, skel, chapterVerses, ayatWithWords, ayatByEnglish } from './verse.js';
+import { EmailMessage } from 'cloudflare:email';
 
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
+// a new validation volunteer (#drv page), mailed to the site owner through the EMAIL (send_email) binding
+const b64 = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+function volunteerMail(name, phone, email, note) {
+  const from = 'noreply@can-du-ai.com', to = 'husamalqawasmeh@gmail.com';
+  const body = `متطوع جديد للتحقق من محتوى quran.can-du-ai.com\n\nالاسم: ${name}\nالجوال: ${phone}\nالبريد: ${email}\n${note ? `ملاحظة: ${note}\n` : ''}`;
+  const raw = [`From: Quran.can-du-ai <${from}>`, `To: ${to}`, `Reply-To: ${email}`, `Subject: =?UTF-8?B?${b64('متطوع جديد للتحقق: ' + name)}?=`,
+    `Message-ID: <${crypto.randomUUID()}@can-du-ai.com>`, `Date: ${new Date().toUTCString()}`, 'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', b64(body).replace(/.{76}/g, '$&\r\n')].join('\r\n');
+  return new EmailMessage(from, to, raw);
+}
 let cache, neural;
 // neural model head: class weights (unit vectors), logit scale and calibration temperature, all stored in D1
 async function loadNeural(env) {
@@ -97,6 +108,20 @@ export default {
       const results = ex.map((x, c) => ({ id: nm.classes[c], p: x / sum })).sort((a, b) => b.p - a.p).slice(0, 5)
         .filter((x) => reciters[x.id]).map((x) => ({ id: x.id, name: reciters[x.id].name, name_ar: reciters[x.id].name_ar, links: reciters[x.id].links, confidence: x.p }));
       return json({ results, segments: emb.length, model: 'neural' });
+    }
+
+    // validation volunteers: kept in D1 (so nothing is lost if mail fails) and emailed to the owner
+    if (url.pathname === '/api/volunteer' && req.method === 'POST') {
+      const b = await req.json().catch(() => ({}));
+      if (b.website) return json({ ok: true });                       // honeypot: only bots fill the hidden field
+      const clean = (s, n) => (typeof s === 'string' ? s.replace(/[\x00-\x1f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n) : '');
+      const name = clean(b.name, 80), phone = clean(b.phone, 30), email = clean(b.email, 120), note = clean(b.note, 500);
+      if (name.length < 2 || !/^\+?[\d\s()-]{7,}$/.test(phone) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'bad input' }, 400);
+      await env.DB.prepare('CREATE TABLE IF NOT EXISTS volunteers(id INTEGER PRIMARY KEY, name TEXT, phone TEXT, email TEXT, note TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP)').run();
+      await env.DB.prepare('INSERT INTO volunteers(name,phone,email,note) VALUES(?,?,?,?)').bind(name, phone, email, note).run();
+      let mailed = false;
+      if (env.EMAIL) try { await env.EMAIL.send(volunteerMail(name, phone, email, note)); mailed = true; } catch (e) { console.log('volunteer mail failed:', e.message); }
+      return json({ ok: true, mailed });
     }
 
     if (url.pathname === '/api/feedback' && req.method === 'POST') {

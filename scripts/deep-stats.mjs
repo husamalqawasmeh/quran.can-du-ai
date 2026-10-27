@@ -117,7 +117,6 @@ for (let a = 1; a <= 114; a++) for (let b = a + 1; b <= 114; b++) {
   let d = 0; for (const [l, x] of A.v) { const y = B.v.get(l); if (y) d += x * y; }
   sim.push([a, b, d / (A.nn * B.nn)]);
 }
-const nextSim = sim.filter(([a, b]) => b === a + 1).sort((x, y) => x[0] - y[0]).map(([, , c]) => Math.round(c * 100));   // surah n vs surah n+1, n = 1..113
 const similar = sim.sort((x, y) => y[2] - x[2]).slice(0, 25).map(([a, b, c]) => [SUR[a].ar, SUR[b].ar, Math.round(c * 100)]);
 
 /* 12. words found in only one surah: which surahs have the most */
@@ -180,6 +179,6 @@ const opposites = OPP.map(([an, al, bn, bl]) => {
   return [an, a, bn, b, both, Math.min(va.size, vb.size), +((both * NV) / (va.size * vb.size || 1)).toFixed(1)];   // last: times more than chance
 });
 
-const out = { nextSim, opposites, totals: { words: W.length, lemmas: V, verses: NV, makkah: placeTotal.makkah, madinah: placeTotal.madinah }, strongPairs, companions, always, repeatedVerses, phrases, longest, verseEnds, verseEnds2, verseStarts, roots, makki, madani, concentrated, similar, exclusive };
+const out = { opposites, totals: { words: W.length, lemmas: V, verses: NV, makkah: placeTotal.makkah, madinah: placeTotal.madinah }, strongPairs, companions, always, repeatedVerses, phrases, longest, verseEnds, verseEnds2, verseStarts, roots, makki, madani, concentrated, similar, exclusive };
 writeFileSync('public/deep.json', JSON.stringify(out));
 console.log(Object.fromEntries(Object.entries(out).map(([k, v]) => [k, Array.isArray(v) ? v.length : v])));
