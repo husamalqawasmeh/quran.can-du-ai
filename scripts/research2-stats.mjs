@@ -42,18 +42,23 @@ const allPairs = []; for (let a = 1; a <= 114; a++) for (let b = a + 1; b <= 114
 const adj = []; for (let a = 1; a < 114; a++) adj.push([NAME[a], NAME[a + 1], r2(100 * SIM[a][a + 1])]);
 const neighbours = { adjMean: r2(100 * mean(adj.map((x) => x[2] / 100))), allMean: r2(100 * mean(allPairs)),
   higher: adj.filter((x, i) => SIM[i + 1][i + 2] > mean(allPairs)).length, top: [...adj].sort((a, b) => b[2] - a[2]).slice(0, 10), low: [...adj].sort((a, b) => a[2] - b[2]).slice(0, 5) };
-// spherical k-means (8 groups, fixed start: the most mutually distant surahs); surahs under 100 words are too short to place reliably
-const big = SU.filter((s) => s.words >= 100).map((s) => s.id), KC = 8;
+// spherical k-means, 8 groups: 40 random starts (fixed seed), the tightest result kept; surahs under 200 words are too short to place reliably
+let ks = 11; const krnd = () => { ks = (ks * 16807) % 2147483647; return ks / 2147483647; };
+const big = SU.filter((s) => s.words >= 200).map((s) => s.id), KC = 8;
 const unit = (s) => { const { v, nn } = vec.get(s); return new Map([...v].map(([l, x]) => [l, x / nn])); };
 const dot = (u, c) => { let d = 0; for (const [l, x] of u) { const y = c.get(l); if (y) d += x * y; } return d; };
 const U = new Map(big.map((s) => [s, unit(s)]));
-let cent = [U.get(big[0])]; while (cent.length < KC) { let best = null; for (const s of big) { const m = Math.max(...cent.map((c) => dot(U.get(s), c))); if (!best || m < best[1]) best = [s, m]; } cent.push(U.get(best[0])); }
-let asg = new Map();
-for (let it = 0; it < 30; it++) {
-  asg = new Map(big.map((s) => { const d = cent.map((c) => dot(U.get(s), c)); return [s, d.indexOf(Math.max(...d))]; }));
-  cent = cent.map((c, k) => { const m = new Map(); let n = 0; for (const [s, g] of asg) if (g === k) { n++; for (const [l, x] of U.get(s)) inc(m, l, x); } let nn = 0; for (const x of m.values()) nn += x * x; nn = Math.sqrt(nn) || 1; return n ? new Map([...m].map(([l, x]) => [l, x / nn])) : c; });
+let bestRun = null;
+for (let run = 0; run < 40; run++) {
+  const pick = [...big].sort(() => krnd() - 0.5).slice(0, KC); let cent = pick.map((s) => U.get(s)), asg = new Map(), score = 0;
+  for (let it = 0; it < 25; it++) {
+    score = 0; asg = new Map(big.map((s) => { const d = cent.map((c) => dot(U.get(s), c)), m = Math.max(...d); score += m; return [s, d.indexOf(m)]; }));
+    cent = cent.map((c, k) => { const m = new Map(); let n = 0; for (const [s, g] of asg) if (g === k) { n++; for (const [l, x] of U.get(s)) inc(m, l, x); } let nn = 0; for (const x of m.values()) nn += x * x; nn = Math.sqrt(nn) || 1; return n ? new Map([...m].map(([l, x]) => [l, x / nn])) : c; });
+  }
+  const sizes = Array.from({ length: KC }, (_, k) => [...asg.values()].filter((g) => g === k).length);
+  if (Math.min(...sizes) >= 3 && (!bestRun || score > bestRun.score)) bestRun = { score, asg };   // no group of one or two surahs
 }
-const cl = Array.from({ length: KC }, (_, k) => big.filter((s) => asg.get(s) === k)).filter((g) => g.length);
+const cl = Array.from({ length: KC }, (_, k) => big.filter((s) => bestRun.asg.get(s) === k)).filter((g) => g.length);
 const words = (g) => { const m = new Map(); for (const s of g) for (const [l, x] of vec.get(s).v) inc(m, l, x); return [...m].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([l]) => l); };
 const clusters = cl.sort((a, b) => b.length - a.length).map((g) => ({ surahs: g.sort((a, b) => a - b).map((s) => NAME[s]), words: words(g), makki: g.filter((s) => SU[s - 1].place === 'makkah').length }));
 
@@ -88,13 +93,12 @@ for (const [g, ks] of gram) { const a = [...ks]; if (a.length < 2 || a.length > 
   for (let i = 0; i < a.length; i++) for (let j = i + 1; j < a.length; j++) { const s1 = +a[i].split(':')[0], s2 = +a[j].split(':')[0]; if (s1 === s2) continue;
     const key = s1 < s2 ? `${s1}-${s2}` : `${s2}-${s1}`; inc(pairPh, key); far.push([a[i], a[j], Math.abs(VK.indexOf(a[i]) - VK.indexOf(a[j])), g]); } }
 const shared = [...pairPh].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k, n]) => { const [a, b] = k.split('-').map(Number); return [NAME[a], NAME[b], n, r2(100 * SIM[a][b])]; });
-const farSeen = new Set(), farTop = far.sort((a, b) => b[2] - a[2]).filter(([a, b]) => { const k = a + b; return !farSeen.has(k) && farSeen.add(k); }).slice(0, 10).map(([a, b, d, g]) => [a, b, d, g]);
+const farSeen = new Set(), farTop = far.sort((a, b) => b[2] - a[2]).filter(([x, y]) => !farSeen.has(x + y) && farSeen.add(x + y))   // one phrase per pair of verses.slice(0, 10).map(([a, b, d, g]) => [a, b, d, g]);
 
 /* ---- 88: Uthmani spelling against the plain spelling, word by word where both verses have the same number of words ---- */
 let rasm = null;
 if (existsSync('quran.sql')) {
   const U = new Map(readFileSync('quran.sql', 'utf8').split('\n').filter((l) => l.startsWith('INSERT INTO ayat')).map((l) => { const m = /^INSERT INTO ayat VALUES\((\d+),(\d+),'((?:[^']|'')*)'/.exec(l); return [`${m[1]}:${m[2]}`, m[3].replace(/''/g, "'")]; }));
-  const ut = (w) => w.replace(/[ٰ]/g, 'ا').replace(/[ً-ْۖ-ۭۥۦٓٔ]/g, '').replace(/[ٱأإآ]/g, 'ا').replace(/ى/g, 'ي');   // the small alef counts as a written alef here
   const diff = new Map(); let comp = 0, same = 0, aligned = 0;
   for (const k of VK) { const a = strip(TEXT[k]).split(/\s+/).filter(Boolean), b = (U.get(k) || '').split(/\s+/).filter((w) => /[ء-يٱ]/.test(w)); if (a.length !== b.length) continue; aligned++;
     a.forEach((w, i) => { comp++; const raw = strip(b[i]).replace(/[^ء-ي]/g, ''); if (raw === w) same++; else inc(diff, `${w} ← ${raw}`); }); }
@@ -103,7 +107,7 @@ if (existsSync('quran.sql')) {
 
 /* ---- 67, 68: one consonant repeated through a verse; words in a verse rhyming with its ending ---- */
 const LF = new Map(); let LT = 0; for (const k of VK) for (const c of letters(TEXT[k])) { inc(LF, c); LT++; }
-const COMMON = new Set('اليونمهوة'.split(''));
+const COMMON = new Set('اليونمهوةءؤئ'.split(''));   // the commonest letters and the hamza seats say little about sound
 const allit = [], rhyme = [];
 for (const k of VK) { const ws = strip(TEXT[k]).split(/\s+/).filter(Boolean); if (ws.length < 6) continue;
   const m = new Map(); let t = 0; for (const c of letters(TEXT[k])) { inc(m, c); t++; }
