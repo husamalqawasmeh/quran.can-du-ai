@@ -25,7 +25,7 @@ button,input,select{font-family:inherit}
 .vtitle{flex:1;min-width:240px}
 .vtitle h1,.vtitle h2{font-size:2rem;line-height:1.3;margin:0 0 2px;color:var(--ink);text-align:start}
 .vtitle .sub,.vtitle .hint{color:var(--muted);font-size:.9rem;margin:0;text-align:start}
-.back{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:.85rem;padding:7px 14px;border-radius:10px;white-space:nowrap}
+.back{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:.85rem;padding:11px 14px;border-radius:10px;white-space:nowrap}
 .back:hover,.back:focus-visible{filter:brightness(1.1);outline:none}.vactions{display:flex;gap:10px;flex-wrap:nowrap}.back .tri{color:var(--accent);background:var(--card);font-size:.8em;line-height:1;width:1.7em;height:1.7em;border-radius:50%;display:inline-grid;place-items:center;flex:none}
 .hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
 .sub{color:var(--muted)}
@@ -101,7 +101,7 @@ label.up{color:var(--accent);cursor:pointer;text-decoration:underline}
 .sbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.sfields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}@media(max-width:800px){.sfields{grid-template-columns:1fr}}.sfield{display:flex;align-items:stretch;border:1px solid var(--stat-line);border-radius:10px;background:var(--panel);overflow:hidden}.sfield:focus-within{border-color:var(--accent)}.sfield .inp{border:0;border-radius:0;background:transparent}.gbtn{flex:none;display:grid;place-items:center;cursor:pointer;border:0;border-inline-start:1px solid var(--stat-line);background:var(--card);color:var(--accent);padding:0 12px}.gbtn:hover{background:var(--panel)}#qres{width:100%;border:1px solid var(--accent);border-radius:14px;background:var(--panel);padding:10px 14px;max-height:60vh;overflow:auto}#qres .qh{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700;color:var(--accent);margin-bottom:6px}#qres .qx{font:inherit;cursor:pointer;border:1px solid var(--stat-line);background:var(--card);color:var(--ink);border-radius:8px;padding:2px 10px}#qres .qr{border-top:1px solid var(--line);padding:6px 0;line-height:1.9}#qres .qr .tag{display:inline;color:var(--muted);font-size:.85em;margin-inline-end:6px}#qres .qr mark{background:color-mix(in srgb,var(--amber) 35%,transparent);color:inherit;border-radius:3px}#qres a.qt{color:var(--title);text-decoration:none;font-weight:700}#qres a.qt:hover{text-decoration:underline}#qres .qr small{color:var(--muted)}
 
 #sJuz[aria-pressed=true]{box-shadow:0 0 0 3px var(--amber)}
-[data-ak]{cursor:pointer;border-radius:6px;transition:background .15s}[data-ak]:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}[data-ak].playing{color:var(--amber)}.defrow{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}.defreader{font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--stat-line);background:var(--panel);color:var(--ink);max-width:100%}.rdtools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ucfg{display:flex;align-items:center;justify-content:center;flex:none;width:82px;font-size:1.6rem;line-height:1;text-decoration:none;border:1px solid var(--line);border-radius:10px;background:var(--card)}.ucfg:hover{border-color:var(--accent)}.ucwelcome{background:color-mix(in srgb,var(--accent) 14%,var(--card));border:1px solid var(--accent);border-radius:12px;padding:10px 14px;margin:0 0 6px}.ucform h2{margin-top:16px}.ucopt{border:0;padding:0;margin:8px 0;display:flex;gap:8px 20px;flex-wrap:wrap}.ucopt legend{color:var(--muted);font-size:.9rem;margin-bottom:4px;padding:0}.ucopt label,.ucchk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}.ucbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:16px}.ucmsg{color:var(--accent)}.rsfilter{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.rsfilter .btn{width:13em;text-align:center}.rslegend{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px}.rsb{display:inline-block;width:10em;text-align:center;font-size:.75rem;padding:2px 8px;border-radius:99px;border:1px solid;white-space:nowrap}.rs-d{color:#3fb99a;border-color:#3fb99a}.rs-i{color:#6ea8fe;border-color:#6ea8fe}.rs-a{color:#c9a227;border-color:#c9a227}.rs-n{color:#b48ead;border-color:#b48ead}.rs-x{color:#e06c75;border-color:#e06c75}.rsfilter .btn.on{color:var(--accent-ink)}.rsgroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px}@media(max-width:900px){.rsgroups{grid-template-columns:1fr}}.rsg h3{margin:10px 0 4px;font-size:1rem}.rslist{list-style:none;padding:0;margin:0}.rsi{display:flex;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}.rsn{flex:none;min-width:2em;color:var(--muted);text-align:center}.rst{flex:1;min-width:0}.rst small{display:block;color:var(--muted);font-size:.78rem}.rst small a{color:var(--accent);text-decoration:none}.rs2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:700px){.rs2{grid-template-columns:1fr}}#sgrid .jgap{grid-column:1/-1;height:16px}#sgrid .srp{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}#sgrid .sr[open]{padding-bottom:0;border-color:var(--accent)}#sgrid .sr[open]>summary{color:var(--accent)}#sgrid .srp select{max-width:360px}
+[data-ak]{cursor:pointer;border-radius:6px;transition:background .15s}[data-ak]:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}[data-ak].playing{color:var(--amber)}.defrow{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}.defreader{font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--stat-line);background:var(--panel);color:var(--ink);max-width:100%}.rdtools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ucfg{display:flex;align-items:center;justify-content:center;flex:none;width:82px;font-size:1.6rem;line-height:1;text-decoration:none;border:2px solid #3b82f6;border-radius:10px;background:#2563eb;box-shadow:0 0 0 2px color-mix(in srgb,#3b82f6 35%,transparent)}.ucfg:hover{background:#3b82f6;border-color:#93c5fd}.ucwelcome{background:color-mix(in srgb,var(--accent) 14%,var(--card));border:1px solid var(--accent);border-radius:12px;padding:10px 14px;margin:0 0 6px}.ucform h2{margin-top:16px}.ucopt{border:0;padding:0;margin:8px 0;display:flex;gap:8px 20px;flex-wrap:wrap}.ucopt legend{color:var(--muted);font-size:.9rem;margin-bottom:4px;padding:0}.ucopt label,.ucchk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}.ucbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:16px}.ucmsg{color:var(--accent)}.rsfilter{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.rsfilter .btn{width:13em;text-align:center}.rslegend{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px}.rsb{display:inline-block;width:10em;text-align:center;font-size:.75rem;padding:2px 8px;border-radius:99px;border:1px solid;white-space:nowrap}.rs-d{color:#3fb99a;border-color:#3fb99a}.rs-i{color:#6ea8fe;border-color:#6ea8fe}.rs-a{color:#c9a227;border-color:#c9a227}.rs-n{color:#b48ead;border-color:#b48ead}.rs-x{color:#e06c75;border-color:#e06c75}.rsfilter .btn.on{color:var(--accent-ink)}.rsgroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px}@media(max-width:900px){.rsgroups{grid-template-columns:1fr}}.rsg h3{margin:10px 0 4px;font-size:1rem}.rslist{list-style:none;padding:0;margin:0}.rsi{display:flex;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}.rsn{flex:none;min-width:2em;color:var(--muted);text-align:center}.rst{flex:1;min-width:0}.rst small{display:block;color:var(--muted);font-size:.78rem}.rst small a{color:var(--accent);text-decoration:none}.rs2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:700px){.rs2{grid-template-columns:1fr}}#sgrid .jgap{grid-column:1/-1;height:16px}#sgrid .srp{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}#sgrid .sr[open]{padding-bottom:0;border-color:var(--accent)}#sgrid .sr[open]>summary{color:var(--accent)}#sgrid .srp select{max-width:360px}
 #sgrid.juz{display:block}
 #sgrid .jsec{border:2px solid var(--line);border-radius:16px;padding:10px;margin-bottom:14px;background:var(--card)}
 #sgrid .jsec{display:flex;gap:10px;align-items:flex-start}#sgrid .jsec>.jgrid{flex:1;min-width:0}@media(min-width:1001px){#sgrid .jsec.j6 .jgrid{grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}:is(#sgrid .jsec.j6,#sgrid) .sr{padding-inline:7px}:is(#sgrid .jsec.j6,#sgrid) .sr>summary{gap:4px;padding:2px 0;line-height:1.35}:is(#sgrid .jsec.j6,#sgrid) .sr .n{min-width:0;margin-inline-end:4px}:is(#sgrid .jsec.j6,#sgrid) .sr .nm{font-size:.92rem}:is(#sgrid .jsec.j6,#sgrid) .sr .m{font-size:.64rem}}
@@ -141,7 +141,7 @@ mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:inherit;b
 .mgroup>h3::after{content:"";flex:1;height:1px;background:var(--line)}
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
 @media(max-width:1100px){.mgrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.mgrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.mgrid{grid-template-columns:1fr}}
-.mgrid .lesson{margin-top:0}:is(#t-jannah,#t-jannah2,#t-qiyamah) .lesson>summary{padding:6px 0}@media(min-width:1101px){:is(#t-jannah,#t-jannah2,#t-qiyamah) .mgrid{grid-template-columns:repeat(5,minmax(0,1fr))}}.mgrid .rgap{grid-column:1/-1;height:10px}.lesson.pending{border:1px dashed var(--warn)}.lesson.pending>summary{color:var(--warn)}.pend{margin-inline-start:auto;flex:none;font-size:.7rem;font-weight:600;color:var(--warn);border:1px solid var(--warn);border-radius:99px;padding:0 8px;white-space:nowrap}.lesson>summary.fit{white-space:nowrap;font-size:.86em;letter-spacing:-.2px}#mirList .lesson>summary.fit{font-size:.74em}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .vt{font-size:1.65rem;line-height:1.85;margin:0}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .ex{padding:2px 0}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .tag{display:inline;color:var(--muted);font-size:.9em;margin-right:4px}.nw{color:var(--amber);font-weight:700}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .lesson[open]{padding-bottom:0;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .lesson[open]>summary{color:var(--accent);font-weight:700}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:12px 16px}:is(#v-numbers,#v-surahs) .vtitle{display:flex;align-items:baseline;gap:12px}:is(#v-numbers,#v-surahs) .vtitle h1{margin:0;white-space:nowrap}:is(#v-numbers,#v-surahs) .vtitle .sub{flex:1}#v-surahs .vtitle h2{margin:0;white-space:nowrap}#v-names .vhead{flex-wrap:wrap}#v-names .vtitle{display:contents}#v-names .vtitle h1{order:0;flex:1}#v-names .vactions{order:1}#v-names .vtitle .sub{order:2;flex-basis:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.79rem;margin-top:-6px}#v-surahs .vtitle .hint{flex:1;margin:0}@media(min-width:1100px){#v-surahs .vtitle .hint{font-size:.8rem;min-width:0;line-height:1.4}#v-surahs .vtitle h2{font-size:1.7rem}}@media(min-width:1100px){:is(#v-numbers,#v-surahs) .vhead{flex-wrap:nowrap;align-items:center}:is(#v-numbers,#v-surahs) .vtitle{min-width:0}:is(#v-numbers) .vtitle .sub{white-space:nowrap;font-size:.8rem;min-width:0;overflow:hidden;text-overflow:ellipsis}:is(#v-numbers,#v-surahs) .vactions .back{padding:7px 14px}:is(#v-numbers,#v-surahs) .vtitle h1{font-size:1.7rem}}.mgrid .lesson.wide{grid-column:span 3}@media(max-width:800px){.mgrid .lesson.wide{grid-column:span 2}}@media(max-width:560px){.mgrid .lesson.wide{grid-column:span 1}}
+.mgrid .lesson{margin-top:0}:is(#t-jannah,#t-jannah2,#t-qiyamah) .lesson>summary{padding:6px 0}@media(min-width:1101px){:is(#t-jannah,#t-jannah2,#t-qiyamah) .mgrid{grid-template-columns:repeat(5,minmax(0,1fr))}}.mgrid .rgap{grid-column:1/-1;height:10px}.lesson.pending{border:1px dashed var(--warn)}.lesson.pending>summary{color:var(--warn)}.pend{margin-inline-start:auto;flex:none;font-size:.7rem;font-weight:600;color:var(--warn);border:1px solid var(--warn);border-radius:99px;padding:0 8px;white-space:nowrap}.lesson>summary.fit{white-space:nowrap;font-size:.86em;letter-spacing:-.2px}#mirList .lesson>summary.fit{font-size:.74em}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .vt{font-size:1.65rem;line-height:1.85;margin:0}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .ex{padding:2px 0}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel .tag{display:inline;color:var(--muted);font-size:.9em;margin-right:4px}.nw{color:var(--amber);font-weight:700}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .lesson[open]{padding-bottom:0;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .lesson[open]>summary{color:var(--accent);font-weight:700}:is(#t-numbers,#t-jannah,#t-jannah2,#t-jesus,#t-qiyamah,#t-hafiz,#t-names,#t-food,#t-akhlaq,#t-family,#t-water,#t-falak,#t-animals,#t-others,#t-jews,#t-duasp,#t-duasb,#t-prophets,#mirList) .npanel{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:12px 16px}:is(#v-numbers,#v-surahs) .vtitle{display:flex;align-items:baseline;gap:12px}:is(#v-numbers,#v-surahs) .vtitle h1{margin:0;white-space:nowrap}:is(#v-numbers,#v-surahs) .vtitle .sub{flex:1}#v-surahs .vtitle h2{margin:0;white-space:nowrap}#v-names .vhead{flex-wrap:wrap}#v-names .vtitle{display:contents}#v-names .vtitle h1{order:0;flex:1}#v-names .vactions{order:1}#v-names .vtitle .sub{order:2;flex-basis:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.79rem;margin-top:-6px}#v-surahs .vtitle .hint{flex:1;margin:0}@media(min-width:1100px){#v-surahs .vtitle .hint{font-size:.8rem;min-width:0;line-height:1.4}#v-surahs .vtitle h2{font-size:1.7rem}}@media(min-width:1100px){:is(#v-numbers,#v-surahs) .vhead{flex-wrap:nowrap;align-items:center}:is(#v-numbers,#v-surahs) .vtitle{min-width:0}:is(#v-numbers) .vtitle .sub{white-space:nowrap;font-size:.8rem;min-width:0;overflow:hidden;text-overflow:ellipsis}:is(#v-numbers,#v-surahs) .vactions .back{padding:11px 14px}:is(#v-numbers,#v-surahs) .vtitle h1{font-size:1.7rem}}.mgrid .lesson.wide{grid-column:span 3}@media(max-width:800px){.mgrid .lesson.wide{grid-column:span 2}}@media(max-width:560px){.mgrid .lesson.wide{grid-column:span 1}}
 .mgroup>h3 .cnt{color:var(--muted);font-size:.8em;font-weight:400}.mgroup>h3>span:first-child,#t-names :is(.gcol,.ggroup)>summary>span:first-child{flex:none}.mgroup>h3 .cnt,#t-names :is(.gcol,.ggroup)>summary .cnt{margin-inline-start:auto;flex:none;white-space:nowrap}
 /* dropdown group headings: bold + distinct colours, so they stand apart from the reader names */
 select optgroup{font-weight:800;font-style:normal;font-size:1.02em}
@@ -149,7 +149,7 @@ select optgroup[label="المفضلة"]{color:var(--heart)}
 select optgroup[label="جميع القرّاء"],select optgroup[label="القرّاء"]{color:var(--title)}
 select option{font-weight:400;color:var(--ink);background:var(--card)}
 /* statistics */
-.kpis .krow{grid-column-start:1}.kpis .klink{text-decoration:none;color:inherit;cursor:pointer}.kpis .klink:hover{border-color:var(--accent)}button.kpi{font:inherit;text-align:start;color:inherit}.kpi.kexp small{font-size:.75rem;color:var(--accent);margin-inline-start:6px}.kpi.kexp.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.ktri{font-style:normal;color:var(--accent);font-size:1.15em;margin-inline-end:6px}.ktri::before{content:"◀"}.kexp.on .ktri::before{content:"▼"}.kpis #kWords{display:grid;gap:8px;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch}.kxp>details{margin:0!important}.kxp>details.pg{--cc:var(--title);border-width:1px}.kxp:not(#kWords){display:grid;gap:8px}.kxp[hidden]{display:none!important}#kWords>details[open]{padding-bottom:10px}.kpis :is(#kSurahs,#kDistinct){grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:stretch}.kxp>.npanel{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:12px 16px}.kxp>details.pg[open]{--cc:var(--accent);box-shadow:0 0 0 2px var(--accent)}.kxp>details.lesson[open]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.kxp>details.lesson[open]>summary{color:var(--accent)}@media(max-width:800px){.kpis #kWords{grid-template-columns:1fr 1fr}}.kpis #kWords[hidden]{display:none}.kpis .kxp{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpis .krow{grid-column-start:1}.kpis .klink{text-decoration:none;color:inherit;cursor:pointer}.kpis .klink:hover{border-color:var(--accent)}button.kpi{font:inherit;text-align:start;color:inherit}.kpi.kexp small{font-size:.75rem;color:var(--accent);margin-inline-start:6px}.kpi.kexp.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.ktri{font-style:normal;color:var(--accent);font-size:1.15em;margin-inline-end:6px}.ktri::before{content:"◀"}.kexp.on .ktri::before{content:"▼"}.kpis #kWords{display:grid;gap:8px;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch}.kxp>details{margin:0!important}.kxp>details.pg{--cc:var(--title);border-width:1px}.kxp>details.pg>summary h4{font-size:var(--lsz,1.05rem)}.kxp:not(#kWords){display:grid;gap:8px}.kxp[hidden]{display:none!important}#kWords>details[open]{padding-bottom:10px}.rtall{max-height:460px;overflow:auto}#statsBody .chips.oathg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 14px repeat(3,minmax(0,1fr)) 14px repeat(3,minmax(0,1fr)) 14px repeat(3,minmax(0,1fr));gap:6px}#statsBody .chips.oathg>.chip{margin:0;text-align:center;justify-content:center}#statsBody .chips.oathg>.chip:nth-child(12n+4){grid-column:5}#statsBody .chips.oathg>.chip:nth-child(12n+7){grid-column:9}#statsBody .chips.oathg>.chip:nth-child(12n+10){grid-column:13}@media(max-width:900px){#statsBody .chips.oathg{grid-template-columns:repeat(3,minmax(0,1fr))}#statsBody .chips.oathg>.chip:nth-child(n){grid-column:auto}}.mkc{font-size:1.4rem;font-family:"Amiri",serif}.lsur{font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--stat-line);background:var(--panel);color:var(--ink);margin-bottom:8px}.wsearch{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.wsearch .inp{max-width:320px}.pair b.muted{color:var(--muted);font-weight:400}.kpis :is(#kSurahs,#kDistinct,#kAyat){grid-template-columns:repeat(var(--n,4),minmax(0,1fr));align-items:stretch}.kxp>.npanel{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:12px 16px}.kxp>details.pg[open]{--cc:var(--accent);box-shadow:0 0 0 2px var(--accent)}.kxp>details.lesson[open]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.kxp>details.lesson[open]>summary{color:var(--accent)}@media(max-width:800px){.kpis :is(#kWords,#kSurahs,#kDistinct,#kAyat){grid-template-columns:1fr 1fr}}.kpis #kWords[hidden]{display:none}.kpis .kxp{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 @media(max-width:800px){.kpis{grid-template-columns:1fr 1fr}}
 .kpi{background:var(--card);border:1px solid var(--stat-line);border-radius:14px;box-shadow:var(--shadow);padding:8px 14px}
 .kpi b{display:block;font-size:1.5rem;line-height:1.2;color:var(--accent)}.kpi span{color:var(--muted);font-size:.85rem}#statsBody .kpi{border-color:var(--title)}#statsBody .kpi:is(.klink:hover,.on){border-color:var(--accent)}#statsBody .kpi.on{box-shadow:0 0 0 2px var(--accent)}#statsBody .kpi span,#statsBody .kpi.kexp small{color:var(--title)}
@@ -199,7 +199,7 @@ select option{font-weight:400;color:var(--ink);background:var(--card)}
 .quote{margin:10px 0;padding:4px 16px;text-align:center;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);background:var(--panel);border-radius:10px;font-size:2rem;line-height:1.55;font-family:"Amiri","Traditional Arabic","Noto Naskh Arabic",serif}
 #walid .wh{color:var(--accent);font-weight:700}
 #walid p{margin:6px 0}#walid .quote{color:var(--accent)}.fact .hk{cursor:help}.fact .hv{transition:color .15s}.fact:has(.hk.mk:hover) .hv.mk,.fact:has(.hk.md:hover) .hv.md{color:var(--accent);font-weight:700}#t-jannah .lesson>summary{font-size:.95rem}#walid .wnote{font-size:.72rem;font-weight:400;line-height:1.7}
-.home .tile.plan{grid-column:auto;grid-template-columns:1fr;align-content:space-between;border-style:dashed;box-shadow:none;cursor:default}.home .tile.plan b{grid-column:1;color:var(--muted)}.home .tile.plan span{align-self:end}.home .tile.plan:hover{border-color:var(--stat-line)}.tile.soon{border-style:dashed;box-shadow:none;cursor:default;opacity:.85}.tile.soon:hover{border-color:var(--stat-line)}.home .tile.soon{background:var(--accent);border:1px solid var(--accent);opacity:1}.home .tile.soon,.home .tile.soon b,.home .tile.soon span{color:var(--accent-ink)}.home .tile.soon:hover{border-color:var(--accent)}.home .toprow{grid-column:1/-1;display:flex;gap:12px}.home .tile.drvtile{flex:1;border-color:#87ceeb;background:#87ceeb}.home .tile.drvtile b{color:#0b2233}:is(#v-drv,#v-stats) .vtitle>h1{display:inline;margin:0}:is(#v-drv,#v-stats) .vtitle>.sub{display:inline;margin-inline-start:12px;font-size:.8rem}@media(min-width:1300px){#v-drv .vtitle>.sub{white-space:nowrap}#v-stats .vtitle>.sub{white-space:nowrap;font-size:.7rem;margin-inline-start:8px}#v-stats .vtitle>h1{font-size:1.85rem;white-space:nowrap}}.drvsec{margin-bottom:14px}.drvsec .h2note{color:var(--muted);font-size:.68em;font-weight:400;margin-inline-start:6px}.drvsec h2{margin:0 0 8px;font-size:1.2rem;color:var(--accent)}.drvsec ul{margin:0;padding-inline-start:20px;line-height:2}.drvsec td a{color:var(--accent);word-break:break-all}.drvsec .tbl :is(th,td):nth-child(2){text-align:left}.drvsec .tbl th:nth-child(1){width:25.9%}.drvsec .tbl th:nth-child(2){width:26.4%}.drvsec .tbl :is(th,td):nth-child(1){text-align:left}.volform{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;align-items:end;margin:10px 0}.volform label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}.volform label:nth-of-type(4){grid-column:1/-1}.volform :is(input,textarea){font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--stat-line);background:var(--panel);color:var(--ink)}.volform .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}.volform .btn{justify-self:start}.volmsg{grid-column:2/-1;align-self:center;color:var(--accent)}@media(max-width:700px){.volform{grid-template-columns:1fr}.volmsg{grid-column:1}}.home .tile>span{display:none}.home .tile{min-height:82px}.home .tile.dev{background:#fffbd6;border-color:#efe08a}.home .tile.dev b,.home .tile.dev span{color:#1d1d1b}.home .tile.dev:hover{border-color:#b8aa00}
+.home .tile.plan{grid-column:auto;grid-template-columns:1fr;align-content:space-between;border-style:dashed;box-shadow:none;cursor:default}.home .tile.plan b{grid-column:1;color:var(--muted)}.home .tile.plan span{align-self:end}.home .tile.plan:hover{border-color:var(--stat-line)}.tile.soon{border-style:dashed;box-shadow:none;cursor:default;opacity:.85}.tile.soon:hover{border-color:var(--stat-line)}.home .tile.soon{background:var(--accent);border:1px solid var(--accent);opacity:1}.home .tile.soon,.home .tile.soon b,.home .tile.soon span{color:var(--accent-ink)}.home .tile.soon:hover{border-color:var(--accent)}.home .toprow{grid-column:1/-1;display:flex;gap:12px}.home .tile.drvtile{flex:1;border-color:#87ceeb;background:#87ceeb}.home .tile.drvtile b{color:#0b2233}:is(#v-drv,#v-stats) .vtitle>h1{display:inline;margin:0}:is(#v-drv,#v-stats) .vtitle>.sub{display:inline;margin-inline-start:12px;font-size:.8rem}@media(min-width:1300px){#v-drv .vtitle>.sub{white-space:nowrap}#v-stats .vtitle>.sub{white-space:nowrap;font-size:.7rem;margin-inline-start:8px}#v-stats .vtitle>h1{font-size:1.85rem;white-space:nowrap}}.drvsec{margin-bottom:14px}.drvsec .h2note{color:var(--muted);font-size:.68em;font-weight:400;margin-inline-start:6px}.drvsec h2{margin:0 0 8px;font-size:1.2rem;color:var(--accent)}.drvsec ul{margin:0;padding-inline-start:20px;line-height:2}.drvsec td a{color:var(--accent);word-break:break-all}.drvsec .tbl :is(th,td):nth-child(2){text-align:left}.drvsec .tbl th:nth-child(1){width:25.9%}.drvsec .tbl th:nth-child(2){width:26.4%}.drvsec .tbl :is(th,td):nth-child(1){text-align:left}.volform{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;align-items:end;margin:10px 0}.volform label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}.volform label:nth-of-type(4){grid-column:1/-1}.volform :is(input,textarea){font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--stat-line);background:var(--panel);color:var(--ink)}.volform .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}.volform .btn{justify-self:start}.volmsg{grid-column:2/-1;align-self:center;color:var(--accent)}@media(max-width:700px){.volform{grid-template-columns:1fr}.volmsg{grid-column:1}}.home .tile>span{display:none}.home .tile{min-height:52px;padding-top:6px;padding-bottom:6px}.home .tile.dev{background:#fffbd6;border-color:#efe08a}.home .tile.dev b,.home .tile.dev span{color:#1d1d1b}.home .tile.dev:hover{border-color:#b8aa00}
 .lvl{height:8px;max-width:320px;margin:-6px auto 14px;background:var(--line);border-radius:5px;overflow:hidden}.lvl i{display:block;height:100%;width:0;background:var(--accent);transition:width .12s linear}
 /* Names of Allah: 6 cards per row; the count sits at the left end of each card */
 #t-names .mgrid{grid-template-columns:repeat(6,1fr)}
@@ -1555,7 +1555,8 @@ async function initStats() {
     const lt = (head, a, id) => stab([head, 'المرات', 'النسبة'], byN(a).map(([c, n, p]) => [[`<b>${c}</b>`, c], [N(n), n], [N(p) + '٪', p]]), 1, 'desc', id);
     return `<p class="how"><b>إنتروبيا الحروف:</b> ${N(L.entropy)} بت للحرف، من حد أقصى ${N(L.maxEntropy)} لو تساوت الحروف الـ${N(L.alphabet)} في تكرارها. والفرق يعني أن بعض الحروف أكثر وروداً بكثير من غيرها (الألف واللام خاصة)، وهذا معتاد في العربية.</p>` +
       `<details class="pg pc-top"><summary class="pgh"><h4>أكثر الحروف في أول الكلمة وآخرها</h4></summary><div class="rs2">${lt('أول الكلمة', L.first, 'lfirst')}${lt('آخر الكلمة', L.last, 'llast')}</div></details>` +
-      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر الأزواج المتتالية من الحروف داخل الكلمة</h4></summary>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>`;
+      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر الأزواج المتتالية من الحروف داخل الكلمة</h4></summary>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>` +
+      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر السلاسل الثلاثية من الحروف</h4></summary>${lt('السلسلة', L.tri, 'ltri')}</details>`;
   };
   const gramPanel = () => {   // morphology and syntax markers, per 1,000 words in Makki and Madani surahs
     const G = RJ.grammar, ratio = (a, b) => (Math.min(a, b) ? Math.max(a, b) / Math.min(a, b) : 0);
@@ -1564,6 +1565,55 @@ async function initStats() {
       stab(['الظاهرة', 'العدد', 'في كل ألف كلمة: المكي', 'المدني', 'الفرق'], rows, 1, 'desc', 'gram') +
       `<p class="how"><b>الجذور:</b> ${N(G.roots.all)} جذراً، منها ${N(G.roots.tri)} ثلاثياً و${N(G.roots.quad)} رباعياً. أكثر الرباعية وروداً: ${G.roots.quadTop.map(([r, n]) => `${esc(r)} (${N(n)})`).join('، ')}.</p>`;
   };
+  /* more criteria from research.json; each section opens under its box at the top */
+  const MORE = RJ ? (() => {
+    const T = RJ.structure, Lt = RJ.letters, W = RJ.words, G = RJ.grammar, Mk = RJ.marks, SN = Object.fromEntries(S.surahs.map((x) => [x.id, x.ar]));
+    const key = (k) => { const [a, b] = k.split(':'); return `${esc(SN[a] || a)} ${N(+b)}`; };
+    return {
+      ayat: [
+        ['الآيات الأطول من المعتاد', `<p class="how">متوسط الآية ${N(T.verseLen.mean)} كلمة والانحراف المعياري ${N(T.verseLen.sd)}. منها ${N(T.verseLen.over3sd)} آية أطول من المتوسط بثلاثة انحرافات فأكثر، و${N(T.verseLen.oneOrTwo)} آية من كلمة أو كلمتين. أطول عشر آيات (اضغط الآية لتسمعها):</p>` +
+          stab(['الآية', 'الكلمات', 'عدد الانحرافات عن المتوسط'], T.verseLen.long.map(([k, n, z]) => [[`<span data-ak="${k}">${key(k)}</span>`, k], [N(n), n], [N(z), z]]), 1, 'desc', 'vlong')],
+        ['أول آية وآخر آية في كل سورة', `<p class="how">متوسط أول آية في السور ${N(T.firstLast.first)} كلمة، ومتوسط آخر آية ${N(T.firstLast.last)} كلمة. فالخاتمة أطول من المطلع في ${N(T.firstLast.longerLast)} سورة، والمطلع أطول في ${N(T.firstLast.longerFirst)}، ويتساويان في البقية. ومن أسباب قِصر المطلع الحروفُ المقطعة (الم، حم…) التي تُعدّ آية مستقلة في سور كثيرة.</p>`],
+        ['تتابع الفواصل في السور', `<p class="how">في ${N(T.fawasil.same)}٪ من الآيات المتتالية تنتهي الآية بالحرف نفسه الذي انتهت به التي قبلها. والجدولان لكل سورة من عشر آيات فأكثر: نسبة الآيات التي وافقت فاصلتُها فاصلةَ ما قبلها.</p><div class="rs2">` +
+          stab(['أكثر السور تتابعاً', 'الآيات', 'النسبة'], T.fawasil.top.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'desc', 'fwtop') +
+          stab(['أقلها تتابعاً', 'الآيات', 'النسبة'], T.fawasil.low.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'asc', 'fwlow') + '</div>'],
+        ['طول الآيات في السور المكية والمدنية', stab(['', 'السور', 'الآيات', 'متوسط الآيات في السورة', 'متوسط كلمات الآية'], [['السور المكية', T.place.makkah], ['السور المدنية', T.place.madinah]].map(([a, x]) => [[a, a], [N(x.surahs), x.surahs], [N(x.verses), x.verses], [N(x.vps), x.vps], [N(x.wpv), x.wpv]]), 4, 'desc', 'plv') +
+          `<p class="how">الآية المدنية أطول بنحو ${N((T.place.madinah.wpv / T.place.makkah.wpv).toFixed(1))} مرة من المكية في المتوسط.</p>`],
+      ],
+      letters: [
+        ['الحروف في كل سورة', `<p class="how">اختر سورة لترى نسبة كل حرف فيها، وبجانبها نسبته في القرآن كله.</p><select class="lsur" aria-label="السورة">${S.surahs.map((x) => `<option value="${x.id}">${N(x.id)}. ${esc(x.ar)}</option>`).join('')}</select><div class="lsbars"></div>`],
+        ['الحروف في السور الطويلة والقصيرة', `<p class="how">نسبة كل حرف في أطول ٣٨ سورة (بعدد الكلمات) وفي أقصر ٣٨ سورة، والحروف العشرة الأكثر اختلافاً بينهما.</p>` +
+          stab(['الحرف', 'في السور الطويلة', 'في السور القصيرة', 'الفرق (القصيرة − الطويلة)'], Lt.longShort.map(([c, a, b, d]) => [[`<b>${c}</b>`, c], [N(a) + '٪', a], [N(b) + '٪', b], [N(d), d]]), 3, 'desc', 'lls')],
+        ['الحركات وعلامات الرسم العثماني والوقف', Mk ? `<p class="how">عدّ العلامات في نص الرسم العثماني (Quran.com) لآياته الـ${N(Mk.verses)}.</p>` +
+          stab(['المجموعة', 'العلامة', 'شكلها', 'العدد'], Mk.rows.map(([g, n, c, k]) => [[esc(g), g], [esc(n), n], [`<span class="mkc">ـ${c}</span>`, k], [N(k), k]]), 3, 'desc', 'marks') : '<p class="hint">غير متاح.</p>'],
+      ],
+      words: [
+        ['البحث في كل كلمات القرآن', `<p class="how">كل كلمات القرآن بصيغها كما تُكتب (${N(W.forms)} صيغة)، منها ${N(W.hapax)} وردت مرة واحدة. اكتب كلمة أو جزءاً منها (بلا تشكيل).</p><div class="wsearch"><input class="inp wq" placeholder="ابحث عن كلمة…" aria-label="ابحث عن كلمة"><label class="ucchk"><input type="checkbox" class="wh"> ما ورد مرة واحدة فقط</label></div><div class="wres"><p class="hint">جارٍ التحميل…</p></div>`],
+        ['تكرار الكلمة وطولها (قانون زيبف)', `<p class="how">ميل الخط بين لوغاريتم ترتيب الكلمة ولوغاريتم تكرارها ${N(W.zipf)}، قريب من −١ الذي يتوقعه «قانون زيبف» في اللغات الطبيعية: الكلمة الثانية في الترتيب تتكرر نحو نصف الأولى، والعاشرة نحو عُشرها. والكلمات الأكثر تكراراً أقصر:</p>` +
+          stab(['الكلمات', 'متوسط طول الكلمة بالحروف'], W.bands.map(([a, l]) => [[a, a], [N(l), l]]), 1, 'asc', 'zipf')],
+        ['المفاهيم بجذورها', `<p class="how">عدد مرات ورود الجذر بكل صيغه، وعدد الألفاظ المختلفة المشتقة منه. الجذر يقارب المفهوم ولا يطابقه: فجذر «أمن» يشمل الإيمان والأمن والأمانة معاً.</p>` +
+          stab(['المفهوم', 'الجذر', 'مرات الورود', 'الألفاظ المشتقة'], G.concepts.map(([c, r, n, l]) => [[c, c], [r, r], [N(n), n], [N(l), l]]), 2, 'desc', 'conc')],
+        ['أدوات التشبيه', `<p class="how">عدد أدوات التشبيه في القرآن كما صنّفتها «مدونة القرآن العربية». العدّ آلي، وقد تأتي بعض هذه الأدوات لغير التشبيه (فـ«مِثْل» قد تعني المساواة)، فالنتيجة تقريبية تحتاج مراجعة.</p>` +
+          stab(['الأداة', 'العدد'], G.similes.map(([a, n]) => [[a, a], [N(n), n]]), 1, 'desc', 'simile')],
+        ['الأماكن في القرآن', `<p class="how">الأماكن المذكورة بأسمائها (أسماء أعلام في «مدونة القرآن العربية»)، ومنها ما في عالم الغيب.</p><div class="rs2">` +
+          stab(['في الأرض', 'المرات'], G.places.earth.map(([a, n]) => [[a, a], [N(n), n]]), 1, 'desc', 'plearth') +
+          stab(['في عالم الغيب', 'المرات'], G.places.unseen.map(([a, n]) => [[a, a], [N(n), n]]), 1, 'desc', 'plunseen') + '</div>'],
+        ['طرق عدّ الكلمات', stab(['طريقة العدّ', 'عدد الكلمات'], [['ما يفصله فراغ في الرسم الإملائي (المعتمد في هذه الصفحة)', G.tokens.space], ['ما يفصله فراغ في الرسم العثماني', G.tokens.uthmani], ['الكلمات في «مدونة القرآن العربية»', G.tokens.qac], ['الأجزاء الصرفية (بفصل السوابق واللواحق)', G.tokens.segments]].filter(([, n]) => n).map(([a, n]) => [[a, a], [N(n), n]]), 1, 'desc', 'tok') +
+          '<p class="how">تختلف الأعداد باختلاف طريقة العدّ؛ ولهذا يُذكر في كل إحصاء أساس العدّ.</p>'],
+      ],
+      distinct: [
+        ['ثراء المفردات في السور', `<p class="how">نسبة الكلمات غير المكررة في كل نافذة من ١٠٠ كلمة متتالية، متوسطةً على السورة كلها؛ وهذا المقياس لا يتأثر بطول السورة. محسوب لـ${N(W.rich.n)} سورة من ٢٠٠ كلمة فأكثر.</p><div class="rs2">` +
+          stab(['أكثرها تنوعاً', 'الكلمات', 'النسبة'], W.rich.top.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'desc', 'richtop') +
+          stab(['أقلها تنوعاً', 'الكلمات', 'النسبة'], W.rich.low.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'asc', 'richlow') + '</div><p class="hint">تكرار اللازمة يخفض النسبة، كما في سورة الرحمن («فبأي آلاء ربكما تكذبان»).</p>'],
+        ['كل الجذور بتكرارها وعدد ألفاظها', `<p class="how">${N(G.rootTable.length)} جذراً. ومعامل الارتباط بين لوغاريتم تكرار الجذر وعدد ألفاظه المختلفة ${N(G.rootCorr)}: الجذور الأكثر وروداً يُشتق منها ألفاظ أكثر. (هذا مقياس تقريبي لتنوع المعنى؛ قياس المعاني نفسها يحتاج معجماً.)</p><div class="tscroll rtall">` +
+          stab(['الجذر', 'مرات الورود', 'الألفاظ المختلفة'], G.rootTable.map(([r, n, l]) => [[esc(r), r], [N(n), n], [N(l), l]]), 1, 'desc', 'roots') + '</div>'],
+      ],
+      surahs: [
+        ['السور المبدوءة بالقسم', `<p class="how">${N(G.oathOpen.length)} سورة تبدأ بالقسم (بالواو، أو «لا أقسم»، أو بعد الحروف المقطعة). العدّ آلي من أول آيتين، فيحتاج مراجعة.</p><div class="chips oathg">${G.oathOpen.map((a) => `<span class="chip">${esc(a)}</span>`).join('')}</div>`],
+      ],
+    };
+  })() : null;
+  const moreSecs = (k) => (MORE ? MORE[k].map(([t, h]) => panel(t, h, false)).join('') : '');
   const oppPanel = () => {   // opposite pairs: how often each side comes, how often both come in one verse, and what the numbers show
     const O = D.opposites.map(([an, a, bn, b, both, minV, x]) => ({ an, a, bn, b, both, minV, x, gap: Math.abs(a - b) / Math.max(a, b) }));
     const nm = (o) => `${esc(o.an)} / ${esc(o.bn)}`, li = (o) => `${nm(o)} (${N(o.a)} / ${N(o.b)})`;
@@ -1620,7 +1670,7 @@ async function initStats() {
   const lettersBars = bars(S.letters.map((x) => ({ k: x.l === 'ء' ? 'ء (همزة)' : x.l === 'ة' ? 'ة' : x.l, n: x.n })), S.letters[0].n, (r) => `<span class="pair"><b>${N(r.n)}</b><b>${pct(r.n, t.letters)}</b></span>`);
   body.innerHTML =
     `<div class="kpis">${kpi(N(t.surahs), 'سورة', 'kSurahs')}${kpi(N(t.verses), 'آية', 'kAyat')}${NCD && NCD['الله'] ? kpi(N(NCD['الله'].n), 'مرة ورد فيها لفظ الجلالة «الله»', 'kNames') : ''}${NCD ? kpi(N(Object.values(NCD).reduce((a, x) => a + x.n, 0)), 'مرة ذكرت أسماء الله الحسنى <span class="kwarn">⚠︎</span>', 'kNames') : ''}<div class="kxp" id="kSurahs" hidden></div><div class="kxp" id="kAyat" hidden></div><div class="kxp" id="kNames" hidden></div>` +
-    `${kpi(N(t.words), 'كلمة (بالتكرار) <small>تحليل الكلمات</small>', 'kWords', 1)}${kpi(N(t.uniqueWords), 'كلمة مختلفة', 'kDistinct')}${kpi(N(t.hapax), 'كلمة وردت مرة واحدة', 'kWords')}${kpi(N((t.words / t.surahs).toFixed(1)), 'متوسط الكلمات في السورة', 'kWords')}${kpi(N(t.wordsPerVerse), 'متوسط الكلمات في الآية', 'kWords')}<div class="kxp" id="kWords" hidden></div><div class="kxp" id="kDistinct" hidden></div>` +
+    `${kpi(N(t.words), 'كلمة (بالتكرار) <small>تحليل الكلمات</small>', 'kWords', 1)}${kpi(N(t.uniqueWords), 'كلمة مختلفة', 'kSurahs')}${kpi(N(t.hapax), 'كلمة وردت مرة واحدة', 'kWords')}${kpi(N((t.words / t.surahs).toFixed(1)), 'متوسط الكلمات في السورة', 'kWords')}${kpi(N(t.wordsPerVerse), 'متوسط الكلمات في الآية', 'kWords')}<div class="kxp" id="kWords" hidden></div>` +
     `${kpi(N(t.letters), 'حرفاً <small>تكرار الحروف</small>', 'kLetters', 1)}${kpi(N(t.lettersPerWord), 'متوسط الحروف في الكلمة', 'kWords')}${kpi(N((t.letters / t.verses).toFixed(1)), 'متوسط الحروف في الآية', 'kWords')}${kpi(N((t.letters / t.surahs).toFixed(1)), 'متوسط الحروف في السورة', 'kWords')}${kpi(N((t.verses / t.surahs).toFixed(1)), 'متوسط الآيات في السورة', 'kWords')}<div class="kxp" id="kLetters" hidden><h3 class="ptl">تكرار الحروف</h3>${lettersBars}</div></div>` +
     panel('عدد مرات ورود أسماء الله الحسنى في القرآن', '<div id="namesCounts"><p class="hint">جارٍ التحميل…</p></div>', false) +
     (P ? panel('أنواع الكلمات (أسماء، صفات، أفعال)', posPanel(), false) : '') +
@@ -1639,6 +1689,7 @@ async function initStats() {
     panel('جميع السور مرتّبة حسب…', `<div class="sorters"></div><div class="tscroll"><table class="tbl"><thead><tr><th>#</th><th>السورة</th><th></th><th class="num">آياتها</th><th class="num">كلماتها</th><th class="num">حروفها</th></tr></thead><tbody></tbody></table></div>`, false) +
     (D ? panel(`الأضداد في القرآن (${N(D.opposites.length)} زوجاً)`, oppPanel(), false) : '') +
     (D ? panel('تحليلات أعمق للألفاظ: الروابط والأنماط (المستوى الثاني)', deepPanel(), false) : '') +
+    moreSecs('ayat') + moreSecs('letters') + moreSecs('words') + moreSecs('distinct') + moreSecs('surahs') +
     `<p class="note">المصدر: ${esc(S.source)} — حُسبت بتاريخ ${esc(S.generated)}. تُعدّ الكلمة ما يفصله فراغ في الرسم الإملائي المعتاد، وتُحسب ى ياءً وؤ/ئ همزةً.</p>`;
   /* category rows (.catgrid): equal-width item boxes, 8–16 per row, with a gap between each small group of boxes */
   const GROUP = { 8: 4, 9: 3, 10: 5, 12: 3, 14: 7, 15: 3, 16: 4 };   // boxes per row -> boxes per group
@@ -1707,19 +1758,35 @@ async function initStats() {
     t.dataset.d = i ? i.dataset.d : t.dataset.c === c ? (t.dataset.d === 'desc' ? 'asc' : 'desc') : c === '0' ? 'asc' : 'desc'; t.dataset.c = c; sortT(t); selSet('tbl:' + t.dataset.id, { c: t.dataset.c, d: t.dataset.d });
   });
   /* every section of the page lives under one of the boxes at the top, and opens under that box's row */
-  const KW = ['أنواع الكلمات (', 'الصرف والنحو بين السور المكية', 'الأفعال الواردة في القرآن', 'كلمة تكراراً', 'توزيع أطوال الكلمات', 'الأضداد في القرآن', 'أزواج الكلمات المجتمعة', 'خريطة الألفاظ', 'ألفاظ لا تأتي إلا', 'آيات تكررت بنصها', 'أكثر العبارات تكراراً', 'أطول العبارات المكررة', 'كيف تبدأ الآيات', 'جذر واحد وألفاظ كثيرة', 'ألفاظ مكية وألفاظ مدنية', 'ألفاظ تجمّعت في سورة'];
+  const KW = ['أنواع الكلمات (', 'البحث في كل كلمات القرآن', 'تكرار الكلمة وطولها', 'المفاهيم بجذورها', 'أدوات التشبيه', 'الأماكن في القرآن', 'طرق عدّ الكلمات', 'الصرف والنحو بين السور المكية', 'الأفعال الواردة في القرآن', 'كلمة تكراراً', 'توزيع أطوال الكلمات', 'الأضداد في القرآن', 'أزواج الكلمات المجتمعة', 'خريطة الألفاظ', 'ألفاظ لا تأتي إلا', 'آيات تكررت بنصها', 'أكثر العبارات تكراراً', 'أطول العبارات المكررة', 'كيف تبدأ الآيات', 'جذر واحد وألفاظ كثيرة', 'ألفاظ مكية وألفاظ مدنية', 'ألفاظ تجمّعت في سورة'];
   const secs = (L) => [...body.querySelectorAll('details.lesson, details.pg.pc-top')].filter((d) => { const t = d.querySelector(':scope>summary').textContent; return L.some((k) => t.includes(k)); });
-  const kxSecs = { kLetters: secs(['الحروف: الإنتروبيا']), kWords: secs(KW), kNames: secs(['عدد مرات ورود أسماء الله الحسنى']), kSurahs: secs(['تصنيف أسماء السور', 'المكي والمدني', 'جميع السور مرتّبة حسب']), kAyat: secs(['أطول آية وأقصر آية']), kDistinct: secs(['السور المتقاربة في ألفاظها', 'السور ذات الألفاظ الخاصة بها']) };   // the two names boxes share one panel
-  for (const [id, L] of Object.entries(kxSecs)) { const x = $(id); x.append(...L); if (L.length === 1) L[0].open = true; else panelize(x, (d) => d.parentNode === x && d.tagName === 'DETAILS'); }
+  const kxSecs = { kLetters: secs(['الحروف: الإنتروبيا', 'الحروف في كل سورة', 'الحروف في السور الطويلة', 'الحركات وعلامات الرسم']), kWords: secs(KW), kNames: secs(['عدد مرات ورود أسماء الله الحسنى']), kSurahs: secs(['تصنيف أسماء السور', 'المكي والمدني', 'جميع السور مرتّبة حسب', 'السور المبدوءة بالقسم', 'السور المتقاربة في ألفاظها', 'السور ذات الألفاظ الخاصة بها', 'ثراء المفردات في السور', 'كل الجذور بتكرارها']), kAyat: secs(['أطول آية وأقصر آية', 'الآيات الأطول من المعتاد', 'أول آية وآخر آية في كل سورة', 'تتابع الفواصل في السور', 'طول الآيات في السور المكية والمدنية']) };   // the two names boxes share one panel
+  for (const [id, L] of Object.entries(kxSecs)) { const x = $(id); x.append(...L); if (L.length === 1) L[0].open = true; else { panelize(x, (d) => d.parentNode === x && d.tagName === 'DETAILS'); x.style.setProperty('--n', L.length > 5 ? 4 : L.length); } }   // --n: one row of equal boxes
   body.querySelectorAll(':scope>details.lesson').forEach((d) => d.remove());   // what is left below: the letters (shown in the letters box) and the emptied level-2 panel
   body.querySelectorAll('.kexp').forEach((b) => (b.onclick = () => {
-    const x = $(b.getAttribute('aria-controls')), open = x.hidden; x.hidden = !open;
-    body.querySelectorAll(`.kexp[aria-controls="${x.id}"]`).forEach((k) => { k.classList.toggle('on', open); k.setAttribute('aria-expanded', open); });
+    const x = $(b.getAttribute('aria-controls')), open = x.hidden || !b.classList.contains('on'); x.hidden = !open;   // another box of the same panel: the panel stays open, the highlight moves to this box
+    body.querySelectorAll(`.kexp[aria-controls="${x.id}"]`).forEach((k) => { const on = open && k === b; k.classList.toggle('on', on); k.setAttribute('aria-expanded', on); });
     (pstate.kx ||= {})[x.id] = open; saveState();
   }));
   if (remember()) {   // the page as the visitor left it
     const kx = { ...(pstate.kx || {}) }; for (const id in kx) if (kx[id]) body.querySelector(`.kexp[aria-controls="${id}"]`)?.click();
     body.querySelectorAll('.stbl').forEach((t) => { const o = selGet('tbl:' + t.dataset.id) || (t.dataset.id === 'opp' && selGet('opp')); if (o) { t.dataset.c = o.c; t.dataset.d = o.d; sortT(t); } });
+  }
+  const lsur = body.querySelector('.lsur');
+  if (lsur) {   // letters of the chosen surah against the whole Quran
+    const Lt = RJ.letters, tot = Lt.alpha.map((c, i) => S.surahs.reduce((a, x, j) => a + Lt.perSurah[j][i], 0)), all = tot.reduce((a, b) => a + b, 0);
+    const draw = () => { const j = +lsur.value - 1, row = Lt.perSurah[j], n = row.reduce((a, b) => a + b, 0), items = Lt.alpha.map((c, i) => ({ k: c, n: row[i], q: tot[i] })).sort((a, b) => b.n - a.n);
+      lsur.nextElementSibling.innerHTML = `<p class="how">${N(n)} حرفاً.</p>` + bars(items, items[0].n, (r) => `<span class="pair"><b>${N(((100 * r.n) / n).toFixed(1))}٪</b><b class="muted">${N(((100 * r.q) / all).toFixed(1))}٪</b></span>`); };
+    lsur.value = selGet('lsur') || 1; draw(); lsur.onchange = () => { selSet('lsur', lsur.value); draw(); };
+  }
+  const ws = body.querySelector('.wsearch');
+  if (ws) {   // every word form with its count: loaded the first time the section opens
+    let WL = null; const q = ws.querySelector('.wq'), h = ws.querySelector('.wh'), out = ws.nextElementSibling;
+    const nrm = (t) => t.replace(/[ً-ٰٟـۖ-ۭ]/g, '').replace(/[ٱأإآ]/g, 'ا').replace(/ى/g, 'ي').trim();
+    const draw = () => { if (!WL) return; const t = nrm(q.value), m = WL.map(([w, n], i) => [w, n, i + 1]).filter(([w, n]) => (!t || w.includes(t)) && (!h.checked || n === 1));
+      out.innerHTML = `<p class="how">${N(m.length)} كلمة${m.length > 200 ? '، تُعرض أول ٢٠٠' : ''}.</p><div class="tscroll rtall">` + stab(['الكلمة', 'مرات الورود', 'ترتيبها في التكرار'], m.slice(0, 200).map(([w, n, r]) => [[esc(w), w], [N(n), n], [N(r), r]]), 1, 'desc', 'words') + '</div>'; };
+    ws.closest('details').addEventListener('toggle', async () => { if (WL) return; try { WL = await (await fetch('/words.json')).json(); } catch { out.innerHTML = '<p class="hint">تعذّر التحميل.</p>'; return; } q.value = selGet('wq') || ''; h.checked = !!selGet('wh'); draw(); });
+    q.oninput = () => { selSet('wq', q.value); draw(); }; h.onchange = () => { selSet('wh', h.checked); draw(); };
   }
   body.querySelectorAll('.psort').forEach((bar) => bar.addEventListener('click', (e) => {
     const b = e.target.closest('.btn'); if (!b) return;
@@ -2494,51 +2561,51 @@ const RS = [   // [group, [[n, title, verdict, note, link]]]
     [4, 'توزيع عدد الكلمات في السور', 'a', 'أدناه، والسور مرتبة بعدد الكلمات في الإحصاءات', '#stats'],
     [5, 'توزيع عدد الكلمات في الآية', 'a', 'أدناه'],
     [6, 'العلاقة بين طول السورة ومتوسط طول آياتها', 'a', 'معامل الارتباط أدناه'],
-    [7, 'الآيات والسور الطويلة والقصيرة على غير المعتاد', 'i', 'أطول آية وأقصرها موجودة؛ تنقص قائمة الآيات الشاذة الطول إحصائياً', '#stats'],
+    [7, 'الآيات والسور الطويلة والقصيرة على غير المعتاد', 'a', 'تحت صندوق «آية»: «الآيات الأطول من المعتاد»', '#stats'],
     [8, 'مقارنة الأثلاث الثلاثة للمصحف', 'a', 'أدناه'],
   ]],
   ['أ٢ — الحروف', [
     [9, 'تكرار كل حرف في القرآن', 'd', 'صندوق «حرفاً» في الإحصاءات', '#stats'],
-    [10, 'تكرار الحروف في كل سورة', 'n', 'ممكن من النص المتاح'],
-    [11, 'الحروف في أول الكلمة ووسطها وآخرها', 'a', 'أول الكلمة وآخرها أدناه'],
-    [12, 'الأزواج المتتالية من الحروف', 'a', 'أكثر ٢٠ زوجاً أدناه'],
-    [13, 'السلاسل الثلاثية والرباعية من الحروف', 'n', 'ممكن، وفائدته اللغوية أقل من الجذور'],
-    [14, 'توزيع الحركات والسكون والشدة والتنوين', 'n', 'ممكن من نص الرسم العثماني المشكول'],
-    [15, 'أنماط الحروف في السور الطويلة والقصيرة', 'n', 'ممكن'],
-    [16, 'الكلمات المبدوءة أو المختومة بحروف معينة', 'a', 'يغطيه المعيار ١١ أدناه'],
+    [10, 'تكرار الحروف في كل سورة', 'a', 'تحت «حرفاً»: «الحروف في كل سورة»', '#stats'],
+    [11, 'الحروف في أول الكلمة ووسطها وآخرها', 'a', 'تحت «حرفاً»: الحروف في أول الكلمة وآخرها', '#stats'],
+    [12, 'الأزواج المتتالية من الحروف', 'a', 'تحت «حرفاً»: الأزواج المتتالية', '#stats'],
+    [13, 'السلاسل الثلاثية والرباعية من الحروف', 'a', 'تحت «حرفاً»: السلاسل الثلاثية', '#stats'],
+    [14, 'توزيع الحركات والسكون والشدة والتنوين', 'a', 'تحت «حرفاً»: «الحركات وعلامات الرسم العثماني والوقف»', '#stats'],
+    [15, 'أنماط الحروف في السور الطويلة والقصيرة', 'a', 'تحت «حرفاً»: «الحروف في السور الطويلة والقصيرة»', '#stats'],
+    [16, 'الكلمات المبدوءة أو المختومة بحروف معينة', 'a', 'يغطيه المعيار ١١ تحت «حرفاً»', '#stats'],
   ]],
   ['أ٣ — الكلمات والمفردات', [
-    [17, 'ترتيب كل كلمة بحسب تكرارها', 'i', 'المعروض أكثر ٢٩ كلمة فقط؛ الأفضل قائمة كاملة قابلة للبحث', '#stats'],
-    [18, 'ثراء المفردات في كل سورة', 'n', 'ممكن، بمقياس لا يتأثر بطول السورة'],
-    [19, 'الكلمات التي وردت مرة واحدة', 'i', 'العدد معروض؛ تنقص القائمة نفسها', '#stats'],
+    [17, 'ترتيب كل كلمة بحسب تكرارها', 'a', 'تحت «كلمة (بالتكرار)»: «البحث في كل كلمات القرآن»', '#stats'],
+    [18, 'ثراء المفردات في كل سورة', 'a', 'تحت «كلمة مختلفة»: «ثراء المفردات في السور»', '#stats'],
+    [19, 'الكلمات التي وردت مرة واحدة', 'a', 'البحث في كل الكلمات، مع خيار «ما ورد مرة واحدة فقط»', '#stats'],
     [20, 'أكثر التراكيب تكراراً', 'd', '«أكثر العبارات تكراراً»', '#stats'],
     [21, 'توزيع أطوال الكلمات بالحروف', 'd', '«توزيع أطوال الكلمات»', '#stats'],
-    [22, 'العلاقة بين تكرار الكلمة وطولها', 'n', 'ممكن (قانون زيبف)'],
+    [22, 'العلاقة بين تكرار الكلمة وطولها', 'a', 'تحت «كلمة (بالتكرار)»: «قانون زيبف»', '#stats'],
     [23, 'تكرار العبارات الكاملة في سور مختلفة', 'd', '«آيات تكررت بنصها» و«أطول العبارات المكررة»', '#stats'],
     [24, 'تداخل المفردات وتفرّدها بين السور', 'd', '«السور المتقاربة» و«السور ذات الألفاظ الخاصة»', '#stats'],
   ]],
   ['ب٤ — الجذور والصرف', [
-    [25, 'توزيع الجذور الثلاثية', 'i', 'الجذور مستعملة في «أسر الجذور»؛ ينقص جدول تكرارها', '#stats'],
-    [26, 'الجذور الرباعية', 'a', 'أدناه'],
+    [25, 'توزيع الجذور الثلاثية', 'a', 'تحت «كلمة مختلفة»: «كل الجذور بتكرارها»', '#stats'],
+    [26, 'الجذور الرباعية', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو بين السور المكية والمدنية»', '#stats'],
     [27, 'عدد الكلمات المشتقة من كل جذر', 'd', '«أسر الجذور»', '#stats'],
     [28, 'توزيع أوزان الأفعال', 'd', '«الأفعال بحسب وزنها الصرفي»', '#stats'],
-    [29, 'المشتقات: اسم الفاعل والمفعول والمصدر', 'a', 'أدناه'],
-    [30, 'العلاقة بين تكرار الجذر وتنوع معانيه', 'n', 'يحتاج معجماً دلالياً'],
-    [31, 'المفرد والمثنى والجمع', 'a', 'أدناه'],
-    [32, 'المذكر والمؤنث', 'a', 'أدناه'],
+    [29, 'المشتقات: اسم الفاعل والمفعول والمصدر', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
+    [30, 'العلاقة بين تكرار الجذر وتنوع معانيه', 'a', 'تقريبي: عدد ألفاظ الجذر بدل معانيه، تحت «كلمة مختلفة»', '#stats'],
+    [31, 'المفرد والمثنى والجمع', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
+    [32, 'المذكر والمؤنث', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
   ]],
   ['ب٥ — النحو وبناء الجملة', [
     [33, 'الجمل الاسمية والفعلية', 'n', 'يحتاج شجرة إعراب كاملة؛ المتاح منها جزئي'],
     [34, 'ترتيب الفاعل والفعل والمفعول', 'n', 'يحتاج شجرة إعراب كاملة'],
     [35, 'الماضي والمضارع والأمر', 'd', '«الأفعال بحسب الظرف الزمني»', '#stats'],
-    [36, 'المبني للمعلوم والمجهول', 'a', 'أدناه'],
-    [37, 'أدوات الشرط', 'a', 'أدناه (العدّ؛ أما الوظائف فتحتاج تفسيراً)'],
-    [38, 'النفي والحصر والاستثناء', 'a', 'أدناه'],
-    [39, 'الاستفهام', 'a', 'أدناه'],
+    [36, 'المبني للمعلوم والمجهول', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
+    [37, 'أدوات الشرط', 'a', 'العدّ تحت «الصرف والنحو…»؛ أما الوظائف فتحتاج تفسيراً', '#stats'],
+    [38, 'النفي والحصر والاستثناء', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
+    [39, 'الاستفهام', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
     [40, 'تعقيد التراكيب في الآيات والسور', 'n', 'يحتاج شجرة إعراب كاملة'],
   ]],
   ['ج٦ — الحقول الدلالية', [
-    [41, 'تكرار مفاهيم كالرحمة والعدل والعلم والصبر', 'i', 'صفحات الموضوعات تعرض آياتها؛ ينقص عدّ كل مفهوم بجذوره'],
+    [41, 'تكرار مفاهيم كالرحمة والعدل والعلم والصبر', 'a', 'تحت «كلمة (بالتكرار)»: «المفاهيم بجذورها»', '#stats'],
     [42, 'المفاهيم المتقابلة كالحياة والموت', 'd', '«الأضداد في القرآن»', '#stats'],
     [43, 'المترادفات والمتقاربات', 'n', 'بمراجعة علمية، لا آلياً'],
     [44, 'الألفاظ متعددة المعاني', 'n', 'بمراجعة علمية من كتب الوجوه والنظائر'],
@@ -2551,23 +2618,23 @@ const RS = [   // [group, [[n, title, verdict, note, link]]]
     [49, 'أسماء الأنبياء وتكرارها', 'd', 'صفحة الأنبياء', '#prophets'],
     [50, 'أسماء الله الحسنى وصفاته', 'd', 'صفحة الأسماء، وعددها في الإحصاءات', '#names'],
     [51, 'الأقوام والأمم والقبائل', 'd', 'صفحة «أشخاص آخرون» واليهود وبنو إسرائيل', '#others'],
-    [52, 'الأماكن الجغرافية', 'n', 'ممكن من أسماء الأعلام في المدونة الصرفية'],
+    [52, 'الأماكن الجغرافية', 'a', 'تحت «كلمة (بالتكرار)»: «الأماكن في القرآن»', '#stats'],
     [53, 'الملائكة والكائنات المسماة', 'd', 'صفحة «أشخاص آخرون»', '#others'],
     [54, 'الضمائر العائدة على الله والأنبياء والمؤمنين', 'i', 'المتكلم والمخاطب والغائب في الأفعال أدناه؛ عود الضمير يحتاج تفسيراً'],
   ]],
   ['د٨ — البلاغة', [
-    [55, 'التشبيه', 'n', 'يمكن حصر أدواته (الكاف، مثل، كأنّ) ثم مراجعتها'],
+    [55, 'التشبيه', 'a', 'عدّ آلي لأدوات التشبيه تحت «كلمة (بالتكرار)»، يحتاج مراجعة', '#stats'],
     [56, 'الاستعارة', 'x', 'لا تُكتشف آلياً بثقة؛ تُنقل من كتب البلاغة'],
     [57, 'الكناية', 'x', 'كذلك'],
     [58, 'التكرار أسلوباً', 'd', 'العبارات والآيات المكررة', '#stats'],
     [59, 'الطباق والمقابلة', 'd', '«الأضداد في القرآن»', '#stats'],
-    [60, 'القسم وبناؤه', 'n', 'ممكن: حصر صيغ القسم (أقسم، والفجر…) ثم مراجعتها'],
+    [60, 'القسم وبناؤه', 'a', 'تحت «سورة»: «السور المبدوءة بالقسم» (آلي، يحتاج مراجعة)', '#stats'],
     [61, 'الاستفهام البلاغي ووظائفه', 'n', 'العدّ أدناه؛ الوظيفة البلاغية تحتاج تفسيراً'],
     [62, 'الالتفات', 'x', 'لا يُكتشف آلياً بثقة'],
   ]],
   ['د٩ — الأصوات والإيقاع', [
     [63, 'الفواصل القرآنية', 'd', '«كيف تبدأ الآيات وكيف تنتهي»', '#stats'],
-    [64, 'تشابه أصوات الفواصل المتتالية', 'i', 'الفواصل معدودة؛ ينقص قياس تتابعها'],
+    [64, 'تشابه أصوات الفواصل المتتالية', 'a', 'تحت «آية»: «تتابع الفواصل في السور»', '#stats'],
     [65, 'المدود والحركات القصيرة', 'n', 'يحتاج نصاً صوتياً (أحكام التجويد)'],
     [66, 'الخصائص الصوتية للمكي والمدني', 'n', 'ممكن بعد المعيار ٦٥'],
     [67, 'تكرار الأصوات الساكنة (الجناس الصوتي)', 'n', 'ممكن، وفائدته محدودة'],
@@ -2579,7 +2646,7 @@ const RS = [   // [group, [[n, title, verdict, note, link]]]
     [71, 'تشابه مطالع السور وخواتيمها', 'i', 'مطالع الآيات وخواتيمها عامة؛ تنقص المقارنة لكل سورة', '#stats'],
     [72, 'ألفاظ وجذور في مواضع متناظرة من السور', 'n', 'ممكن، ويحتاج تصحيحاً للمقارنات الكثيرة'],
     [73, 'توزيع الموضوعات في أول السورة ووسطها وآخرها', 'x', 'يحتاج تصنيفاً موضوعياً لكل آية'],
-    [74, 'أنماط أول آية وآخر آية', 'n', 'ممكن'],
+    [74, 'أنماط أول آية وآخر آية', 'a', 'تحت «آية»: «أول آية وآخر آية في كل سورة»', '#stats'],
     [75, 'مقارنة السور المتجاورة', 'i', 'التقارب محسوب بين كل السور، لا المتجاورة خاصة', '#stats'],
     [76, 'تغيّر الخصائص على ترتيب المصحف', 'a', 'مقارنة الأثلاث أدناه'],
   ]],
@@ -2593,17 +2660,17 @@ const RS = [   // [group, [[n, title, verdict, note, link]]]
   ]],
   ['و١٢ — المكي والمدني', [
     [83, 'اختلاف تكرار المفردات', 'd', '«ألفاظ مكية وألفاظ مدنية»', '#stats'],
-    [84, 'اختلاف طول الآيات والتراكيب', 'i', '«المكي والمدني» في الإحصاءات؛ والتراكيب لكل ألف كلمة أدناه', '#stats'],
-    [85, 'اختلاف الأساليب النحوية والبلاغية', 'a', 'أدناه'],
+    [84, 'اختلاف طول الآيات والتراكيب', 'a', 'تحت «آية»: «طول الآيات في السور المكية والمدنية»', '#stats'],
+    [85, 'اختلاف الأساليب النحوية والبلاغية', 'a', 'تحت «كلمة (بالتكرار)»: «الصرف والنحو…»', '#stats'],
     [86, 'المفردات التشريعية والقصصية والعقدية', 'n', 'يحتاج تصنيف الألفاظ في حقول'],
     [87, 'ترتيب النزول المقترح', 'x', 'ترتيب النزول مختلف فيه، فلا يُبنى عليه'],
   ]],
   ['و١٣ — الرسم والقراءات', [
     [88, 'الرسم العثماني والإملاء الحديث', 'i', 'العرض بالرسم العثماني والعدّ بالإملائي؛ تنقص المقارنة'],
-    [89, 'ظواهر الرسم العثماني', 'n', 'ممكن من النصين'],
+    [89, 'ظواهر الرسم العثماني', 'a', 'تحت «حرفاً»: علامات الرسم العثماني', '#stats'],
     [90, 'أثر القراءات في الصرف والنحو', 'x', 'لا تتوفر بيانات موثقة للقراءات بصيغة قابلة للحساب'],
     [91, 'أثر القراءات في الأصوات والإعراب', 'x', 'كذلك'],
-    [92, 'طرق تقسيم الكلمات', 'i', 'الطريقة مذكورة تحت الإحصاءات؛ تنقص المقارنة بين الطرق', '#stats'],
+    [92, 'طرق تقسيم الكلمات', 'a', 'تحت «كلمة (بالتكرار)»: «طرق عدّ الكلمات»', '#stats'],
   ]],
   ['ز١٤ — النمذجة الحاسوبية', [
     [93, 'شبكات تلازم الألفاظ', 'd', '«أزواج الكلمات المجتمعة» و«خريطة الألفاظ»', '#stats'],
@@ -2614,7 +2681,7 @@ const RS = [   // [group, [[n, title, verdict, note, link]]]
     [98, 'العلاقات بين المقاطع المتباعدة', 'n', 'ممكن من «العبارات المكررة» وتلازم الألفاظ'],
   ]],
   ['ز١٥ — الرياضيات ونظرية المعلومات', [
-    [99, 'الإنتروبيا وقابلية التنبؤ', 'a', 'إنتروبيا الحروف أدناه'],
+    [99, 'الإنتروبيا وقابلية التنبؤ', 'a', 'تحت «حرفاً»: «الحروف: الإنتروبيا…»', '#stats'],
     [100, 'الفرضيات العددية والموضعية', 'x', 'كثرة الفرضيات تُنتج مطابقات بالصدفة؛ لا يُبنى عليها إعجاز عددي'],
   ]],
 ];
@@ -2652,13 +2719,13 @@ async function initResearch() {
        <p><b>طول السورة وطول آياتها:</b> معامل الارتباط بين عدد آيات السورة ومتوسط كلمات آياتها ${N(S.corrLenWpv)}، أي علاقة طردية ضعيفة إلى متوسطة: السور الطويلة آياتها أطول في الغالب.</p>` +
       tbl(['الثلث (بترتيب المصحف)', 'السور', 'الآيات', 'الكلمات', 'كلمات الآية', 'حروف الكلمة'], S.thirds.map((t) => [`${esc(t.from)} ← ${esc(t.to)}`, N(t.surahs), N(t.verses), N(t.words), N(t.wpv), N(t.lpw)])) +
       '<p class="hint">تقصر الآيات كثيراً من الثلث الأول إلى الأخير (من نحو ١٥ كلمة إلى ٤)، بينما يبقى طول الكلمة شبه ثابت.</p>') +
-    card('تحليلات جديدة ٢ و٣: الحروف، والصرف والنحو في المكي والمدني', '<p>صارت هذه التحليلات جزءاً ثابتاً من <a href="#stats">صفحة الإحصاءات</a>، بأقسام تُفتح وتُطوى وجداول تُرتّب بأي عمود: الحروف تحت صندوق «حرفاً»، والصرف والنحو تحت صندوق «كلمة (بالتكرار)».</p>') +
-    card('ما يُقترح بعد ذلك', `<ol>
-      <li>قائمة كاملة قابلة للبحث لكل الكلمات بتكرارها، ولما ورد مرة واحدة (المعياران ١٧، ١٩).</li>
-      <li>تكرار الحروف والمفردات لكل سورة، بمقياس لثراء المفردات لا يتأثر بطول السورة (١٠، ١٨).</li>
-      <li>أدوات التشبيه وصيغ القسم وأسماء الأماكن، تُحصر آلياً ثم تُراجع (٥٢، ٥٥، ٦٠).</li>
-      <li>تحويل كل معيار مُنجز إلى بطاقة فيها: التعريف، والبيانات، والطريقة، والنتيجة، وموضعها في الموقع.</li>
-      <li>تجنّب المعايير المعلَّمة «لا يُنصح به»، أو نقلها من كتب العلماء بدل استخراجها آلياً.</li></ol>`);
+    card('أين تجد التحليلات الجديدة؟', '<p>صارت التحليلات الجديدة جزءاً ثابتاً من <a href="#stats">صفحة الإحصاءات</a>، بأقسام تُفتح وتُطوى وجداول تُرتّب بأي عمود، كلٌّ تحت صندوقه في أعلى الصفحة:</p><ul><li><b>سورة:</b> السور المبدوءة بالقسم.</li><li><b>آية:</b> الآيات الأطول من المعتاد، وأول آية وآخر آية، وتتابع الفواصل، وطول الآيات في المكي والمدني.</li><li><b>كلمة (بالتكرار):</b> الصرف والنحو بين المكي والمدني، والبحث في كل الكلمات، وقانون زيبف، والمفاهيم بجذورها، وأدوات التشبيه، والأماكن، وطرق عدّ الكلمات.</li><li><b>كلمة مختلفة:</b> ثراء المفردات، وكل الجذور بتكرارها.</li><li><b>حرفاً:</b> الإنتروبيا، وأول الكلمة وآخرها، والأزواج والسلاسل الثلاثية، والحروف في كل سورة، والسور الطويلة والقصيرة، والحركات وعلامات الرسم والوقف.</li></ul>') +
+    card('ما بقي بعد ذلك', `<ol>
+      <li><b>يحتاج شجرة إعراب كاملة:</b> الجمل الاسمية والفعلية، وترتيب الجملة، وتعقيد التراكيب (٣٣، ٣٤، ٤٠).</li>
+      <li><b>يحتاج معجماً دلالياً أو مراجعة علمية:</b> المترادفات، والألفاظ متعددة المعاني، ومعاني ألفاظ الجذر، وحقول المفردات التشريعية والقصصية (٣٠، ٤٣–٤٥، ٤٨، ٨٦).</li>
+      <li><b>يحتاج نصاً صوتياً بأحكام التجويد:</b> المدود والإيقاع والخصائص الصوتية (٦٥، ٦٦، ٧٠).</li>
+      <li><b>ممكن لاحقاً:</b> مقارنة السور المتجاورة، ومطالع السور وخواتيمها، ونمذجة الموضوعات، وتصنيف المقاطع (٧١، ٧٢، ٧٥، ٨١، ٩٥، ٩٧، ٩٨).</li>
+      <li>المعايير المعلَّمة «لا يُنصح به» تُنقل من كتب العلماء إن أُريدت، ولا تُستخرج آلياً.</li></ol>`);
   body.querySelector('.rsfilter').onclick = (e) => {
     const b = e.target.closest('button[data-f]'); if (!b) return;
     body.querySelectorAll('.rsfilter .btn').forEach((x) => x.classList.toggle('on', x === b));
