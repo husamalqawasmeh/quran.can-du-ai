@@ -4,9 +4,15 @@ export const normAr = (s) => s
   .replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
   .replace(/[^ء-ي\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
+let DB = null;
+export const useDb = (db) => { DB = db; };   // the worker's D1: the fixed Quran text lives there (scripts/load-quran.mjs); Quran.com is the fallback
+const dbRows = async (sql, ...args) => { if (!DB) return []; try { return (await DB.prepare(sql).bind(...args).all()).results; } catch { return []; } };
+
 let chapters;
 export async function getChapters() {
   if (!chapters) {
+    const rows = await dbRows('SELECT id, en, ar, verses, place, meaning FROM chapters ORDER BY id');
+    if (rows.length === 114) return (chapters = rows);
     const r = await fetch('https://api.quran.com/api/v4/chapters?language=en');
     chapters = (await r.json()).chapters.map((c) => ({ id: c.id, en: c.name_simple, ar: c.name_arabic, verses: c.verses_count, place: c.revelation_place, meaning: c.translated_name?.name }));
   }
@@ -22,6 +28,8 @@ export async function verseByKey(key) {
   const m = /^(\d{1,3}):(\d{1,3})$/.exec(key || '');
   const ch = m && (await getChapters())[+m[1] - 1];
   if (!ch || +m[2] < 1 || +m[2] > ch.verses) return null;
+  const [row] = await dbRows('SELECT text, translation FROM ayat WHERE surah = ? AND ayah = ?', +m[1], +m[2]);
+  if (row) return { key, surah: +m[1], ayah: +m[2], surah_en: ch.en, surah_ar: ch.ar, text: row.text, translation: row.translation };
   const r = await fetch(`https://api.quran.com/api/v4/verses/by_key/${key}?translations=20&fields=text_uthmani`);
   if (!r.ok) return null;
   const v = (await r.json()).verse;
@@ -66,6 +74,8 @@ const chapCache = {};
 /** All verses of a surah: [{n, text}] in Uthmani script, from Quran.com. */
 export async function chapterVerses(n) {
   if (chapCache[n]) return chapCache[n];
+  const rows = await dbRows('SELECT ayah AS n, text FROM ayat WHERE surah = ? ORDER BY ayah', n);
+  if (rows.length) return (chapCache[n] = rows);
   const r = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${n}?fields=text_uthmani&per_page=300`);
   if (!r.ok) throw new Error('quran.com ' + r.status);
   return (chapCache[n] = (await r.json()).verses.map((v) => ({ n: v.verse_number, text: v.text_uthmani })));

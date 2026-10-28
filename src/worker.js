@@ -2,7 +2,7 @@ import { classify } from './match.mjs';
 import { chat, transcribe } from './ai.js';
 import { advise } from './advisor.js';
 import { discover } from './discover.js';
-import { findVerse, getChapters, verseByKey, normAr, skel, chapterVerses, ayatWithWords, ayatByEnglish } from './verse.js';
+import { findVerse, getChapters, verseByKey, normAr, skel, chapterVerses, ayatWithWords, ayatByEnglish, useDb } from './verse.js';
 import { EmailMessage } from 'cloudflare:email';
 
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
@@ -62,9 +62,10 @@ const isAdmin = (req, env) => safeEq((req.headers.get('authorization') || '').re
 
 export default {
   // Every Friday 06:00 UTC (10:00 Dubai): the research agent looks for new miracle items and saves them as PENDING.
-  async scheduled(event, env, ctx) { ctx.waitUntil(discover(env).catch(() => null)); },
+  async scheduled(event, env, ctx) { useDb(env.DB); ctx.waitUntil(discover(env).catch(() => null)); },
 
   async fetch(req, env, ctx) {
+    useDb(env.DB);
     const url = new URL(req.url);
     // The site moved from qreaders.can-du-ai.com to quran.can-du-ai.com; keep old links working.
     if (url.hostname === 'qreaders.can-du-ai.com') return Response.redirect('https://quran.can-du-ai.com' + url.pathname + url.search, 308);
