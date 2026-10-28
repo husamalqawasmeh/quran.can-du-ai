@@ -82,8 +82,9 @@ for (let i = 0; i < long.length; i++) { const a = bySurah.get(long[i]), b = bySu
 const openEnd = { n: long.length, mean: r2(mean(oe.map((x) => x[1]))), base: r2(mean(base)), top: [...oe].sort((a, b) => b[1] - a[1]).slice(0, 10) };
 
 /* ---- 72: words that come in the first verse, and in the last verse, of many surahs ---- */
-const atPos = (pick) => { const m = new Map(); for (const [s, ks] of bySurah) for (const l of new Set(vLem.get(pick(ks)) || [])) inc(m, l); return [...m].sort((a, b) => b[1] - a[1]).slice(0, 12); };
-const positions = { first: atPos((ks) => ks[0]), last: atPos((ks) => ks.at(-1)) };
+const atPos = (pick) => { const m = new Map(); for (const [s, ks] of bySurah) for (const l of new Set(vLem.get(pick(ks)) || [])) (m.get(l) || m.set(l, []).get(l)).push(NAME[s]); return [...m].sort((a, b) => b[1].length - a[1].length).map(([l, su]) => [l, su.length, su]); };   // every word, with the surahs
+const both = new Map(); for (const [s, ks] of bySurah) { const f = new Set(vLem.get(ks[0]) || []); if (ks.length > 1) for (const l of new Set(vLem.get(ks.at(-1)) || [])) if (f.has(l)) (both.get(l) || both.set(l, []).get(l)).push(NAME[s]); }   // words in both the first and the last verse of the same surah, with those surahs
+const positions = { first: atPos((ks) => ks[0]), last: atPos((ks) => ks.at(-1)), both: [...both].sort((a, b) => b[1].length - a[1].length).map(([l, su]) => [l, su.length, su]) };
 
 /* ---- 81, 98: phrases of 5+ words repeated in two surahs; the farthest-apart verses that share one ---- */
 const N5 = 5, gram = new Map();
