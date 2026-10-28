@@ -5,6 +5,15 @@ import { discover } from './discover.js';
 import { findVerse, getChapters, verseByKey, normAr, skel, chapterVerses, ayatWithWords, ayatByEnglish, useDb } from './verse.js';
 import { EmailMessage } from 'cloudflare:email';
 
+/** The Gmail address a Google sign-in token belongs to, checked by Google; null if the token is missing, expired or for another site. */
+async function googleEmail(env, token) {
+  if (!env.GOOGLE_CLIENT_ID || typeof token !== 'string' || token.length > 4096) return null;
+  const r = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(token)).catch(() => null);
+  if (!r || !r.ok) return null;
+  const t = await r.json().catch(() => ({}));
+  const ok = t.aud === env.GOOGLE_CLIENT_ID && String(t.email_verified) === 'true' && /@gmail\.com$/i.test(t.email || '') && +t.exp * 1000 > Date.now();
+  return ok ? t.email.toLowerCase() : null;
+}
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
 // a new validation volunteer (#drv page), mailed to the site owner through the EMAIL (send_email) binding
 const b64 = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
@@ -111,16 +120,25 @@ export default {
       return json({ results, segments: emb.length, model: 'neural' });
     }
 
+    // the page's public settings: the Google client id for «Sign in with Google» (empty until it is set up)
+    if (url.pathname === '/api/config') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '' });
+
     // volunteers' judgements on things a person must check (#validate): one row per item, reference and volunteer; a new answer replaces the old
     if (url.pathname === '/api/validate') {
       const item = url.searchParams.get('item') || '';
       if (item !== 'names') return json({ error: 'bad item' }, 400);
-      await env.DB.prepare('CREATE TABLE IF NOT EXISTS validations(item TEXT, ref TEXT, who TEXT, verdict TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(item, ref, who))').run();
+      await env.DB.prepare('CREATE TABLE IF NOT EXISTS validations(item TEXT, ref TEXT, who TEXT, verdict TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP, verified INTEGER DEFAULT 0, PRIMARY KEY(item, ref, who))').run();
       if (req.method === 'POST') {
         const b = await req.json().catch(() => ({}));
-        const who = typeof b.who === 'string' ? b.who.replace(/[\x00-\x1f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) : '';
-        if (who.length < 2 || typeof b.ref !== 'string' || !/^[ء-ي ]{2,30}\|\d{1,3}:\d{1,3}$/.test(b.ref) || !['allah', 'other', 'unsure', ''].includes(b.verdict)) return json({ error: 'bad input' }, 400);
-        if (b.verdict) await env.DB.prepare('INSERT INTO validations(item, ref, who, verdict) VALUES(?,?,?,?) ON CONFLICT(item, ref, who) DO UPDATE SET verdict = excluded.verdict, created = CURRENT_TIMESTAMP').bind(item, b.ref, who, b.verdict).run();
+        let who = typeof b.who === 'string' ? b.who.replace(/[\x00-\x1f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) : '', verified = 0;
+        if (typeof b.ref !== 'string' || !/^[ء-ي ]{2,30}\|\d{1,3}:\d{1,3}$/.test(b.ref) || !['allah', 'other', 'unsure', ''].includes(b.verdict)) return json({ error: 'bad input' }, 400);
+        if (env.GOOGLE_CLIENT_ID && /@gmail\.com$/i.test(who)) {   // a Gmail name must be proven by signing in with Google
+          const email = await googleEmail(env, b.idToken);
+          if (!email || email !== who.toLowerCase()) return json({ error: 'login' }, 401);
+          who = email; verified = 1;
+        }
+        if (who.length < 2) return json({ error: 'bad input' }, 400);
+        if (b.verdict) await env.DB.prepare('INSERT INTO validations(item, ref, who, verdict, verified) VALUES(?,?,?,?,?) ON CONFLICT(item, ref, who) DO UPDATE SET verdict = excluded.verdict, verified = excluded.verified, created = CURRENT_TIMESTAMP').bind(item, b.ref, who, b.verdict, verified).run();
         else await env.DB.prepare('DELETE FROM validations WHERE item = ? AND ref = ? AND who = ?').bind(item, b.ref, who).run();   // the volunteer took the answer back
         return json({ ok: true });
       }
@@ -130,7 +148,7 @@ export default {
       if (who) for (const r of (await env.DB.prepare('SELECT ref, verdict FROM validations WHERE item = ? AND who = ?').bind(item, who.slice(0, 60)).all()).results) mine[r.ref] = r.verdict;
       // trusted reviewers (secret REVIEWERS: comma-separated volunteer names): their «allah» / «other» settles a verse alone
       const REV = (env.REVIEWERS || '').split(',').map((x) => x.trim()).filter(Boolean), rev = {};
-      if (REV.length) for (const r of (await env.DB.prepare(`SELECT ref, verdict FROM validations WHERE item = ? AND verdict IN ('allah', 'other') AND who IN (${REV.map(() => '?').join(',')})`).bind(item, ...REV).all()).results) rev[r.ref] = r.verdict;
+      if (REV.length) for (const r of (await env.DB.prepare(`SELECT ref, verdict FROM validations WHERE item = ? AND verdict IN ('allah', 'other') AND who IN (${REV.map(() => '?').join(',')})${env.GOOGLE_CLIENT_ID ? ' AND verified = 1' : ''}`).bind(item, ...REV).all()).results) rev[r.ref] = r.verdict;   // once Google sign-in is on, only signed-in answers are trusted
       return json({ tally, mine, rev });
     }
 
