@@ -14,6 +14,12 @@ async function googleEmail(env, token) {
   const ok = t.aud === env.GOOGLE_CLIENT_ID && String(t.email_verified) === 'true' && /@gmail\.com$/i.test(t.email || '') && +t.exp * 1000 > Date.now();
   return ok ? t.email.toLowerCase() : null;
 }
+const listOf = (v) => (v || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+const adminsOf = (env) => listOf(env.ADMINS || env.REVIEWERS);
+async function trustedOf(env) {   // volunteers an admin has entrusted with judging (#validate)
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS trusted(who TEXT PRIMARY KEY, added_by TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP)').run();
+  return new Set((await env.DB.prepare('SELECT who FROM trusted').all()).results.map((r) => r.who.toLowerCase()));
+}
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
 // a new validation volunteer (#drv page), mailed to the site owner through the EMAIL (send_email) binding
 const b64 = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
@@ -123,6 +129,22 @@ export default {
     // the page's public settings: the Google client id for «Sign in with Google» (empty until it is set up)
     if (url.pathname === '/api/config') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '' });
 
+    // trusted volunteers: only an admin may list, add or remove them
+    if (url.pathname === '/api/trusted') {
+      const b = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
+      const email = b.idToken ? await googleEmail(env, b.idToken) : null;
+      if (!isAdmin(req, env) && !(email && adminsOf(env).includes(email))) return json({ error: 'admin only' }, 401);
+      const T = await trustedOf(env);
+      if (req.method === 'POST') {
+        const who = typeof b.who === 'string' ? b.who.replace(/[\x00-\x1f<>]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 60) : '';
+        if (who.length < 2) return json({ error: 'bad input' }, 400);
+        if (b.remove) await env.DB.prepare('DELETE FROM trusted WHERE who = ?').bind(who).run();
+        else await env.DB.prepare('INSERT OR IGNORE INTO trusted(who, added_by) VALUES(?, ?)').bind(who, email || 'admin').run();
+      }
+      const rows = (await env.DB.prepare('SELECT who, added_by, created FROM trusted ORDER BY created').all()).results;
+      return json({ trusted: rows, admins: adminsOf(env).length });
+    }
+
     // volunteers' judgements on things a person must check (#validate): one row per item, reference and volunteer; a new answer replaces the old
     if (url.pathname === '/api/validate') {
       const item = url.searchParams.get('item') || '';
@@ -138,6 +160,7 @@ export default {
           who = email; verified = 1;
         }
         if (who.length < 2) return json({ error: 'bad input' }, 400);
+        const me = who.toLowerCase(); if (!adminsOf(env).includes(me) && !(await trustedOf(env)).has(me)) return json({ error: 'not trusted' }, 403);
         if (b.verdict) await env.DB.prepare('INSERT INTO validations(item, ref, who, verdict, verified) VALUES(?,?,?,?,?) ON CONFLICT(item, ref, who) DO UPDATE SET verdict = excluded.verdict, verified = excluded.verified, created = CURRENT_TIMESTAMP').bind(item, b.ref, who, b.verdict, verified).run();
         else await env.DB.prepare('DELETE FROM validations WHERE item = ? AND ref = ? AND who = ?').bind(item, b.ref, who).run();   // the volunteer took the answer back
         return json({ ok: true });
@@ -149,7 +172,8 @@ export default {
       // trusted reviewers (secret REVIEWERS: comma-separated volunteer names): their «allah» / «other» settles a verse alone
       const REV = (env.REVIEWERS || '').split(',').map((x) => x.trim()).filter(Boolean), rev = {};
       if (REV.length) for (const r of (await env.DB.prepare(`SELECT ref, verdict FROM validations WHERE item = ? AND verdict IN ('allah', 'other') AND who IN (${REV.map(() => '?').join(',')})${env.GOOGLE_CLIENT_ID ? ' AND verified = 1' : ''}`).bind(item, ...REV).all()).results) rev[r.ref] = r.verdict;   // once Google sign-in is on, only signed-in answers are trusted
-      return json({ tally, mine, rev });
+      const wl = (who || '').trim().toLowerCase(), trusted = !!wl && (adminsOf(env).includes(wl) || (await trustedOf(env)).has(wl));
+      return json({ tally, mine, rev, trusted });
     }
 
     // validation volunteers: kept in D1 (so nothing is lost if mail fails) and emailed to the owner
