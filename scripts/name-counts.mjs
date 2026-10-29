@@ -70,6 +70,9 @@ function confirmedIn(tokens) {   // indices of tokens that are names counted for
   }
   return ok;
 }
+// words that spell a name but are plainly not one: «اليوم الآخر» (the Last Day), and «آخر» without the article
+// («إلهاً آخر» another god, «أيام أُخَر», «قدّم وأخّر»). Of «الآخر», only «هو الأول والآخر» (57:3) is the name.
+const NOT_NAME = { 'الآخر': (t, i) => /^[وفبلك]*اليوم$/.test(t[i - 1] || '') || !/^[وفبلك]*ال/.test(t[i]) };
 const AMB = new Set(amb);
 let ruled = 0;
 for (const name of Object.keys(occ)) {
@@ -79,6 +82,7 @@ for (const name of Object.keys(occ)) {
     const t = textOf(name).find(([vk]) => vk === k)[1], ok = confirmedIn(t);
     const at = t.map((w, i) => (same(w, p) ? i : -1)).filter((i) => i >= 0);
     if (at.length === c && at.every((i) => ok.has(i))) { ruled++; return [k, c, 1]; }   // 1: settled «a name of Allah» by the rule
+    if (NOT_NAME[name] && at.length === c && at.every((i) => NOT_NAME[name](t, i))) { ruled++; return [k, c, -1]; }   // -1: settled «not a name of Allah»
     return [k, c];
   });
 }

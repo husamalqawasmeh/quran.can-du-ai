@@ -2910,11 +2910,11 @@ async function initResearch() {
 /* ---------- التحقق للمتطوعين (#validate): كل ورود لاسم يرد لغير الله أيضاً، يحكم المتطوع هل هو اسم لله في هذه الآية ---------- */
 let vaTrusted = false, vaOcc = null, vaQ = null, vaSur = null, vaTally = {}, vaMine = {}, vaRev = {}, vaName = '', vaShown = 20, vaVerified = null;
 const VA_MIN = 2;   // a verse is decided when at least this many volunteers agree, and more agree than disagree
-let vaRule = new Set();   // verses settled by the rule (names_occ.json, scripts/name-counts.mjs): the name follows «الله» or another of His names
-const vaDec = (ref) => vaRev[ref] || vaDecided(vaTally[ref]) || (vaRule.has(ref) ? 'allah' : null);   // a trusted reviewer's answer, enough volunteers agreeing, or the rule
+let vaRule = new Map();   // verses settled by the rule (names_occ.json, scripts/name-counts.mjs): 'allah' when the name follows «الله» or another of His names, 'other' for «اليوم الآخر» and the like
+const vaDec = (ref) => vaRev[ref] || vaDecided(vaTally[ref]) || vaRule.get(ref) || null;   // a trusted reviewer's answer, enough volunteers agreeing, or the rule
 const vaDecided = (t = {}) => { const a = t.allah || 0, o = t.other || 0; return Math.max(a, o) >= VA_MIN && a !== o ? (a > o ? 'allah' : 'other') : null; };
 async function vaLoad(text) {   // text: also the verses and surah names, for the page itself
-  if (!vaOcc) { vaOcc = await (await fetch('/names_occ.json')).json(); vaRule = new Set(Object.entries(vaOcc).flatMap(([n, l]) => l.filter((x) => x[2]).map(([k]) => n + '|' + k))); }
+  if (!vaOcc) { vaOcc = await (await fetch('/names_occ.json')).json(); vaRule = new Map(Object.entries(vaOcc).flatMap(([n, l]) => l.filter((x) => x[2]).map(([k, , r]) => [n + '|' + k, r > 0 ? 'allah' : 'other']))); }
   if (text && !vaQ) [vaQ, vaSur] = await Promise.all([fetch('/quran_text.json').then((r) => r.json()), fetch('/api/surahs').then((r) => r.json())]);
   const who = prefs ? '&who=' + encodeURIComponent(prefs.uid) : '';
   const t = await (await fetch('/api/validate?item=names' + who)).json(); vaTally = t.tally || {}; vaMine = t.mine || {}; vaRev = t.rev || {}; vaTrusted = !!t.trusted;
@@ -2937,7 +2937,7 @@ async function initValidate() {
       <li>افتح البند، واختر الاسم، ثم احكم على كل آية: هل اللفظ فيها اسم لله أم لغيره؟</li>
       <li>يُحفظ حكمك باسمك المكتوب في <a href="#userconfig">الإعدادات</a>، ويمكنك تغييره أو سحبه في أي وقت.</li>
       <li>تُحسم الآية حين يحكم فيها أحد المراجعين المعتمدين، أو حين يتفق عليها ${nA(VA_MIN)} متطوعين على الأقل ويزيد المتفقون على المخالفين.</li>
-      <li><b>قاعدة:</b> الاسم الذي يأتي بعد لفظ الجلالة مباشرة (مثل «والله»، «بالله»، «لله»، «إن الله»، «وكان الله») أو بعد اسم آخر من أسمائه، يُعدّ اسماً لله: «وكان الله عزيزاً حكيماً». ولا تنطبق إذا كان لفظ الجلالة مضافاً إليه («وعد الله حقاً»، «نصر الله قريب»، «من دون الله وليّاً»). حُسمت بهذه القاعدة <b id="vaRuleN">…</b> آية، ويستطيع المراجعون مخالفتها. وحين تُحسم كل آيات الاسم تُزال علامة <span class="wsign">⚠︎</span> عنه في <a href="#stats">الإحصاءات</a>، ويصير عدده عدد وروده اسماً لله.</li></ul>
+      <li><b>قاعدة:</b> الاسم الذي يأتي بعد لفظ الجلالة مباشرة (مثل «والله»، «بالله»، «لله»، «إن الله»، «وكان الله») أو بعد اسم آخر من أسمائه، يُعدّ اسماً لله: «وكان الله عزيزاً حكيماً». ولا تنطبق إذا كان لفظ الجلالة مضافاً إليه («وعد الله حقاً»، «نصر الله قريب»، «من دون الله وليّاً»). وتُحسم «اليوم الآخر» و«آخر» بلا أداة تعريف («إلهاً آخر»، «أيام أُخَر») بأنها ليست اسماً لله. حُسمت بهذه القاعدة <b id="vaRuleN">…</b> آية، ويستطيع المراجعون مخالفتها. وحين تُحسم كل آيات الاسم تُزال علامة <span class="wsign">⚠︎</span> عنه في <a href="#stats">الإحصاءات</a>، ويصير عدده عدد وروده اسماً لله.</li></ul>
       <p class="hint" id="vaWho"></p></div>
       <details class="lesson vaadm"><summary>👤 إدارة المتطوعين الموثوقين (للمشرف)</summary><div class="vaadmin"><p class="hint">التحكيم متاح للمشرف وللمتطوعين الذين يضيفهم هنا فقط. أدخل كلمة مرور المشرف (تُحفظ على هذا الجهاز).</p><div class="vaadrow"><input class="inp vaatok" type="password" placeholder="كلمة مرور المشرف" autocomplete="current-password"><button type="button" class="btn vaaload">عرض القائمة</button></div><div class="vaadrow"><input class="inp vaanew" placeholder="اسم المتطوع أو بريده كما يكتبه في الإعدادات"><button type="button" class="btn pri vaaadd">إضافة متطوع موثوق</button></div><div class="vaalist"></div></div></details>
       <details class="lesson vaitem" open><summary>١. الأسماء التي ترد في القرآن لغير الله أيضاً (<span class="wsign">⚠︎</span>)</summary><div class="vain"><p class="hint">جارٍ التحميل…</p></div></details>`;
