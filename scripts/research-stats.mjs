@@ -102,7 +102,8 @@ letters.longShort = ALPHA.map((c) => [c, r2(longP(c)), r2(shortP(c)), r2(shortP(
 
 /* ---- 6. words: every word form with its count (17, 19), frequency against length (22), vocabulary richness per surah (18) ---- */
 const forms = new Map(), sw = new Map();
-for (const k of VK) { const s = +k.split(':')[0]; for (const raw of TEXT[k].split(/\s+/)) { const w = [...norm(raw)].filter((c) => AR.test(c)).join(''); if (!w) continue; inc(forms, w); (sw.get(s) || sw.set(s, []).get(s)).push(w); } }
+const asWritten = (w) => w.replace(/[ً-ٰٟـۖ-ۭ]/g, '');   // as scripts/stats.mjs counts words: «ى» stays apart from «ي» (هدى and هدي are different words)
+for (const k of VK) { const s = +k.split(':')[0]; for (const raw of TEXT[k].split(/\s+/)) { const w = [...norm(raw)].filter((c) => AR.test(c)).join(''); if (!w) continue; inc(forms, asWritten(raw)); (sw.get(s) || sw.set(s, []).get(s)).push(w); } }
 const ranked = [...forms].sort((a, b) => b[1] - a[1]);
 writeFileSync('public/words.json', JSON.stringify(ranked));   // the full list, loaded only when the word search is opened
 const lr = ranked.map(([, n], i) => [Math.log(i + 1), Math.log(n)]), slope = (() => { const xs = lr.map((p) => p[0]), ys = lr.map((p) => p[1]), mx = mean(xs), my = mean(ys); let a = 0, b = 0; xs.forEach((x, i) => { a += (x - mx) * (ys[i] - my); b += (x - mx) ** 2; }); return a / b; })();
