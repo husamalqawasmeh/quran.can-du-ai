@@ -231,7 +231,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 @media(max-width:560px){.cr{grid-template-columns:8.5em 1fr 4.5em}.cr .vv{display:none}}
 .wsign{color:var(--warn);font-size:1.4em;font-weight:700;line-height:1;vertical-align:-.12em}
 /* names screen: collapsible group on top + six vertical collapsible columns */
-#t-names .ggroup{margin:8px 0 22px}#t-names details.nolink>summary{cursor:default}#t-names details.nolink>summary::before{content:none}
+#t-names .ggroup{margin:8px 0 22px}.chordw{max-width:680px;margin:6px auto 10px}.chord{width:100%;height:auto;display:block}.chord text{fill:var(--ink);font-size:12px;cursor:default}.chord .rb{opacity:.6;transition:opacity .15s}.chord .rb:hover{opacity:.95}.chord.hl .rb{opacity:.06}.chord.hl .rb.on{opacity:.9}.chord.hl g:not(.on) text{opacity:.35}#t-names details.nolink>summary{cursor:default}#t-names details.nolink>summary::before{content:none}
 #t-names>.caveat{margin:0 0 12px}
 #t-names .ggroup>.mgrid{margin-top:8px}#t-names .ggroup>#n99Note{margin:8px 0 0}#t-names .qgroup>.ncols{margin-top:12px}#t-names .qgroup{margin-bottom:0}#t-names .ggroup>#countsNote{margin:10px 0 0}
 #t-names .ggroup>summary,#t-names .gcol>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;font-weight:700;color:var(--accent);font-size:1.1rem;padding:8px 4px}
@@ -1719,9 +1719,26 @@ async function initStats() {
       ] : [],
     };
   })() : null;
+  const chordSvg = (P) => {   // the pairs as a circle: an arc per name (its length = how often it is in a pair), a ribbon per pair (its width = how often, both orders together)
+    const L = new Map(), D = new Map(), W = new Map(), add = (m, k, n) => m.set(k, (m.get(k) || 0) + n);
+    for (const [p, n] of P) { const [a, b] = p.split(' '); add(L, [a, b].sort().join(' '), n); D.set(p, n); add(W, a, n); add(W, b, n); }
+    const nodes = [...W.keys()].sort((x, y) => W.get(y) - W.get(x)), R = 230, TAU = 2 * Math.PI, GAP = 0.008, MIN = 0.06;   // MIN: room for a label
+    let k = 0; for (let it = 0, small = new Set(); it < 30; it++) { const big = nodes.filter((t) => !small.has(t)); k = (TAU - small.size * MIN - big.length * GAP) / big.reduce((a, t) => a + W.get(t), 0); big.forEach((t) => W.get(t) * k + GAP < MIN && small.add(t)); }
+    const pos = new Map(); let at = 0;
+    nodes.forEach((t, i) => { const w = W.get(t) * k, slot = Math.max(MIN, w + GAP); pos.set(t, { a0: at + (slot - w) / 2, mid: at + slot / 2, cur: at + (slot - w) / 2, col: `hsl(${Math.round((i * 360) / nodes.length)} 65% 58%)` }); at += slot; });
+    const pt = (r, a) => `${(r * Math.sin(a)).toFixed(1)},${(-r * Math.cos(a)).toFixed(1)}`;
+    const links = [...L].sort((x, y) => y[1] - x[1]).map(([p, n]) => { const [a, b] = p.split(' '); return { a, b, n }; });
+    for (const t of nodes) links.filter((l) => l.a === t || l.b === t).sort((x, y) => pos.get(x.a === t ? x.b : x.a).mid - pos.get(y.a === t ? y.b : y.a).mid).forEach((l) => { const P0 = pos.get(t), s0 = P0.cur; P0.cur += l.n * k; l[l.a === t ? 'sa' : 'sb'] = [s0, P0.cur]; });
+    const rib = links.map(({ a, b, n, sa, sb }) => { const big = W.get(a) >= W.get(b) ? a : b, ord = [`${a} ${b}`, `${b} ${a}`].filter((x) => D.get(x)).map((x) => `«${x}» ${N(D.get(x))}`).join('، ');
+      return `<path class="rb" data-a="${esc(a)}" data-b="${esc(b)}" fill="${pos.get(big).col}" d="M${pt(R, sa[0])}A${R},${R} 0 0 1 ${pt(R, sa[1])}Q0,0 ${pt(R, sb[0])}A${R},${R} 0 0 1 ${pt(R, sb[1])}Q0,0 ${pt(R, sa[0])}Z"><title>${esc(ord)}</title></path>`; }).join('');
+    const arcs = nodes.map((t) => { const { a0, mid, col } = pos.get(t), a1 = a0 + W.get(t) * k, deg = (mid * 180) / Math.PI, right = mid < Math.PI;
+      return `<g data-n="${esc(t)}"><title>${esc(t)}: ${N(W.get(t))}</title><path fill="${col}" d="M${pt(R + 2, a0)}A${R + 2},${R + 2} 0 0 1 ${pt(R + 2, a1)}L${pt(R + 12, a1)}A${R + 12},${R + 12} 0 0 0 ${pt(R + 12, a0)}Z"/><text transform="rotate(${(right ? deg - 90 : deg + 90).toFixed(1)}) translate(${right ? R + 17 : -(R + 17)},0)" text-anchor="${right ? 'start' : 'end'}" dominant-baseline="central">${esc(t)}</text></g>`; }).join('');
+    return `<div class="chordw"><svg class="chord" viewBox="-345 -345 690 690" direction="ltr" role="img" aria-label="مخطط دائري لأزواج الأسماء">${rib}${arcs}</svg></div><p class="hint">كل قوس اسمٌ، وطوله بعدد مرات وروده في زوج؛ وكل شريط زوجٌ، وعرضه بعدد مرات مجيء الاسمين متتاليين (بالترتيبين معاً). مرّر المؤشر على اسم لتظهر أزواجه.</p>`;
+  };
   const pairsPanel = () => {   // names of Allah that come one right after the other, most frequent first
     const SN = Object.fromEntries(S.surahs.map((x) => [x.id, x.ar])), key = ([su, c, ay]) => `<button type="button" class="chip npc" data-k="${ay.map((a) => su + ':' + a).join(',')}"><span>${esc(SN[su] || su)}</span><b>${N(c)}</b></button>`;
     return `<p class="how">كل اسمين من أسماء الله الحسنى جاءا متتاليين في الآية («عليم حكيم»، «غفور رحيم»، «الرحمن الرحيم»)، بترتيبهما في الآية، وعدد المرات، والسور التي جاءا فيها مع عدد المرات في كل سورة (اضغط السورة لترى الآيات). وقد يصف الزوجُ أحياناً غيرَ الله، كقوله عن النبي ﷺ: «بالمؤمنين رءوف رحيم».</p>` +
+      chordSvg(NP) +
       `<div class="wsearch npsearch"><div class="sfield wsf"><input class="inp npq" placeholder="ابحث عن اسم أو سورة…" aria-label="ابحث عن اسم أو سورة"><button type="button" class="gbtn npgo" title="ابحث" aria-label="ابحث"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15.5" y1="15.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div></div>` +
       stab(['الاسمان', 'المرات', 'السور'], NP.map(([p, n, ss]) => [[`<b>${esc(p.replace(' ', ' · '))}</b>`, p], [N(n), n], [`<div class="npx">${ss.map(key).join('')}</div>`, ss.length]]), 1, 'desc', 'npairs');
   };
@@ -2632,6 +2649,10 @@ function panelize(list, is = (d) => d.classList.contains('lesson')) {
   }, true);
   addEventListener('resize', () => list.querySelectorAll('details[open]').forEach((d) => d._p && is(d) && place(d)));
 }
+addEventListener('mouseover', (e) => {   // the pairs circle (#stats): pointing at a name shows only its pairs
+  const g = e.target.closest?.('.chord g[data-n]'), svg = g?.closest('.chord'), n = g?.dataset.n;
+  document.querySelectorAll('.chord').forEach((c) => { const on = c === svg; c.classList.toggle('hl', on); c.querySelectorAll('.rb').forEach((r) => r.classList.toggle('on', on && (r.dataset.a === n || r.dataset.b === n))); c.querySelectorAll('g[data-n]').forEach((x) => x.classList.toggle('on', on && (x === g || [...c.querySelectorAll('.rb.on')].some((r) => r.dataset.a === x.dataset.n || r.dataset.b === x.dataset.n)))); });
+});
 const PANEL_TOPICS = ['numbers', 'jannah', 'jannah2', 'jesus', 'qiyamah', 'hafiz', 'names', 'places', 'food', 'akhlaq', 'family', 'water', 'falak', 'animals', 'others', 'jews', 'duasp', 'duasb', 'prophets'];      // topic pages whose boxes open as a full-width panel, verses as «سورة … — الآية …: text»
 const topicInit = {};
 async function initTopic(name) {
