@@ -1812,7 +1812,7 @@ async function initStats() {
     (P ? panel('أنواع الكلمات (أسماء، صفات، أفعال)', posPanel(), false) : '') +
     (VB ? panel(`الأفعال الواردة في القرآن بحسب وزنها الصرفي`, verbPanel(), false) : '') +
     (NP ? panel('أسماء الله المتتالية في الآيات - 1', pairsPanel(), false) : '') +
-    panel('2 - أسماء الله المتتالية في الآيات', '<iframe src="/names8finalf.html" title="احصائية الاسماء الحسنى المتتالية في القرآن الكريم" loading="lazy" onload="const f = this, b = f.contentDocument.body; new ResizeObserver(() => b.scrollHeight && (f.style.height = b.scrollHeight + \'px\')).observe(b)" style="display:block;width:100%;aspect-ratio:4/5;border:0;border-radius:12px"></iframe>', false) +   // a standalone page with its own styles, so it sits in a frame
+    panel('2 - أسماء الله المتتالية في الآيات', '<iframe src="/names8finalf" title="احصائية الاسماء الحسنى المتتالية في القرآن الكريم" loading="lazy" onload="const f = this, b = f.contentDocument.body; new ResizeObserver(() => b.scrollHeight && (f.style.height = b.scrollHeight + \'px\')).observe(b)" style="display:block;width:100%;aspect-ratio:4/5;border:0;border-radius:12px"></iframe>', false) +   // a standalone page with its own styles, so it sits in a frame
     (RJ ? panel('الصرف والنحو للسور المكية والمدنية (لكل 1000 كلمة)', gramPanel(), false) : '') +
     (RJ ? panel('الحروف: الإنتروبيا وأول الكلمة وآخرها والأزواج المتتالية', letPanel(), false) : '') +
     (VB ? panel('الأفعال الواردة في القرآن بحسب الظرف الزمني', tenseBox().replace('<details class="pg pc-verb">', '<details class="pg pc-verb" open>'), false) : '') +
