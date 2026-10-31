@@ -105,7 +105,7 @@ const pairs = new Map();
 verses.forEach(([k, t], vi) => {
   const tH = versesH[vi][1]; if (tH.length !== t.length) return;   // hamza kept or not, the words line up
   for (let i = 1; i < t.length; i++) {
-    const a = nameAt(t[i - 1], tH[i - 1]), b = nameAt(t[i], tH[i]); if (!a || !b || a === 'الله' || b === 'الله' || a === b) continue;
+    const a = nameAt(t[i - 1], tH[i - 1]), b = nameAt(t[i], tH[i]); if (!a || !b || a === 'الله' || b === 'الله' || a === b || NOT_NAME[a]?.(t, i - 1) || NOT_NAME[b]?.(t, i)) continue;   // 10:10 «سلام وآخر دعواهم» is not a pair
     const key = a + ' ' + b, e = pairs.get(key) || pairs.set(key, { n: 0, s: {} }).get(key), [su, ay] = k.split(':').map(Number), x = (e.s[su] ||= [0, []]); e.n++; x[0]++; if (!x[1].includes(ay)) x[1].push(ay);
   }
 });
