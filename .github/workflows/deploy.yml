@@ -1,0 +1,19 @@
+# Deploys the site (worker + public/) to Cloudflare on every push to main.
+# Needs the repo secret CLOUDFLARE_API_TOKEN (Cloudflare → My Profile → API Tokens → "Edit Cloudflare Workers" template, plus D1 Edit).
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency: deploy
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 5e64f46b23938b87898101fd640a3b95
+          wranglerVersion: '4.156.0'
+          command: deploy
