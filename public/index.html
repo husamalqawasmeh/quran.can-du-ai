@@ -573,7 +573,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 <section class="view" id="v-names" hidden>
   <h1>أسماء الله الحسنى في القرآن</h1>
   <p class="sub">أسماء الله الحسنى التي وردت بلفظها في القرآن الكريم، مع معنى مختصر لكل اسم وموضع منها. وبعض ما هنا أوصاف أو أسماء مضافة وردت في القرآن (مثل: أرحم الراحمين، وشديد العقاب)، وقد عدّ بعض العلماء كثيراً منها من الأسماء.</p>
-  <div class="caveat" id="n99Note">يتداول الناس قائمة من ٩٩ اسماً (وهي المذكورة في رواية الترمذي). والحديث الثابت في الصحيحين: <span style="color:var(--title);font-weight:600">«إن لله تسعة وتسعين اسماً من أحصاها دخل الجنة»</span>،<br>ويرى كثير من المحدثين أن تعداد الأسماء في تلك الرواية ليس من كلام النبي ﷺ، وأن أسماء الله لا تنحصر في عدد.<br>وقد فحصتُ كل اسم من القائمة المتداولة؛ فما ورد لفظه في القرآن بنصّه عُرض في المجموعات الأولى، وما لم يرد لفظه اسماً فيه جُمع أدناه مع بيان ما ورد في القرآن بمعناه.</div>
+  <div class="caveat" id="n99Note">يتداول الناس قائمة من ٩٩ اسماً (وهي المذكورة في رواية الترمذي). والحديث الثابت في الصحيحين: <span style="color:var(--title);font-weight:600">«إن لله تسعة وتسعين اسماً من أحصاها دخل الجنة»</span>،<br>ويرى كثير من المحدثين أن تعداد الأسماء في تلك الرواية ليس من كلام النبي ﷺ، وأن أسماء الله لا تنحصر في عدد.<br>وقد فحصتُ كل اسم من القائمة المتداولة؛ <a href="#" class="toInQ">فما ورد لفظه في القرآن بنصّه عُرض أدناه لاحقاً في المجموعة الثانية</a>، وما لم يرد لفظه اسماً فيه جُمع أدناه مع بيان ما ورد في القرآن بمعناه.</div>
   <div class="caveat" id="countsNote"><b>■ ملاحظة عن الأعداد على البطاقات:</b><br>العدد هو مرات ورود لفظ الاسم في نص القرآن (بالألف واللام أو بدونهما، ومع حروف «و، ف، ب، ل، ك» الملتصقة بأوله)، والأسماء المركّبة تُعدّ بورود العبارة كاملة. والعدّ لا يفرّق بين ما يُراد به الله وغيره، فعلامة <span class="wsign">⚠︎</span> على الأسماء التي ترد في القرآن لغير الله أيضاً (كالملك والحق والحي والمؤمن والعظيم)، فعددها يزيد عن عدد ورودها اسماً لله. وهذه العلامة من اجتهادي في مراجعة الاستعمال القرآني. والجدول الكامل للأعداد في شاشة <a href="#stats" style="color:var(--accent)">«إحصاءات لغوية لنص القرآن»</a>.</div>
   <div id="t-names" class="mir"></div>
 </section>
@@ -2692,6 +2692,8 @@ async function initTopic(name) {
     if (countsNote) inQ.append(countsNote);
     inQ.append(cols);
     list.innerHTML = ''; list.append(top, inQ);
+    const toInQ = n99 && n99.querySelector('.toInQ');   // the link in the note opens and scrolls to the names found in the Quran
+    if (toInQ) toInQ.onclick = (e) => { e.preventDefault(); inQ.open = true; inQ.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     if (AF) list.insertAdjacentHTML('beforeend', `<p class="how afn afb">* ${afNote()}</p>`);   // the other written forms of «الله», as a note at the bottom
   }
   list.addEventListener('toggle', async (e) => {
