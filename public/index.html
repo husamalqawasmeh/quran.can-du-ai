@@ -1811,7 +1811,7 @@ async function initStats() {
     panel('عدد مرات ورود أسماء الله الحسنى في القرآن', '<div id="namesCounts"><p class="hint">جارٍ التحميل…</p></div>', false) +
     (P ? panel('أنواع الكلمات (أسماء، صفات، أفعال)', posPanel(), false) : '') +
     (VB ? panel(`الأفعال الواردة في القرآن بحسب وزنها الصرفي`, verbPanel(), false) : '') +
-    (NP ? panel('أسماء الله المتتالية في الآيات', pairsPanel(), false) : '') +
+    (NP ? panel('أسماء الله المتتالية في الآيات - 1', pairsPanel(), false) : '') +
     (RJ ? panel('الصرف والنحو للسور المكية والمدنية (لكل 1000 كلمة)', gramPanel(), false) : '') +
     (RJ ? panel('الحروف: الإنتروبيا وأول الكلمة وآخرها والأزواج المتتالية', letPanel(), false) : '') +
     (VB ? panel('الأفعال الواردة في القرآن بحسب الظرف الزمني', tenseBox().replace('<details class="pg pc-verb">', '<details class="pg pc-verb" open>'), false) : '') +
