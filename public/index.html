@@ -233,7 +233,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 /* names screen: collapsible group on top + six vertical collapsible columns */
 #t-names .ggroup{margin:8px 0 22px}.chordw{max-width:680px;margin:6px auto 10px}.chord{width:100%;height:auto;display:block}.chord text{fill:var(--ink);font-size:12px;cursor:default}.chord .rb{opacity:.6;transition:opacity .15s}.chord .rb:hover{opacity:.95}.chord.hl .rb{opacity:.06}.chord.hl .rb.on{opacity:.9}.chord.hl g:not(.on) text{opacity:.35}#t-names details.nolink>summary{cursor:default}#t-names details.nolink>summary::before{content:none}
 #t-names>.caveat{margin:0 0 12px}
-#t-names .ggroup>.mgrid{margin-top:8px}#t-names .ggroup>#n99Note{margin:8px 0 0}#t-names .qgroup>.ncols{margin-top:12px}#t-names .qgroup{margin-bottom:0}#t-names .ggroup>#countsNote{margin:10px 0 0}
+#t-names .ggroup>.mgrid{margin-top:8px}#t-names .ggroup .nogap{grid-column:1/-1;height:10px}#t-names .ggroup>#n99Note{margin:8px 0 0}#t-names .qgroup>.ncols{margin-top:12px}#t-names .qgroup{margin-bottom:0}#t-names .ggroup>#countsNote{margin:10px 0 0}
 #t-names .ggroup>summary,#t-names .gcol>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;font-weight:700;color:var(--accent);font-size:1.1rem;padding:8px 4px}
 #t-names .ggroup>summary::-webkit-details-marker,#t-names .gcol>summary::-webkit-details-marker{display:none}
 #t-names .ggroup>summary::before,#t-names .gcol>summary::before{content:"◀";font-size:.75em;flex:none}#t-names .ggroup>summary::before{font-size:1.15em}
@@ -2602,30 +2602,30 @@ TOPICS.names.items.push(
     { g: 6, t: "المقدِّم", note: "", keys: [] },
     { g: 6, t: "المؤخِّر", note: "", keys: [] },
     { g: 6, t: "المانع", note: "", keys: [] },
-    { g: 6, t: "القابض", note: "", keys: [] },
-    { g: 6, t: "الباسط", note: "", keys: [] },
-    { g: 6, t: "الرافع", note: "", keys: [] },
-    { g: 6, t: "المعز", note: "", keys: [] },
-    { g: 6, t: "المذل", note: "", keys: [] },
-    { g: 6, t: "الحَكَم", note: "", keys: [] },
-    { g: 6, t: "الجليل", note: "", keys: [] },
-    { g: 6, t: "الباعث", note: "", keys: [] },
-    { g: 6, t: "المحصي", note: "", keys: [] },
-    { g: 6, t: "المبدئ", note: "", keys: [] },
-    { g: 6, t: "المعيد", note: "", keys: [] },
-    { g: 6, t: "المحيي", note: "", keys: [] },
-    { g: 6, t: "المميت", note: "", keys: [] },
-    { g: 6, t: "الماجد", note: "", keys: [] },
-    { g: 6, t: "الوالي", note: "", keys: [] },
-    { g: 6, t: "المنتقم", note: "", keys: [] },
-    { g: 6, t: "المقسط", note: "", keys: [] },
-    { g: 6, t: "المغني", note: "", keys: [] },
-    { g: 6, t: "الضار", note: "", keys: [] },
-    { g: 6, t: "النافع", note: "", keys: [] },
-    { g: 6, t: "الباقي", note: "", keys: [] },
-    { g: 6, t: "الوارث", note: "", keys: [] },
-    { g: 6, t: "الرشيد", note: "", keys: [] },
-    { g: 6, t: "الصبور", note: "", keys: [] },
+    { g: 6, t: "القابض", note: "لم يرد «القابض» اسماً في القرآن؛ ورد معناه فعلاً: «والله يقبض ويبسط وإليه ترجعون».", keys: ['2:245'] },
+    { g: 6, t: "الباسط", note: "لم يرد «الباسط» اسماً؛ ورد معناه فعلاً في قوله: «والله يقبض ويبسط».", keys: ['2:245'] },
+    { g: 6, t: "الرافع", note: "لم يرد «الرافع» اسماً؛ ورد قوله تعالى لعيسى: «إني متوفيك ورافعك إليّ».", keys: ['3:55'] },
+    { g: 6, t: "المعز", note: "لم يرد اسماً؛ ورد فعلاً: «وتعز من تشاء وتذل من تشاء».", keys: ['3:26'] },
+    { g: 6, t: "المذل", note: "لم يرد اسماً؛ ورد فعلاً: «وتعز من تشاء وتذل من تشاء».", keys: ['3:26'] },
+    { g: 6, t: "الحَكَم", note: "لم يرد «الحَكَم» اسماً لله بلفظه؛ ورد قوله: «أفغير الله أبتغي حكماً».", keys: ['6:114'] },
+    { g: 6, t: "الجليل", note: "لم يرد «الجليل» لفظاً؛ ورد «ذو الجلال والإكرام».", keys: ['55:27'] },
+    { g: 6, t: "الباعث", note: "لم يرد «الباعث» اسماً؛ ورد فعلاً: «وأن الله يبعث من في القبور».", keys: ['22:7'] },
+    { g: 6, t: "المحصي", note: "لم يرد «المحصي» اسماً؛ ورد فعلاً: «وأحصى كل شيء عدداً».", keys: ['72:28'] },
+    { g: 6, t: "المبدئ", note: "لم يرد «المبدئ» اسماً؛ ورد فعلاً: «إنه هو يبدئ ويعيد».", keys: ['85:13'] },
+    { g: 6, t: "المعيد", note: "لم يرد «المعيد» اسماً؛ ورد فعلاً: «إنه هو يبدئ ويعيد».", keys: ['85:13'] },
+    { g: 6, t: "المحيي", note: "ورد مضافاً لا مفرداً: «إن ذلك لمحيي الموتى»؛ وكثيراً ما ورد فعلاً: «يحيي ويميت».", keys: ['30:50'] },
+    { g: 6, t: "المميت", note: "لم يرد «المميت» اسماً؛ ورد فعلاً: «هو يحيي ويميت».", keys: ['40:68'] },
+    { g: 6, t: "الماجد", note: "لم يرد «الماجد» لفظاً؛ الوارد «المجيد»، وهو في قائمة الأسماء الواردة أعلاه.", keys: ['85:15'] },
+    { g: 6, t: "الوالي", note: "لم يرد «الوالي» لله اسماً؛ ورد نفي «وال» عن غيره: «وما لهم من دونه من والٍ».", keys: ['13:11'] },
+    { g: 6, t: "المنتقم", note: "لم يرد «المنتقم» مفرداً؛ ورد «ذو انتقام» (14:47) و«إنا من المجرمين منتقمون» (32:22).", keys: ['32:22'] },
+    { g: 6, t: "المقسط", note: "لم يرد «المقسط» مفرداً اسماً لله؛ ورد أن الله «يحب المقسطين».", keys: ['5:42'] },
+    { g: 6, t: "المغني", note: "لم يرد «المغني» اسماً؛ ورد فعلاً: «فسوف يغنيكم الله من فضله».", keys: ['9:28'] },
+    { g: 6, t: "الضار", note: "لم يرد «الضار» اسماً؛ ورد معناه: «وإن يمسسك الله بضر فلا كاشف له إلا هو».", keys: ['6:17'] },
+    { g: 6, t: "النافع", note: "لم يرد «النافع» اسماً؛ ورد معناه: «وإن يمسسك بخير فهو على كل شيء قدير».", keys: ['6:17'] },
+    { g: 6, t: "الباقي", note: "لم يرد «الباقي» اسماً؛ ورد معناه: «ويبقى وجه ربك ذو الجلال والإكرام».", keys: ['55:27'] },
+    { g: 6, t: "الوارث", note: "لم يرد مفرداً لله؛ ورد بصيغة الجمع: «ونحن الوارثون» (وفي 21:89: «وأنت خير الوارثين»).", keys: ['15:23'] },
+    { g: 6, t: "الرشيد", note: "لم يرد «الرشيد» وصفاً لله؛ ورد في الآية على لسان قوم شعيب وصفاً له: «إنك لأنت الحليم الرشيد».", keys: ['11:87'] },
+    { g: 6, t: "الصبور", note: "لم يرد «الصبور» وصفاً لله في القرآن؛ ورد: «إن الله مع الصابرين».", keys: ['2:153'] },
 );
 /* numbers page: number words inside a verse are coloured */
 const NUMW = /^(?:[وفبلك]|ال|لل|وال|فال|بال)?(?:واحد|وحد|احد|اثنت|اثن|ثنت|ثلث|ثلاث|اربع|خمس|ست|سبع|ثمني|ثمن|ثمان|تسع|عشر|مائت|مائ|ميه|مايه|الف|الاف|نصف|ربع|سدس|بضع|زوج|شهرين|شهران)(?:ه|ا|ي|ان|ين|ون|ات)?$/;
@@ -2684,8 +2684,9 @@ async function initTopic(name) {
     const countsNote = document.getElementById('countsNote');            // order: note about the 99 names, THEN this collapsible group, THEN the note about the counts, then the columns
     const top = make(extra, 'ggroup', false), n99 = document.getElementById('n99Note');      // the note about the 99-name list goes inside this group, above its cards
     if (n99) top.querySelector('summary').after(n99);
-    top.querySelectorAll('details.lesson').forEach((d) => { d.classList.add('nolink'); d.querySelector('summary').tabIndex = -1; d.querySelectorAll(':scope>div').forEach((c) => c.remove()); });   // names not in the Quran: no verses, so the boxes do not open
+    top.querySelectorAll('details.lesson').forEach((d) => { if (T.items[+d.dataset.i].keys.length) return; d.classList.add('nolink'); d.querySelector('summary').tabIndex = -1; d.querySelectorAll(':scope>div').forEach((c) => c.remove()); });   // names not in the Quran: no verses, so the boxes do not open
     top.addEventListener('click', (e) => { if (e.target.closest('.nolink>summary')) e.preventDefault(); });
+    const lastNo = [...top.querySelectorAll('.nolink')].pop(); if (lastNo) lastNo.insertAdjacentHTML('afterend', '<div class="nogap"></div>');   // a gap between the boxes without verses and those with them
     const inQ = document.createElement('details');                                // the names found in the Quran: one collapsible box with the note about the counts and the six columns
     inQ.className = 'ggroup qgroup'; inQ.open = true;
     inQ.innerHTML = `<summary><span>📖</span>الأسماء الواردة بلفظها في القرآن <small class="cnt">(${nA(T.items.filter((m) => m.g < 6).length)})</small></summary>`;
