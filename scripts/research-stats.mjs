@@ -101,11 +101,11 @@ const longP = third(bySize.slice(0, 38)), shortP = third(bySize.slice(-38));
 letters.longShort = ALPHA.map((c) => [c, r2(longP(c)), r2(shortP(c)), r2(shortP(c) - longP(c))]).sort((a, b) => Math.abs(b[3]) - Math.abs(a[3])).slice(0, 10);
 
 /* ---- 6. words: every word form with its count (17, 19), frequency against length (22), vocabulary richness per surah (18) ---- */
-const forms = new Map(), sw = new Map();
+const forms = new Map(), sw = new Map(), at = new Map();   // at: the verse of each form (kept for the words found once)
 const asWritten = (w) => w.replace(/[ً-ٰٟـۖ-ۭ]/g, '');   // as scripts/stats.mjs counts words: «ى» stays apart from «ي» (هدى and هدي are different words)
-for (const k of VK) { const s = +k.split(':')[0]; for (const raw of TEXT[k].split(/\s+/)) { const w = [...norm(raw)].filter((c) => AR.test(c)).join(''); if (!w) continue; inc(forms, asWritten(raw)); (sw.get(s) || sw.set(s, []).get(s)).push(w); } }
+for (const k of VK) { const s = +k.split(':')[0]; for (const raw of TEXT[k].split(/\s+/)) { const w = [...norm(raw)].filter((c) => AR.test(c)).join(''); if (!w) continue; inc(forms, asWritten(raw)); at.set(asWritten(raw), k); (sw.get(s) || sw.set(s, []).get(s)).push(w); } }
 const ranked = [...forms].sort((a, b) => b[1] - a[1]);
-writeFileSync('public/words.json', JSON.stringify(ranked));   // the full list, loaded only when the word search is opened
+writeFileSync('public/words.json', JSON.stringify(ranked.map(([w, n]) => (n === 1 ? [w, n, at.get(w)] : [w, n]))));   // the full list (a word found once with its verse key), loaded only when the word search is opened
 const lr = ranked.map(([, n], i) => [Math.log(i + 1), Math.log(n)]), slope = (() => { const xs = lr.map((p) => p[0]), ys = lr.map((p) => p[1]), mx = mean(xs), my = mean(ys); let a = 0, b = 0; xs.forEach((x, i) => { a += (x - mx) * (ys[i] - my); b += (x - mx) ** 2; }); return a / b; })();
 const band = (a) => r2(mean(a.map(([w]) => [...w].length)));
 const words2 = { forms: ranked.length, hapax: ranked.filter(([, n]) => n === 1).length, zipf: r2(slope),
