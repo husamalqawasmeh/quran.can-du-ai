@@ -33,8 +33,9 @@ button,input,select{font-family:inherit}
 /* home tiles = dad cards */
 .home{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:18px 12px}
 .home .tile,.home .tile.half,.home .tile.quarter{grid-column:auto}.home .tile.newrow{grid-column-start:1}
+.home .tile.wide{grid-column:span 2}.home .tile.wide.newrow{grid-column:1/span 2}
 @media(max-width:1000px){.home{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.home{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.home{grid-template-columns:1fr}}
+@media(max-width:480px){.home{grid-template-columns:1fr}.home .tile.wide,.home .tile.wide.newrow{grid-column:auto}}
 .tile,.card,.aib,.col,.vrow{background:var(--card);border:1px solid var(--stat-line);border-radius:14px;box-shadow:var(--shadow)}
 .tile{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-content:center;padding:10px 16px;min-height:96px;text-decoration:none;color:var(--ink)}
 .tile .ic{grid-column:1;font-size:1.5rem;line-height:1.2;margin:0}
@@ -317,11 +318,11 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
     <a class="tile" href="#animals"><div class="ic">🐜</div><b>الحيوان في القرآن</b><span>النمل والنحل والهدهد والإبل وغيرها مع آياتها</span></a>
     <a class="tile" href="#places"><div class="ic">📍</div><b>الأماكن في القرآن</b><span>مكة والمدينة ومصر ومدين والطور، وأسماء الجنة والنار، مع آياتها</span></a>
     <a class="tile" href="#food"><div class="ic">🍞</div><b>الطعام في القرآن</b><span>الثمار والحبوب واللحوم والحلال والحرام وموائد الأنبياء مع آياتها</span></a>
-    <a class="tile" href="#numbers"><div class="ic">🔢</div><b>الأعداد في القرآن</b><span>الأعداد المذكورة في الآيات: أين وردت وفي أي سياق</span></a>
-    <a class="tile quarter" href="#stats"><div class="ic">📊</div><b>إحصاءات لغوية لنص القرآن</b><span>عدد الكلمات والحروف وأكثرها تكراراً وغير ذلك</span></a>
     <a class="tile" href="#management"><div class="ic">🧭</div><b>دروس الإدارة في القرآن</b><span>القيادة والتخطيط والشورى والأمانة من آياته وقصصه</span></a>
     <a class="tile" href="#water"><div class="ic">💧</div><b>الماء والروح والحياة</b><span>من الماء كل شيء حي، ونفخ الروح، وأطوار الحياة والبعث، مع آياتها</span></a>
     <a class="tile" href="#falak"><div class="ic">🌙</div><b>الفلك</b><span>الشمس والقمر والنجوم والسماء والليل والنهار، مع آياتها</span></a>
+    <a class="tile wide newrow" href="#numbers"><div class="ic">🔢</div><b>الأعداد في القرآن</b><span>الأعداد المذكورة في الآيات: أين وردت وفي أي سياق</span></a>
+    <a class="tile wide" href="#stats"><div class="ic">📊</div><b>إحصاءات لغوية لنص القرآن</b><span>عدد الكلمات والحروف وأكثرها تكراراً وغير ذلك</span></a>
     <a class="tile dev" href="#validate"><div class="ic">✅</div><b>التحقق: صفحة المتطوعين</b><span>بنود تحتاج حكماً من أهل العلم، أولها الأسماء التي ترد لغير الله أيضاً</span></a>
     <div class="tile plan dev" aria-disabled="true"><b>...</b><span>قيد التخطيط</span></div>
     <div class="tile soon" aria-disabled="true"><div class="ic">⏳</div><b>المزيد قريباً</b><span>موضوعات أخرى ستُضاف قريباً إن شاء الله</span></div>
