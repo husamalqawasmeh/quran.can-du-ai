@@ -275,7 +275,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .pstack{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:10px 0 6px}.pstack i{display:block;height:100%;background:var(--cc)}
 .pleg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;margin-bottom:14px}.pleg span{display:inline-flex;align-items:center;gap:6px}.pleg b{width:12px;height:12px;border-radius:3px;background:var(--cc);display:inline-block}
 .pg{border:2px solid var(--cc);border-radius:14px;padding:10px 14px 8px;margin:0 0 14px;background:color-mix(in srgb,var(--cc) 7%,var(--panel))}
-.pgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.pgh h4{margin:0;color:var(--cc);font-size:1.2rem}
+.pgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.pgh h4{margin:0;color:var(--cc);font-size:1.2rem}.lsub{margin-inline-start:40px}.lsub>.pgh h4{font-size:1rem}
 .pgn{text-align:end;white-space:nowrap}.pgn b{font-size:1.3rem}.pgn small{display:block;color:var(--muted);font-size:.78rem}.pgn.inl{display:flex;align-items:baseline;gap:6px}.kpi span.kwarn,.kwarn{display:inline;color:#d4a017;font-size:1.35em;line-height:1;vertical-align:-.1em}.pgn.inl small{display:inline}
 .pgd{margin:2px 0 8px;color:var(--muted);font-size:.88rem}
 .pr{display:grid;grid-template-columns:minmax(14em,24em) 1fr 9em;gap:12px;align-items:center;padding:6px 0;border-top:1px solid color-mix(in srgb,var(--cc) 25%,transparent)}
@@ -1641,9 +1641,9 @@ async function initStats() {
     const L = RJ.letters, byN = (a) => [...a].sort((p, q) => q[1] - p[1]);
     const lt = (head, a, id) => stab([head, 'المرات', 'النسبة'], byN(a).map(([c, n, p]) => [[`<b>${c}</b>`, c], [N(n), n], [N(p) + '٪', p]]), 1, 'desc', id);
     return `<p class="how"><b>إنتروبيا الحروف:</b> ${N(L.entropy)} بت للحرف، من حد أقصى ${N(L.maxEntropy)} لو تساوت الحروف الـ${N(L.alphabet)} في تكرارها. والفرق يعني أن بعض الحروف أكثر وروداً بكثير من غيرها (الألف واللام خاصة)، وهذا معتاد في العربية.</p>` +
-      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر الحروف في أول الكلمة وآخرها</h4></summary><div class="rs2">${lt('أول الكلمة', L.first, 'lfirst')}${lt('آخر الكلمة', L.last, 'llast')}</div></details>` +
-      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر الأزواج المتتالية من الحروف داخل الكلمة</h4></summary>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>` +
-      `<details class="pg pc-top"><summary class="pgh"><h4>أكثر السلاسل الثلاثية من الحروف</h4></summary>${lt('السلسلة', L.tri, 'ltri')}</details>`;
+      `<details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر الحروف في أول الكلمة وآخرها</h4></summary><div class="rs2">${lt('أول الكلمة', L.first, 'lfirst')}${lt('آخر الكلمة', L.last, 'llast')}</div></details>` +
+      `<details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر الأزواج المتتالية من الحروف داخل الكلمة</h4></summary>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>` +
+      `<details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر السلاسل الثلاثية من الحروف</h4></summary>${lt('السلسلة', L.tri, 'ltri')}</details>`;
   };
   const gramPanel = () => {   // morphology and syntax markers, per 1,000 words in Makki and Madani surahs
     const G = RJ.grammar, ratio = (a, b) => (Math.min(a, b) ? Math.max(a, b) / Math.min(a, b) : 0);
