@@ -1989,8 +1989,8 @@ async function initStats() {
     const nrm = (t) => t.replace(/[ً-ٰٟـۖ-ۭ]/g, '').trim();   // as the word list: «ى» and «ي» stay different
     const draw = () => { if (!WL) return; let r = 0; const t = nrm(q.value),   // r: words with the same count share one rank (WL is sorted by count)
       m = WL.map(([w, n], i) => [w, n, n === WL[i - 1]?.[1] ? r : (r = i + 1)]).filter(([w, n]) => (!t || w.includes(t)) && (!h.checked || n === 1));
-      out.innerHTML = `<p class="how">${N(m.length)} كلمة${m.length > 200 ? '، تُعرض أول ٢٠٠' : ''}.</p><div class="tscroll">` + stab(['الكلمة', 'مرات الورود', 'ترتيبها في التكرار'], m.slice(0, 200).map(([w, n, r]) => [[`<span class="wlink" tabindex="0" role="button">${esc(w)}</span>` + (w === 'الله' && AF ? `<small class="afn">${afNote()}</small>` : ''), w], [N(n), n], [N(r), r]]), 1, 'desc', 'words') + '</div>'; };
-    ws.closest('details').addEventListener('toggle', async () => { if (WL) return; try { WL = await (await fetch('/words.json')).json(); await loadAF(); } catch { out.innerHTML = '<p class="hint">تعذّر التحميل.</p>'; return; } q.value = selGet('wq') || ''; h.checked = !!selGet('wh'); draw(); });
+      out.innerHTML = `<p class="how">${N(m.length)} كلمة${m.length > 200 ? '، تُعرض أول ٢٠٠' : ''}.</p><div class="tscroll">` + stab(['الكلمة', 'مرات الورود', 'ترتيبها في التكرار'], m.slice(0, 200).map(([w, n, r]) => [[`<span class="wlink" tabindex="0" role="button">${esc(w)}</span>`, w], [N(n), n], [N(r), r]]), 1, 'desc', 'words') + '</div>'; };
+    ws.closest('details').addEventListener('toggle', async () => { if (WL) return; try { WL = await (await fetch('/words.json')).json(); } catch { out.innerHTML = '<p class="hint">تعذّر التحميل.</p>'; return; } q.value = selGet('wq') || ''; h.checked = !!selGet('wh'); draw(); });
     /* a word of the table: a click opens, under its row, the verses it comes in (from the published text, matched the way the counts were made) */
     let QT = null; const asW = (x) => x.replace(/[ً-ٰٟـۖ-ۭ]/g, '');
     out.addEventListener('click', async (e) => {
