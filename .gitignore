@@ -10,3 +10,4 @@ data/opus/
 .wrangler/
 .claude/
 quran.sql
+.playwright-mcp/

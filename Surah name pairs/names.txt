@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مخطط ارتباط الأسماء الحسنى</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">مخطط ارتباط الأسماء الحسنى (Bipartite Association)</h1>
+            <p class="text-slate-400">مرر الماوس فوق أي خط لعرض عدد الارتباط بين الاسمين</p>
+        </header>
+
+        <div class="relative bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow-2xl overflow-x-auto min-h-[800px]" id="canvas-container">
+            <svg id="connections-svg" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;"></svg>
+            <div class="flex justify-between relative" style="z-index: 20;">
+                <!-- Left Column -->
+                <div class="flex flex-col gap-3 w-1/6" id="left-column">
+                    <h3 class="text-center font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2">الطرف الأيمن</h3>
+                </div>
+                <!-- Right Column -->
+                <div class="flex flex-col gap-3 w-1/6" id="right-column">
+                    <h3 class="text-center font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2">الطرف الأيسر</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="fixed hidden bg-slate-800 text-white px-3 py-1.5 rounded-lg shadow-xl text-sm border border-slate-700 pointer-events-none" style="z-index: 100;"></div>
+
+    <script>
+        const rawData = [
+            { pair: "لغفور · الرحيم", count: 71 },
+            { pair: "العزيز · الحكيم", count: 47 },
+            { pair: "السميع · العليم", count: 32 },
+            { pair: "العليم · الحكيم", count: 29 },
+            { pair: "الغني · الحميد", count: 10 },
+            { pair: "السميع · البصير", count: 11 },
+            { pair: "الرؤوف · الرحيم", count: 9 },
+            { pair: "القوي · العزيز", count: 7 },
+            { pair: "العزيز · العليم", count: 6 },
+            { pair: "الواحد · القهار", count: 6 },
+            { pair: "العزيز · الرحيم", count: 13 },
+            { pair: "الحكيم · العليم", count: 7 },
+            { pair: "الرحمن · الرحيم", count: 6 },
+            { pair: "اللطيف · الخبير", count: 5 },
+            { pair: "العلي · الكبير", count: 5 },
+            { pair: "التواب · الرحيم", count: 9 },
+            { pair: "الواسع · العليم", count: 7 },
+            { pair: "العليم · الخبير", count: 4 },
+            { pair: "العليم · القدير", count: 4 },
+            { pair: "الخبير · البصير", count: 5 },
+            { pair: "الغفور · الحليم", count: 4 },
+            { pair: "الحكيم · الخبير", count: 4 },
+            { pair: "العفو · الغفور", count: 4 },
+            { pair: "العليم · الحليم", count: 3 },
+            { pair: "الحي · القيوم", count: 3 },
+            { pair: "العزيز · الحميد", count: 3 },
+            { pair: "العزيز · الغفار", count: 3 },
+            { pair: "الغفور · الشكور", count: 3 },
+            { pair: "العلي · العظيم", count: 2 },
+            { pair: "الخلّاق · العليم", count: 2 },
+            { pair: "الحليم · الغفور", count: 2 },
+            { pair: "الملك · الحق", count: 2 },
+            { pair: "العزيز · الغفور", count: 2 },
+            { pair: "العلي · الحكيم", count: 2 },
+            { pair: "الملك · القدوس", count: 2 },
+            { pair: "الولي · الفاطر", count: 1 },
+            { pair: "الملك · العظيم", count: 1 },
+            { pair: "الواسع · الحكيم", count: 1 },
+            { pair: "العفو · القدير", count: 1 },
+            { pair: "الغني · الحليم", count: 1 },
+            { pair: "السلام · الآخر", count: 1 },
+            { pair: "البصير · السميع", count: 1 },
+            { pair: "القريب · المجيب", count: 1 },
+            { pair: "الحميد · المجيد", count: 1 },
+            { pair: "الرحيم · الودود", count: 1 },
+            { pair: "الملك · الكريم", count: 1 },
+            { pair: "الحفيظ · العليم", count: 1 },
+            { pair: "الكبير · المتعال", count: 1 },
+            { pair: "السلام · العلي", count: 1 },
+            { pair: "التواب · الحكيم", count: 1 },
+            { pair: "الحق · الرحمن", count: 1 },
+            { pair: "الهادي · النصير", count: 1 },
+            { pair: "الغني · الكريم", count: 1 },
+            { pair: "الرحيم · الغفور", count: 1 },
+            { pair: "الرب · الغفور", count: 1 },
+            { pair: "الفتّاح · العليم", count: 1 },
+            { pair: "السميع · القريب", count: 1 },
+            { pair: "الرب · الرحيم", count: 1 },
+            { pair: "العزيز · الوهاب", count: 1 },
+            { pair: "الحكيم · الحميد", count: 1 },
+            { pair: "المتكبر · الجبار", count: 1 },
+            { pair: "العزيز · الكريم", count: 1 },
+            { pair: "الولي · الحميد", count: 1 },
+            { pair: "العزيز · المقتدر", count: 1 },
+            { pair: "الأول · الآخر", count: 1 },
+            { pair: "الآخر · الظاهر", count: 1 },
+            { pair: "الظاهر · الباطن", count: 1 },
+            { pair: "البر · الرحيم", count: 1 },
+            { pair: "القدوس · السلام", count: 1 },
+            { pair: "السلام · المؤمن", count: 1 },
+            { pair: "المؤمن · المهيمن", count: 1 },
+            { pair: "المهيمن · العزيز", count: 1 },
+            { pair: "العزيز · الجبار", count: 1 },
+            { pair: "الجبار · المتكبر", count: 1 },
+            { pair: "الخالق · البارئ", count: 1 },
+            { pair: "البارئ · المصوّر", count: 1 },
+            { pair: "القدوس · العزيز", count: 1 },
+            { pair: "الشكور · الحليم", count: 1 },
+            { pair: "الملك · الكبير", count: 1 },
+            { pair: "الغفور · الودود", count: 1 }
+        ];
+
+        const links = rawData.map(item => {
+            const parts = item.pair.split('·').map(s => s.trim());
+            return { left: parts[1], right: parts[0], count: item.count };
+        });
+
+        const leftNames = [...new Set(links.map(l => l.left))];
+        const rightNames = [...new Set(links.map(l => l.right))];
+
+        function render() {
+            const leftCol = document.getElementById('left-column');
+            const rightCol = document.getElementById('right-column');
+            const svg = document.getElementById('connections-svg');
+            const container = document.getElementById('canvas-container');
+
+            leftCol.innerHTML = '<h3 class="text-center font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2">الطرف الأيمن</h3>';
+            rightCol.innerHTML = '<h3 class="text-center font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2">الطرف الأيسر</h3>';
+            svg.innerHTML = '';
+
+            const leftElements = {};
+            const rightElements = {};
+
+            leftNames.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900 border border-slate-700 p-2 rounded text-center text-xs font-medium shadow text-slate-200';
+                div.textContent = name;
+                leftCol.appendChild(div);
+                leftElements[name] = div;
+            });
+
+            rightNames.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900 border border-slate-700 p-2 rounded text-center text-xs font-medium shadow text-slate-200';
+                div.textContent = name;
+                rightCol.appendChild(div);
+                rightElements[name] = div;
+            });
+
+            setTimeout(() => {
+                const containerRect = container.getBoundingClientRect();
+                svg.setAttribute('width', container.scrollWidth);
+                svg.setAttribute('height', container.scrollHeight);
+
+                links.forEach(link => {
+                    const lEl = leftElements[link.left];
+                    const rEl = rightElements[link.right];
+                    if (!lEl || !rEl) return;
+
+                    const lRect = lEl.getBoundingClientRect();
+                    const rRect = rEl.getBoundingClientRect();
+
+                    const x1 = rRect.left - containerRect.left + container.scrollLeft; 
+                    const y1 = rRect.top + rRect.height / 2 - containerRect.top + container.scrollTop;
+                    const x2 = lRect.left + lRect.width - containerRect.left + container.scrollLeft; 
+                    const y2 = lRect.top + lRect.height / 2 - containerRect.top + container.scrollTop;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const dx = Math.abs(x2 - x1) * 0.5;
+                    const d = `M ${x1} ${y1} C ${x1 - dx} ${y1}, ${x2 + dx} ${y2}, ${x2} ${y2}`;
+
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#38bdf8');
+                    path.setAttribute('stroke-width', Math.max(1.5, Math.min(link.count * 0.4, 8)));
+                    path.setAttribute('stroke-opacity', '0.6');
+                    path.style.cursor = 'pointer';
+                    path.style.transition = 'stroke-opacity 0.2s, stroke 0.2s';
+
+                    path.addEventListener('mouseenter', (e) => {
+                        path.setAttribute('stroke-opacity', '1');
+                        path.setAttribute('stroke', '#f59e0b');
+                        const tooltip = document.getElementById('tooltip');
+                        tooltip.innerHTML = `الارتباط: <b>${link.right}</b> · <b>${link.left}</b><br>العدد: <b>${link.count}</b>`;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (e.clientX + 10) + 'px';
+                        tooltip.style.top = (e.clientY + 10) + 'px';
+                    });
+
+                    path.addEventListener('mousemove', (e) => {
+                        const tooltip = document.getElementById('tooltip');
+                        tooltip.style.left = (e.clientX + 10) + 'px';
+                        tooltip.style.top = (e.clientY + 10) + 'px';
+                    });
+
+                    path.addEventListener('mouseleave', () => {
+                        path.setAttribute('stroke-opacity', '0.6');
+                        path.setAttribute('stroke', '#38bdf8');
+                        document.getElementById('tooltip').style.display = 'none';
+                    });
+
+                    svg.appendChild(path);
+                });
+            }, 50);
+        }
+
+        window.addEventListener('load', render);
+        window.addEventListener('resize', render);
+    </script>
+</body>
+</html>
