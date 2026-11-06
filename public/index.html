@@ -1856,8 +1856,8 @@ async function initStats() {
     const w = Math.max(...rows.flatMap((c) => [...c.children].map((x) => x.offsetWidth))) - 12,   // in the grid a box has 6px less padding on each side
       most = Math.max(...rows.map((c) => c.children.length)), W = rows[0].clientWidth;
     const fits = (n) => n * w + (n - 1) * 6 + (n / GROUP[n] - 1) * 10 <= W, ns = Object.keys(GROUP).map(Number);
-    const fixed = grid.classList.contains('scatg');   // surah-name categories: always 9 a row, 3 + 3 + 3
-    const n = fixed ? (W >= 560 ? 9 : 0) : ns.find((k) => k >= most && fits(k)) || ns.filter(fits).pop(); if (!n) return;   // too narrow even for 8: boxes keep wrapping freely
+    const fixed = grid.classList.contains('scatg');   // surah-name categories: always 8 a row, 4 + 4
+    const n = fixed ? (W >= 560 ? 8 : 0) : ns.find((k) => k >= most && fits(k)) || ns.filter(fits).pop(); if (!n) return;   // too narrow even for 8: boxes keep wrapping freely
     const g = GROUP[n], cols = Array.from({ length: n / g }, () => `repeat(${g},minmax(0,1fr))`).join(fixed ? ' 18px ' : ' 4px ');
     rows.forEach((c) => { c.classList.add('cgrid'); c.style.gridTemplateColumns = cols; [...c.children].forEach((x, k) => { const i = k % n; x.style.gridColumn = i + Math.floor(i / g) + 1; }); });
   };
