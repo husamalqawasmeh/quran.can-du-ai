@@ -1937,6 +1937,8 @@ async function initStats() {
   // the letter sections (kLetters): boxes in the row itself, after «حرفاً»
   for (const [id, L] of Object.entries(kxSecs)) { const x = id === 'kLetters' ? $(id).parentNode : $(id); if (id === 'kLetters') body.querySelector('.kexp[aria-controls="kLetters"]').after(...L); else x.append(...L); if (id === 'kNames' || id === 'kNames2') L[0].replaceWith(...[...L[0].children].slice(1)); else if (L.length === 1) L[0].open = true;   // the names panels: the section's content straight under the box, no inner box to open
    else { panelize(x, (d) => d.parentNode === x && d.tagName === 'DETAILS'); x.style.setProperty('--n', L.length > 5 ? 4 : L.length); } }   // --n: one row of equal boxes
+  { const ent = [...$('kLetters').parentNode.children].find((d) => d.tagName === 'DETAILS' && d.querySelector(':scope>summary').textContent.includes('الحروف: الإنتروبيا'));   // its three tables: boxes in the row in its place; its note: with the letter bars
+    if (ent) { $('kLetters').prepend(ent.querySelector('p.how')); ent.replaceWith(...ent.querySelector('.lrow').children); } }
   { const box = (t) => [...$('kSurahs').children].find((d) => d.querySelector(':scope>summary')?.textContent.includes(t)); box('السور المتقاربة في ألفاظها')?.before(...['السور المبدوءة بالقسم', 'الجذور بتكرارها'].map(box).filter(Boolean)); }   // these two before «السور المتقاربة في ألفاظها»
   body.querySelector('.kstack').prepend($('kNames').closest('.ksec'));   // the names of Allah: the first row
   body.querySelectorAll('.khead').forEach((h, i) => (h.onclick = () => {   // a heading on the right hides or shows its row
