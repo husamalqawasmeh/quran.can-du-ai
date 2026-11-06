@@ -1947,11 +1947,11 @@ async function initStats() {
     (pstate.kh ||= {})[i] = open; saveState();
   }));
   if (remember()) body.querySelectorAll('.khead').forEach((h, i) => { if (pstate.kh?.[i] === false) h.click(); });
-  $('kWords').append(...$('kWords').querySelectorAll(':scope>.kexp'));   // «كلمة مختلفة» and «كلمة وردت مرة واحدة» after the word sections
+  $('kWords').prepend(...$('kWords').querySelectorAll(':scope>.kexp'));   // «كلمة مختلفة» and «كلمة وردت مرة واحدة» first in the word sections
   body.querySelectorAll(':scope>details.lesson').forEach((d) => d.remove());   // what is left below: the letters (shown in the letters box) and the emptied level-2 panel
   body.querySelectorAll('.kexp').forEach((b) => (b.onclick = () => {
     const x = $(b.getAttribute('aria-controls')), open = x.hidden || !b.classList.contains('on'); x.hidden = !open;
-    if (open && b.parentNode.classList.contains('kmini')) { let last = b; for (let n = b.nextElementSibling; n; n = n.nextElementSibling) if (!n.matches('.kxp,.npanel') && n.offsetTop === b.offsetTop) last = n; last.after(x); }   // the panel right under the box's own row   // another box of the same panel: the panel stays open, the highlight moves to this box
+    if (open && b.parentNode.matches('.kmini,#kWords')) { let last = b; for (let n = b.nextElementSibling; n; n = n.nextElementSibling) if (!n.matches('.kxp,.npanel') && n.offsetTop === b.offsetTop) last = n; last.after(x); }   // the panel right under the box's own row   // another box of the same panel: the panel stays open, the highlight moves to this box
     body.querySelectorAll(`.kexp[aria-controls="${x.id}"]`).forEach((k) => { const on = open && k === b; k.classList.toggle('on', on); k.setAttribute('aria-expanded', on); });
     (pstate.kx ||= {})[x.id] = open; saveState();
   }));
