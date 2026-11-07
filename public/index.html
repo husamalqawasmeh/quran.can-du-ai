@@ -1159,16 +1159,16 @@ $('sgrid').addEventListener('change', async (e) => {
   if (url && timing) {                                              // exact timings: one file, colour follows the playhead
     msg.textContent = ''; au.hidden = false; au.src = url;
     au.ontimeupdate = () => { const t = au.currentTime * 1000, a = timing.find((x) => t >= x.s && t < x.e); setCurAyah(box, a ? a.n : 0); };
-    au.onended = () => setCurAyah(box, 0); au.play().catch(() => {}); return;
+    au.onended = () => setCurAyah(box, 0); return;   // paused: it starts with the play button
   }
   if (folder) {                                                     // verse-by-verse recordings: play them in order
     const total = (surahs.find((x) => x.id === n) || {}).verses || 0; let a = 1;
-    const next = () => { if (my !== sPlay) return; if (a > total) { setCurAyah(box, 0); return; } setCurAyah(box, a); au.src = ayahUrl(folder, n, a); au.play().catch(() => {}); };
+    const next = (play = true) => { if (my !== sPlay) return; if (a > total) { setCurAyah(box, 0); return; } setCurAyah(box, a); au.src = ayahUrl(folder, n, a); if (play) au.play().catch(() => {}); };
     au.onended = () => { a++; next(); };
     au.onerror = () => { msg.textContent = 'تعذّر تحميل صوت الآية ' + nA(a) + '.'; };
-    msg.textContent = 'يُشغَّل هذا القارئ آيةً آيةً.'; au.hidden = false; next(); return;
+    msg.textContent = 'يُشغَّل هذا القارئ آيةً آيةً.'; au.hidden = false; next(false); return;   // the first verse waits for the play button; the next ones follow on their own
   }
-  if (url) { msg.textContent = 'تلوين الآية تلقائياً غير متاح لهذا القارئ.'; au.hidden = false; au.src = url; au.play().catch(() => {}); return; }
+  if (url) { msg.textContent = 'تلوين الآية تلقائياً غير متاح لهذا القارئ.'; au.hidden = false; au.src = url; return; }   // paused: it starts with the play button
   unavailable();
 });
 
