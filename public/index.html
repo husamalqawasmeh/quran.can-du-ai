@@ -290,7 +290,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .pv{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.pv b{display:inline}.pv small{color:var(--muted);font-size:.78rem;font-weight:700}
 @media(max-width:700px){.pr{grid-template-columns:1fr 8em;grid-template-areas:"l v" "b b"}.pr .pl{grid-area:l}.pr .pv{grid-area:v}.pr .pb{grid-area:b}}
 /* the settings page: its three parts open and close */
-.ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}.ucsec>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}.ucsec>summary::-webkit-details-marker{display:none}.ucsec>summary::before{content:"◀";color:var(--accent);font-size:.85em}.ucsec[open]>summary::before{content:"▼"}.ucsec>summary h2{margin:0}.ucsec[open]{padding-bottom:12px}
+.ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}:is(.ucsec,.ucard)>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}:is(.ucsec,.ucard)>summary::-webkit-details-marker{display:none}:is(.ucsec,.ucard)>summary::before{content:"◀";color:var(--accent);font-size:.85em}:is(.ucsec,.ucard)[open]>summary::before{content:"▼"}:is(.ucsec,.ucard)>summary h2{margin:0}.ucard>summary{padding:0}.ucard[open]>summary{margin-bottom:8px}.ucsec[open]{padding-bottom:12px}
 /* the book page (#book) */
 .bkclosed{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:24px auto;max-width:900px}
 .bkside{display:flex;flex-direction:column;gap:56px}
@@ -434,16 +434,16 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
     </details>
     <div class="ucbtns"><button type="submit" class="btn pri">حفظ والمتابعة</button><button type="button" class="btn" id="ucGuest">متابعة كضيف</button><button type="button" class="btn" id="ucClear">مسح بياناتي من هذا الجهاز</button><span class="ucmsg" id="ucMsg" role="status"></span></div>
   </form>
-  <div class="card drvsec"><h2>🧪 معايير التحليل اللغوي العميق</h2><p>مراجعة ١٠٠ معيار بحثي، مع تحليلات جديدة للبنية والحروف والنحو.</p><a class="btn" href="#research" style="text-decoration:none">فتح الصفحة</a></div>
-  <div class="card drvsec"><h2>📖 المصحف</h2><p>مصحف تشير إليه أسهم: عن القرآن، والفهرس، والأشخاص. «الفهرس» يفتح المصحف على فهرس السور في صفحتيه.</p><a class="btn" href="#book" style="text-decoration:none">فتح الصفحة</a></div>
-  <div class="card drvsec"><h2>📏 طرق عدّ الكلمات</h2>   <!-- numbers from research.json (grammar.tokens, scripts/research-stats.mjs) -->
+  <details class="card drvsec ucard"><summary><h2>🧪 معايير التحليل اللغوي العميق</h2></summary><p>مراجعة ١٠٠ معيار بحثي، مع تحليلات جديدة للبنية والحروف والنحو.</p><a class="btn" href="#research" style="text-decoration:none">فتح الصفحة</a></details>
+  <details class="card drvsec ucard"><summary><h2>📖 المصحف</h2></summary><p>مصحف تشير إليه أسهم: عن القرآن، والفهرس، والأشخاص. «الفهرس» يفتح المصحف على فهرس السور في صفحتيه.</p><a class="btn" href="#book" style="text-decoration:none">فتح الصفحة</a></details>
+  <details class="card drvsec ucard"><summary><h2>📏 طرق عدّ الكلمات</h2></summary>   <!-- numbers from research.json (grammar.tokens, scripts/research-stats.mjs) -->
     <table class="tbl"><tr><th>طريقة العدّ</th><th class="num">عدد الكلمات</th></tr>
       <tr><td>الأجزاء الصرفية (بفصل السوابق واللواحق)</td><td class="num">١٣٠٬٠٣٠</td></tr>
       <tr><td>ما يفصله فراغ في الرسم الإملائي (المعتمد في صفحة الإحصاءات)</td><td class="num">٧٧٬٧٩٧</td></tr>
       <tr><td>ما يفصله فراغ في الرسم العثماني</td><td class="num">٧٧٬٤٣٣</td></tr>
       <tr><td>الكلمات في «مدونة القرآن العربية»</td><td class="num">٧٧٬٤٢٩</td></tr></table>
     <p class="how">تختلف الأعداد باختلاف طريقة العدّ؛ ولهذا يُذكر في كل إحصاء أساس العدّ.</p>
-  </div>
+  </details>
 </section>
 
 <!-- التعرّف على القارئ -->
