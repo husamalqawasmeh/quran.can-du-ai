@@ -157,6 +157,7 @@ select option{font-weight:400;color:var(--ink);background:var(--card)}
 @media(max-width:800px){.kpis{grid-template-columns:1fr 1fr}}
 .kpi{background:var(--card);border:1px solid var(--stat-line);border-radius:14px;box-shadow:var(--shadow);padding:8px 14px}
 .kpi b{display:block;font-size:1.5rem;line-height:1.2;color:var(--accent)}
+#statsBody .kpi[aria-controls="kDistinct"] span{font-size:1.1rem}
 #statsBody .snum{font-size:1.3rem;color:var(--accent);margin-inline-end:4px}.kpi span{color:var(--muted);font-size:.85rem}#statsBody .kpi{border-color:var(--title)}#statsBody .kpi:is(.klink:hover,.on){border-color:var(--accent)}#statsBody .kpi.on{box-shadow:0 0 0 2px var(--accent);background:var(--accent)}#statsBody .kpi.on :is(b,span,small,.ktri){color:var(--accent-ink)!important}#statsBody .kpi span,#statsBody .kpi.kexp small{color:var(--title)}
 #statsBody>.lesson>summary{padding:8px 0}
 .srow{display:grid;grid-template-columns:7em 1fr 9em;gap:10px;align-items:center;padding:3px 0;font-size:.9rem}
