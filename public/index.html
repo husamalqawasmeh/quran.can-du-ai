@@ -2044,7 +2044,8 @@ async function initStats() {
     const mk = pick('kSurahs', 'المكي والمدني'), len = pick('kAyat', 'آيات السور مكية ومدنية');
     if (mk && len) { [...len.children].slice(1).forEach((n) => n.remove()); len.append(...[...mk.children].slice(1).map((n) => n.cloneNode(true))); }   // both boxes: one table, counts and verse lengths
     swap(mk, pick('kSurahs', 'مطلع السورة وخاتمتها'));   // «المكي والمدني» two rows down
-    swap(len, pick('kAyat', 'آيات تكررت بنصها')); }   // «آيات السور مكية ومدنية» one row up
+    swap(len, pick('kAyat', 'آيات تكررت بنصها'));   // «آيات السور مكية ومدنية» one row up
+    swap(pick('kAyat', 'أطول آية وأقصر آية'), pick('kAyat', 'تمييز الآيات مكية')); }   // the first and the last boxes of the آية row
   body.querySelector('.kstack').prepend($('kNames').closest('.ksec'));   // the names of Allah: the first row
   $('kWords').prepend(...$('kWords').querySelectorAll(':scope>.kexp'));   // «كلمة مختلفة» and «كلمة وردت مرة واحدة» first in the word sections
   body.querySelectorAll(':scope>details.lesson').forEach((d) => d.remove());   // what is left below: the letters (shown in the letters box) and the emptied level-2 panel
