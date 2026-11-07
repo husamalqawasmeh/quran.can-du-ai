@@ -1822,7 +1822,7 @@ async function initStats() {
     `<div class="kxp" id="kLetters" hidden>${lettersBars}</div></div></div></div>` +
     panel('لفظ الجلالة «الله» في القرآن', '<div id="allahCount"><p class="hint">جارٍ التحميل…</p></div>', false) +
     panel('عدد مرات ورود أسماء الله الحسنى في القرآن', '<div id="namesCounts"><p class="hint">جارٍ التحميل…</p></div>', false) +
-    (P ? panel('نوع الكلمة: أسماء - صفات - أفعال', posPanel(), false) : '') +
+    (P ? panel('نوع الكلمة: أسماء-صفات-أفعال', posPanel(), false) : '') +
     (VB ? panel(`الأفعال بحسب وزنها الصرفي`, verbPanel(), false) : '') +
     (NP ? panel('الرسم الأول', pairsPanel(), false) : '') +
     panel('الرسم الثاني', '<iframe src="/names8finalf" title="احصائية الاسماء الحسنى المتتالية في القرآن الكريم" loading="lazy" onload="const f = this, d = f.contentDocument; if (!d.querySelector(\'svg\') || f._ro) return; d.documentElement.style.overflowY = \'hidden\'; (f._ro = new ResizeObserver(() => { const h = d.body.scrollHeight; if (f.offsetWidth && h > 300 && Math.abs(f.offsetHeight - h) > 1) f.style.height = h + \'px\'; })).observe(f)" style="display:block;width:100%;aspect-ratio:4/5;border:0;border-radius:12px"></iframe>', false) +   // a standalone page with its own styles, so it sits in a frame
