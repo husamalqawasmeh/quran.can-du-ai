@@ -289,6 +289,8 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .pb{height:12px;background:color-mix(in srgb,var(--cc) 16%,transparent);border-radius:6px;overflow:hidden}.pb i{display:block;height:100%;background:var(--cc);border-radius:6px}
 .pv{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.pv b{display:inline}.pv small{color:var(--muted);font-size:.78rem;font-weight:700}
 @media(max-width:700px){.pr{grid-template-columns:1fr 8em;grid-template-areas:"l v" "b b"}.pr .pl{grid-area:l}.pr .pv{grid-area:v}.pr .pb{grid-area:b}}
+/* the settings page: its three parts open and close */
+.ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}.ucsec>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}.ucsec>summary::-webkit-details-marker{display:none}.ucsec>summary::before{content:"◀";color:var(--accent);font-size:.85em}.ucsec[open]>summary::before{content:"▼"}.ucsec>summary h2{margin:0}.ucsec[open]{padding-bottom:12px}
 /* the book page (#book) */
 .bkclosed{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:24px auto;max-width:900px}
 .bkside{display:flex;flex-direction:column;gap:56px}
@@ -408,17 +410,19 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
   <p class="sub">تُحفظ في متصفحك فقط، ولا تُرسل إلى أي خادم.</p>
   <p class="ucwelcome" id="ucWelcome" hidden>مرحباً بك! اختر اسماً تُعرف به في هذا الجهاز، وإعدادات العرض التي تناسبك، ثم اضغط «حفظ والمتابعة». ويمكنك تغييرها لاحقاً من زر ⚙️ في الصفحة الرئيسية.</p>
   <form id="ucForm" class="card drvsec ucform" autocomplete="on">
-    <h2>👤 بياناتك</h2>
+    <details class="ucsec"><summary><h2>👤 بياناتك</h2></summary>
     <div class="volform">
       <label>اسم المستخدم (أي اسم تختاره، أو بريدك في Gmail)<input name="uid" required maxlength="60" autocomplete="nickname"><span class="gstate" id="gState"></span><span class="gsbtn" id="gBtn" hidden></span></label>
       <label>البريد الإلكتروني (اختياري)<input name="email" type="email" maxlength="120" dir="ltr" autocomplete="email"></label>
       <label>رقم الجوال (اختياري)<input name="phone" inputmode="tel" maxlength="30" dir="ltr" pattern="[+0-9 ()\-]{6,30}" autocomplete="tel"></label>
     </div>
-    <h2>🔊 القارئ الافتراضي</h2>
+    </details>
+    <details class="ucsec"><summary><h2>🔊 القارئ الافتراضي</h2></summary>
     <p>اضغط على أي آية تظهر في الموقع لتسمعها بصوت هذا القارئ، واضغطها مرة أخرى لإيقافها.</p>
     <label class="defrow">القارئ: <select class="defreader" aria-label="القارئ الافتراضي للآيات"></select></label>
     <p class="hint">جرّب: اضغط الآية</p><div class="vt" data-ak="1:2">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ</div>
-    <h2>📂 عرض الصفحات</h2>
+    </details>
+    <details class="ucsec"><summary><h2>📂 عرض الصفحات</h2></summary>
     <label class="defrow">ترتيب السور في صفحة السور: <select name="sorder" class="ucsel" aria-label="ترتيب السور"><option value="mushaf">الترتيب في المصحف</option><option value="verses">الأكثر آيات</option><option value="words">الأكثر كلمات</option><option value="fewwords">الأقل كلمات</option><option value="letters">الأكثر حروفاً</option></select></label>
     <fieldset class="ucopt"><legend>الأقسام عند فتح أي صفحة</legend>
       <label><input type="radio" name="expand" value="collapsed" checked> مطويّة</label>
@@ -427,6 +431,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
     <fieldset class="ucopt"><legend>مدة حفظ الإعدادات</legend>
       <label><input type="radio" name="scope" value="local" checked> دائماً على هذا الجهاز</label>
       <label><input type="radio" name="scope" value="session"> لهذه الجلسة فقط (تُنسى عند إغلاق المتصفح)</label></fieldset>
+    </details>
     <div class="ucbtns"><button type="submit" class="btn pri">حفظ والمتابعة</button><button type="button" class="btn" id="ucGuest">متابعة كضيف</button><button type="button" class="btn" id="ucClear">مسح بياناتي من هذا الجهاز</button><span class="ucmsg" id="ucMsg" role="status"></span></div>
   </form>
   <div class="card drvsec"><h2>🧪 معايير التحليل اللغوي العميق</h2><p>مراجعة ١٠٠ معيار بحثي، مع تحليلات جديدة للبنية والحروف والنحو.</p><a class="btn" href="#research" style="text-decoration:none">فتح الصفحة</a></div>
@@ -869,9 +874,11 @@ function ucGmail() {   // the settings form: a Gmail name needs signing in
 $('ucForm').uid.addEventListener('input', ucGmail);
 
 /* the settings form */
+$('ucForm').addEventListener('invalid', (e) => { const d = e.target.closest('details'); if (d) d.open = true; }, true);   // a missing field in a closed part: open it so the browser can point at it
 function fillUc() {
   const f = $('ucForm'), p = prefs || { uid: '', email: '', phone: '', expand: 'collapsed', remember: true, scope: 'local' };
   $('ucWelcome').hidden = !!prefs;
+  if (!prefs) f.querySelector('.ucsec').open = true;   // first visit: «بياناتك» open, the name is needed
   setTimeout(ucGmail);
   f.uid.value = p.uid; f.email.value = p.email; f.phone.value = p.phone; f.expand.value = p.expand; f.remember.checked = p.remember; f.scope.value = p.scope; f.sorder.value = p.sorder || 'mushaf';
 }
