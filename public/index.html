@@ -32,7 +32,7 @@ button,input,select{font-family:inherit}
 .sub{color:var(--muted)}
 /* home tiles = dad cards */
 .home{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:18px 12px}
-.home .tile,.home .tile.half,.home .tile.quarter{grid-column:auto}.home .tile.newrow{grid-column-start:1}.home .tile.fullrow{grid-column:1/-1}.home .tile[href="#about"]{border:2px solid #166534;background:#14532d;box-shadow:0 0 0 2px color-mix(in srgb,#166534 35%,transparent)}.home .tile[href="#about"]:hover{background:#166534;border-color:#22c55e}.home .tile[href="#about"] :is(b,svg.ic){color:#f0fdf4}
+.home .tile,.home .tile.half,.home .tile.quarter{grid-column:auto}.home .tile.newrow{grid-column-start:1}.home .tile.fullrow{grid-column:1/-1}.home .tile:is([href="#numbers"],[href="#stats"]){background:color-mix(in srgb,#c9a227 14%,var(--card));border:2px solid #c9a227}.home .tile[href="#about"]{border:2px solid #166534;background:#14532d;box-shadow:0 0 0 2px color-mix(in srgb,#166534 35%,transparent)}.home .tile[href="#about"]:hover{background:#166534;border-color:#22c55e}.home .tile[href="#about"] :is(b,svg.ic){color:#f0fdf4}
 .home .tile.wide{grid-column:span 2}.home .tile.wide.newrow{grid-column:1/span 2}
 @media(max-width:1000px){.home{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.home{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.home{grid-template-columns:1fr}.home .tile.wide,.home .tile.wide.newrow{grid-column:auto}}
@@ -323,7 +323,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,#kPairs,.lrow)>details>summary{padding:4px 0!important;line-height:1.4}
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,#kPairs,.lrow)>details>summary h4{font-size:.96rem;line-height:1.4}
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,#kPairs,.lrow)>.kpi{padding-top:4px!important;padding-bottom:4px!important;line-height:1.4;box-sizing:border-box;min-height:38px}
-#statsBody :is(.kmini,#kWords)>.kpi b{line-height:1}#statsBody #kWords>.kpi b{font-size:1.3rem}#statsBody #kWords>.kpi{background:color-mix(in srgb,#c9a227 14%,var(--card));border-color:#c9a227}#statsBody .snum{line-height:1}
+#statsBody :is(.kmini,#kWords)>.kpi b{line-height:1}#statsBody #kWords>.kpi b{font-size:1.3rem}#statsBody .snum{line-height:1}
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,#kPairs,.lrow){align-items:start}#statsBody .fit1>summary{white-space:nowrap;font-size:.9rem!important;letter-spacing:-.1px}   /* a one-line box keeps its own height beside a two-line box */
 </style></head><body>
 
