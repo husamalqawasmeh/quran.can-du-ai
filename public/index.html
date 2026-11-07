@@ -318,6 +318,10 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .bkidx button{display:flex;gap:6px;align-items:baseline;font:inherit;font-size:.9rem;background:none;border:0;border-bottom:1px dotted #c9b27a;padding:3px 0;color:inherit;cursor:pointer;text-align:start}
 .bkidx button:hover{color:#0f5c45;font-weight:700}
 .bkidx .n{min-width:1.8em;color:#7a5a12}
+.bkppl{display:flex;flex-direction:column;gap:10px}
+.bkppl a{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #c9b27a;border-radius:10px;color:#2b2416;text-decoration:none;font-weight:700;background:rgba(255,255,255,.35)}
+.bkppl a:hover{border-color:#0f5c45;color:#0f5c45}
+.bkppl svg.ic{width:1.4rem;height:1.4rem;fill:none;stroke:#0f5c45;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .bkidx .v{margin-inline-start:auto;color:#7d6a45;font-size:.8rem}
 @media(max-width:700px){.bkclosed{grid-template-columns:1fr;justify-items:center;gap:16px}.bkside{flex-direction:row;gap:12px}.bkarr i{display:none}.bkl{order:3}.bkpages{grid-template-columns:1fr}.bkpage{border-radius:10px!important;border-width:3px!important}}
 /* stats boxes: one height for every one-line box, one for every two-line box */
@@ -396,7 +400,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
       </div>
       <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><span class="bkorn"><b>القرآن الكريم</b></span></button>
       <div class="bkside bkl">
-        <a class="bkarr" href="#others"><span class="bklab">الأشخاص</span><i aria-hidden="true"></i></a>
+        <button type="button" class="bkarr" data-bk="people"><span class="bklab">الأشخاص</span><i aria-hidden="true"></i></button>
       </div>
     </div>
     <div class="bkopen" hidden>
@@ -818,17 +822,24 @@ function route() {
 }
 addEventListener('hashchange', route);
 /* the book page: «الفهرس» (or the cover) opens it on the surah index, 57 surahs a page; a surah opens in the surahs page */
-async function bookShow(open) {
-  $('bk').querySelector('.bkclosed').hidden = open; $('bk').querySelector('.bkopen').hidden = !open;
-  if (!open || $('bkL').firstChild) return;
-  $('bkR').innerHTML = '<p class="hint">جارٍ التحميل…</p>';
+const BK_PEOPLE = [['jesus', 'leaf', 'عيسى ومريم في القرآن'], ['prophets', 'bird', 'الأنبياء في القرآن'], ['others', 'users', 'أشخاص آخرون في القرآن'], ['sifat', 'triangle-alert', 'الكافرين/المنافقين/المشركين'], ['jews', 'scroll', 'اليهود وبنو إسرائيل في القرآن']];
+async function bookShow(mode) {   // mode: 'index', 'people', or false (closed)
+  $('bk').querySelector('.bkclosed').hidden = !!mode; $('bk').querySelector('.bkopen').hidden = !mode;
+  if (!mode || $('bk').dataset.mode === mode) return;
+  if (mode === 'people') {   // the people pages: three on the right page, two on the left
+    const page = (a, title) => `<h3>${title}</h3><div class="bkppl">${a.map(([v, i, t]) => `<a href="#${v}"><svg class="ic" aria-hidden="true"><use href="#i-${i}"/></svg>${t}</a>`).join('')}</div>`;
+    $('bkR').innerHTML = page(BK_PEOPLE.slice(0, 3), 'الأشخاص في القرآن'); $('bkL').innerHTML = page(BK_PEOPLE.slice(3), 'الأشخاص في القرآن (تتمة)');
+    $('bk').dataset.mode = mode; return;
+  }
+  $('bkL').innerHTML = ''; $('bkR').innerHTML = '<p class="hint">جارٍ التحميل…</p>';
   try { if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { $('bkR').innerHTML = '<p class="hint">تعذّر تحميل قائمة السور.</p>'; return; }
   const page = (a, title) => `<h3>${title}</h3><div class="bkidx">${a.map((s) => `<button type="button" data-n="${s.id}"><span class="n">${nA(s.id)}</span><span>${esc(s.ar)}</span><span class="v">${nA(s.verses)} آية</span></button>`).join('')}</div>`;
   $('bkR').innerHTML = page(surahs.slice(0, 57), 'فهرس السور'); $('bkL').innerHTML = page(surahs.slice(57), 'فهرس السور (تتمة)');
+  $('bk').dataset.mode = mode;
 }
 $('bk').addEventListener('click', async (e) => {
-  const b = e.target.closest('[data-bk]'); if (b) return bookShow(b.dataset.bk === 'index');
+  const b = e.target.closest('[data-bk]'); if (b) return bookShow(b.dataset.bk === 'close' ? false : b.dataset.bk);
   const s = e.target.closest('.bkidx button'); if (!s) return;
   await new Promise((r) => { addEventListener('hashchange', () => setTimeout(r), { once: true }); location.hash = '#surahs'; });   // after the page switch (it scrolls to the top)
   await loadSurahs(); if (!$('sgrid').querySelector('details.sr')) renderSurahs();   // the list was loaded here, not drawn yet
