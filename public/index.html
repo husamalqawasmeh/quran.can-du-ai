@@ -821,9 +821,9 @@ const BK_PEOPLE = [['jesus', 'leaf', 'عيسى ومريم في القرآن'], [
 async function bookShow(mode) {   // mode: 'index', 'people', or false (closed)
   $('bk').querySelector('.bkcover').hidden = !!mode; $('bk').querySelector('.bkopen').hidden = !mode;
   if (!mode || $('bk').dataset.mode === mode) return;
-  if (mode === 'people') {   // the people pages: three on the right page, two on the left
+  if (mode === 'people') {   // the people pages: all five on the right page
     const page = (a, title) => `<h3>${title}</h3><div class="bkppl">${a.map(([v, i, t]) => `<a href="#${v}"><svg class="ic" aria-hidden="true"><use href="#i-${i}"/></svg>${t}</a>`).join('')}</div>`;
-    $('bkR').innerHTML = page(BK_PEOPLE.slice(0, 3), 'الأشخاص في القرآن'); $('bkL').innerHTML = page(BK_PEOPLE.slice(3), 'الأشخاص في القرآن (تتمة)');
+    $('bkR').innerHTML = page(BK_PEOPLE, 'الأشخاص في القرآن'); $('bkL').innerHTML = '';
     $('bk').dataset.mode = mode; return;
   }
   $('bkL').innerHTML = ''; $('bkR').innerHTML = '<p class="hint">جارٍ التحميل…</p>';
