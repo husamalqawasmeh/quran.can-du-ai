@@ -1750,8 +1750,7 @@ async function initStats() {
         ['تتابع الفواصل في السور', `<p class="how">في ${N(T.fawasil.same)}٪ من الآيات المتتالية تنتهي الآية بالحرف نفسه الذي انتهت به التي قبلها. والجدولان لكل سورة من عشر آيات فأكثر: نسبة الآيات التي وافقت فاصلتُها فاصلةَ ما قبلها.</p><div class="rs2">` +
           stab(['أكثر السور تتابعاً', 'الآيات', 'النسبة'], T.fawasil.top.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'desc', 'fwtop') +
           stab(['أقلها تتابعاً', 'الآيات', 'النسبة'], T.fawasil.low.map(([a, n, p]) => [[esc(a), a], [N(n), n], [N(p) + '٪', p]]), 2, 'asc', 'fwlow') + '</div>'],
-        ['آيات السور مكية ومدنية', stab(['', 'السور', 'الآيات', 'متوسط الآيات في السورة', 'متوسط كلمات الآية'], [['السور المكية', T.place.makkah], ['السور المدنية', T.place.madinah]].map(([a, x]) => [[a, a], [N(x.surahs), x.surahs], [N(x.verses), x.verses], [N(x.vps), x.vps], [N(x.wpv), x.wpv]]), 4, 'desc', 'plv') +
-          `<p class="how">الآية المدنية أطول بنحو ${N((T.place.madinah.wpv / T.place.makkah.wpv).toFixed(1))} مرة من المكية في المتوسط.</p>`],
+        ['آيات السور مكية ومدنية', '<div></div>'],   // the same table as «المكي والمدني», copied in below
       ],
       letters: [
         ['الحروف في كل سورة', `<p class="how">اختر سورة لترى نسبة كل حرف فيها، وبجانبها نسبته في القرآن كله.</p><select class="lsur" aria-label="السورة">${S.surahs.map((x) => `<option value="${x.id}">${N(x.id)}. ${esc(x.ar)}</option>`).join('')}</select><div class="lsbars"></div>`],
@@ -1936,8 +1935,9 @@ async function initStats() {
     panel(`${N(TW.length)} كلمة أكثر تكراراً`, bars(TW.map((x) => ({ k: x.w, n: x.n })), TW[0].n, (r) => `<span class="pair"><b>${N(r.n)}</b><b>${pct(r.n, t.words)}</b></span>`) + (AF ? `<p class="how afn">${afNote()}</p>` : ''), false).replace(`<summary>${N(TW.length)}`, `<summary><b class="snum">${N(TW.length)}</b>`) +
     panel('تكرار الحروف', lettersBars, false) +
     panel('أطوال الكلمات (بعدد الحروف)', bars(S.wordLength.map((x) => ({ k: x.len === 10 ? '١٠ فأكثر' : N(x.len) + ' حروف', n: x.n })), Math.max(...S.wordLength.map((x) => x.n)), (r) => `<span class="pair"><b>${N(r.n)}</b><b>${pct(r.n, t.words)}</b></span>`), false) +
-    panel('المكي والمدني', `<table class="tbl"><tr><th></th><th class="num">السور</th><th class="num">الآيات</th><th class="num">الكلمات</th><th class="num">الحروف</th></tr>` +
-      [['مكية', mk], ['مدنية', md]].map(([n, p]) => `<tr><td>${n}</td><td class="num">${N(p.surahs)}</td><td class="num">${N(p.verses)} (${pct(p.verses, t.verses)})</td><td class="num">${N(p.words)} (${pct(p.words, t.words)})</td><td class="num">${N(p.letters)}</td></tr>`).join('') + `</table>` +
+    panel('المكي والمدني', `<table class="tbl"><tr><th></th><th class="num">السور</th><th class="num">الآيات</th><th class="num">الكلمات</th><th class="num">الحروف</th>${RJ ? '<th class="num">متوسط الآيات في السورة</th><th class="num">متوسط كلمات الآية</th>' : ''}</tr>` +
+      [['مكية', mk, 'makkah'], ['مدنية', md, 'madinah']].map(([n, p, k]) => `<tr><td>${n}</td><td class="num">${N(p.surahs)}</td><td class="num">${N(p.verses)} (${pct(p.verses, t.verses)})</td><td class="num">${N(p.words)} (${pct(p.words, t.words)})</td><td class="num">${N(p.letters)}</td>${RJ ? `<td class="num">${N(RJ.structure.place[k].vps)}</td><td class="num">${N(RJ.structure.place[k].wpv)}</td>` : ''}</tr>`).join('') + `</table>` +
+      (RJ ? `<p class="how">الآية المدنية أطول بنحو ${N((RJ.structure.place.madinah.wpv / RJ.structure.place.makkah.wpv).toFixed(1))} مرة من المكية في المتوسط.</p>` : '') +
       `<p class="tag">التصنيف المكي/المدني كما ورد في بيانات Quran.com.</p>`, false) +
     panel('أطول آية وأقصر آية', verseBox(S.longestVerse, 'أطول آية (بعدد الكلمات)') + verseBox(S.shortestVerse, 'أقصر آية (بعدد الكلمات)'), false) +
     (D ? panel(`الأضداد في القرآن (${N(D.opposites.length)} زوجاً)`, oppPanel(), false) : '') +
@@ -2042,7 +2042,7 @@ async function initStats() {
   { const pick = (id, t) => [...$(id).children].find((d) => d.tagName === 'DETAILS' && d.querySelector(':scope>summary').textContent.includes(t));
     const swap = (a, b) => { if (!a || !b) return; const m = document.createComment(''); a.replaceWith(m); b.replaceWith(a); m.replaceWith(b); };
     const mk = pick('kSurahs', 'المكي والمدني'), len = pick('kAyat', 'آيات السور مكية ومدنية');
-    if (mk && len) { const own = (d) => [...d.children].slice(1); const a = own(mk).map((n) => n.cloneNode(true)), b = own(len).map((n) => n.cloneNode(true)); mk.append(...b); len.querySelector(':scope>summary').after(...a); }   // both boxes show both tables: the counts, then the verse lengths
+    if (mk && len) { [...len.children].slice(1).forEach((n) => n.remove()); len.append(...[...mk.children].slice(1).map((n) => n.cloneNode(true))); }   // both boxes: one table, counts and verse lengths
     swap(mk, pick('kSurahs', 'مطلع السورة وخاتمتها'));   // «المكي والمدني» two rows down
     swap(len, pick('kAyat', 'آيات تكررت بنصها')); }   // «آيات السور مكية ومدنية» one row up
   body.querySelector('.kstack').prepend($('kNames').closest('.ksec'));   // the names of Allah: the first row
