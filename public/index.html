@@ -2332,7 +2332,7 @@ TOPICS.people = {
     { g: 0, t: 'يحيى', note: 'آتاه الله الحكم صبياً، وكان براً بوالديه.', keys: ['19:12', '19:14'] },
     { g: 0, t: 'عيسى', note: 'المسيح ابن مريم، ولد بكلمة من الله، وأيّده بالبينات وروح القدس.', keys: ['3:45', '2:87'] },
     { g: 0, t: 'ذو الكفل', note: 'ذُكر مع إسماعيل وإدريس في الصابرين. وفي كونه نبياً خلاف بين العلماء.', keys: ['21:85'] },
-    { g: 0, t: 'محمد ﷺ', note: 'خاتم النبيين والمرسلين، ذُكر اسمه في القرآن أربع مرات، وذُكر باسم «أحمد» مرة في بشارة عيسى.', keys: ['3:144', '33:40', '48:29', '47:2', '61:6'] },
+    { g: 0, t: 'محمد ﷺ', note: 'خاتم النبيين والمرسلين، ذُكر اسمه في القرآن أربع مرات، وذُكر باسم «أحمد» مرة في بشارة عيسى.', keys: [] },   // its verses are in «محمد» و«أحمد» lower on the page
     { g: 1, t: 'لقمان', note: 'آتاه الله الحكمة وأمره بالشكر؛ وسُمّيت سورة باسمه، وفيها وصاياه لابنه. وفي نبوّته خلاف، والأكثر على أنه حكيم صالح.', keys: ['31:12', '31:13'] },
     { g: 1, t: 'ذو القرنين', note: 'ملك مكّنه الله في الأرض وآتاه من كل شيء سبباً، وبنى السدّ في وجه يأجوج ومأجوج.', keys: ['18:83', '18:84'] },
     { g: 1, t: 'مريم', note: 'المرأة الوحيدة المسمّاة في القرآن، وسُمّيت سورة باسمها، واصطفاها الله على نساء العالمين.', keys: ['19:16', '3:42'] },
@@ -2869,7 +2869,7 @@ async function initTopic(name) {
     const d = e.target; if (!d.open || d.dataset.done || !d.dataset.i) return; d.dataset.done = 1;
     const m = T.items[+d.dataset.i], box = d.querySelector('.exs');
     try {
-      if (!m.keys.length) { box.innerHTML = '<div class="tag">لا موضع قرآني لهذا اللفظ؛ مصدره السنة.</div>'; return; }
+      if (!m.keys.length) { box.innerHTML = name === 'names' ? '<div class="tag">لا موضع قرآني لهذا اللفظ؛ مصدره السنة.</div>' : ''; return; }
       let vs = [];
       for (let k = 0; k < m.keys.length; k += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + m.keys.slice(k, k + 8).join(','))).json());
       box.innerHTML = (m.subs ? `<div class="subs">${m.subs.map(([w, ks]) => `<details class="subd" data-keys="${ks.join(',')}"><summary>«${esc(w)}» <small>${nA(ks.length)}</small></summary><div class="exs"></div></details>`).join('')}</div>` : '') + vs.map((v) => PANEL_TOPICS.includes(name) ? `<div class="ex"><div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${name === 'numbers' ? hlNum(v.text) : esc(v.text)}</div></div>` : `<div class="ex"><div class="vt" data-ak="${esc(v.key)}">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
