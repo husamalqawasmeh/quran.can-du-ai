@@ -303,10 +303,8 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .bkr .bkarr i::after{left:-2px;border-right:11px solid currentColor;border-left:0}
 .bkl .bkarr{flex-direction:row-reverse}
 .bkl .bkarr i::after{right:-2px;border-left:11px solid currentColor;border-right:0}
-.bkcover{width:230px;height:310px;border:0;padding:14px;cursor:pointer;border-radius:6px 14px 14px 6px;background:linear-gradient(90deg,#0b3d2e,#0f5c45 12%,#0d4d3b);box-shadow:inset -10px 0 0 #0a3427,0 10px 24px rgba(0,0,0,.4);transition:transform .25s}
+.bkcover{width:240px;border:0;padding:0;cursor:pointer;background:none;border-radius:4px 10px 10px 4px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45);transition:transform .25s}.bkcover img{display:block;width:100%;height:auto}
 .bkcover:hover{transform:translateY(-3px)}
-.bkorn{display:flex;align-items:center;justify-content:center;height:100%;border:3px double #d4af37;border-radius:6px;background:radial-gradient(circle,rgba(212,175,55,.18),transparent 65%)}
-.bkorn b{color:#e8c766;font-size:1.7rem;font-family:"Noto Naskh Arabic","Segoe UI",serif}
 .bkopen{margin:16px auto;max-width:1100px;text-align:center}
 .bkpages{display:grid;grid-template-columns:1fr 1fr;margin-bottom:12px;animation:bkopen .45s ease-out;filter:drop-shadow(0 10px 20px rgba(0,0,0,.35))}
 @keyframes bkopen{from{transform:scaleX(.3);opacity:0}to{transform:none;opacity:1}}
@@ -398,7 +396,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
         <a class="bkarr" href="#about"><span class="bklab">عن القرآن…</span><i aria-hidden="true"></i></a>
         <button type="button" class="bkarr" data-bk="index"><span class="bklab">الفهرس</span><i aria-hidden="true"></i></button>
       </div>
-      <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><span class="bkorn"><b>القرآن الكريم</b></span></button>
+      <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><img src="/mushaf.png" alt="المصحف الشريف" width="334" height="468"></button>
       <div class="bkside bkl">
         <button type="button" class="bkarr" data-bk="people"><span class="bklab">الأشخاص</span><i aria-hidden="true"></i></button>
       </div>
