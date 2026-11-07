@@ -293,8 +293,8 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 /* the settings page: its three parts open and close */
 .ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}:is(.ucsec,.ucard)>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}:is(.ucsec,.ucard)>summary::-webkit-details-marker{display:none}:is(.ucsec,.ucard)>summary::before{content:"◀";color:var(--accent);font-size:.85em}:is(.ucsec,.ucard)[open]>summary::before{content:"▼"}:is(.ucsec,.ucard)>summary h2{margin:0}.ucard>summary{padding:0}.ucard[open]>summary{margin-bottom:8px}.ucsec[open]{padding-bottom:12px}
 /* the book page (#book) */
-.bkclosed{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:20px 0}.bkslot{width:min(760px,calc(100vw - 420px));height:760px;display:flex;align-items:center;justify-content:center}
-.bkside{display:flex;flex-direction:column;gap:56px;padding:0 28px}.bkr{align-items:flex-start}.bkl{align-items:flex-end}
+.bkclosed{display:flex;flex-direction:column;align-items:center;gap:16px;margin:16px 0}.bkslot{width:min(760px,100%);height:720px;display:flex;align-items:center;justify-content:center}
+.bkbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .bkarr{display:flex;align-items:center;font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--title);text-decoration:none}
 .bklab{border:2px solid var(--title);border-radius:12px;padding:6px 16px;font-weight:700;background:var(--card);white-space:nowrap}
 .bkarr:hover .bklab{border-color:var(--accent);color:var(--accent)}
@@ -316,7 +316,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .bkppl a:hover{border-color:#0f5c45;color:#0f5c45}
 .bkppl svg.ic{width:1.4rem;height:1.4rem;fill:none;stroke:#0f5c45;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .bkidx .v{margin-inline-start:auto;color:#7d6a45;font-size:.8rem}
-@media(max-width:700px){.bkclosed{grid-template-columns:1fr;justify-items:center;gap:16px}.bkside{flex-direction:row;gap:12px;padding:0}.bkl{order:3}.bkslot{height:auto}.bkcover{height:auto;width:240px}.bkcover img{width:100%;height:auto}.bkpages{grid-template-columns:1fr}.bkpage{border-radius:10px!important;border-width:3px!important}}
+@media(max-width:700px){.bkslot{height:auto}.bkcover{height:auto;width:240px}.bkcover img{width:100%;height:auto}.bkpages{grid-template-columns:1fr}.bkpage{border-radius:10px!important;border-width:3px!important}}
 /* stats boxes: one height for every one-line box, one for every two-line box */
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,.lrow)>details:not(:only-of-type){box-sizing:border-box;min-height:38px;padding-top:0!important;padding-bottom:0!important}
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,.lrow)>details>summary{padding:4px 0!important;line-height:1.4}
@@ -387,9 +387,12 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
   <p class="sub">اختر أحد الأزرار حول المصحف؛ «الفهرس» يفتح المصحف على فهرس السور.</p>
   <div class="bk" id="bk">
     <div class="bkclosed">
-      <div class="bkside bkr">
+      <div class="bkbar">
         <a class="bkarr" href="#about"><span class="bklab">عن القرآن…</span></a>
         <button type="button" class="bkarr" data-bk="index"><span class="bklab">الفهرس</span></button>
+        <button type="button" class="bkarr" data-bk="people"><span class="bklab">الأشخاص</span></button>
+        <a class="bkarr" href="#prophets"><span class="bklab">الأنبياء</span></a>
+        <a class="bkarr" href="#places"><span class="bklab">الأماكن</span></a>
       </div>
       <div class="bkslot">
         <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><img src="/mushaf.png" alt="المصحف الشريف" width="334" height="468"></button>
@@ -397,9 +400,6 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
           <div class="bkpages"><div class="bkpage" id="bkR"></div><div class="bkpage" id="bkL"></div></div>
           <button type="button" class="btn" data-bk="close">إغلاق المصحف</button>
         </div>
-      </div>
-      <div class="bkside bkl">
-        <button type="button" class="bkarr" data-bk="people"><span class="bklab">الأشخاص</span></button>
       </div>
     </div>
   </div>
