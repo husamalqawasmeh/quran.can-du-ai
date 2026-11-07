@@ -293,22 +293,22 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 /* the settings page: its three parts open and close */
 .ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}:is(.ucsec,.ucard)>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}:is(.ucsec,.ucard)>summary::-webkit-details-marker{display:none}:is(.ucsec,.ucard)>summary::before{content:"◀";color:var(--accent);font-size:.85em}:is(.ucsec,.ucard)[open]>summary::before{content:"▼"}:is(.ucsec,.ucard)>summary h2{margin:0}.ucard>summary{padding:0}.ucard[open]>summary{margin-bottom:8px}.ucsec[open]{padding-bottom:12px}
 /* the book page (#book) */
-.bkclosed{display:flex;flex-direction:column;align-items:center;gap:16px;margin:16px 0}.bkslot{width:min(760px,100%);height:720px;display:flex;align-items:center;justify-content:center}
+.bkclosed{display:flex;flex-direction:column;align-items:center;gap:16px;margin:16px 0}.bkslot{width:min(900px,100%);aspect-ratio:596/373;display:flex;align-items:center;justify-content:center}
 .bkbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .bkarr{display:flex;align-items:center;font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--title);text-decoration:none}
 .bklab{border:2px solid var(--title);border-radius:12px;padding:6px 16px;font-weight:700;background:var(--card);white-space:nowrap}
 .bkarr:hover .bklab{border-color:var(--accent);color:var(--accent)}
-.bkcover{height:100%;border:0;padding:0;cursor:pointer;background:none;border-radius:4px 10px 10px 4px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45);transition:transform .25s}.bkcover img{display:block;height:100%;width:auto}
+.bkcover{width:100%;height:100%;border:0;padding:0;cursor:pointer;background:none;border-radius:4px 10px 10px 4px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45);transition:transform .25s}.bkcover img{display:block;width:100%;height:100%;object-fit:cover}
 .bkcover:hover{transform:translateY(-3px)}
-.bkopen{width:100%;height:100%;display:flex;flex-direction:column;gap:8px;align-items:center}.bkopen[hidden]{display:none}
+.bkopen{width:100%;height:calc(100% + 46px);align-self:flex-start;display:flex;flex-direction:column;gap:8px;align-items:center}.bkopen[hidden]{display:none}
 .bkpages{display:grid;grid-template-columns:1fr 1fr;width:100%;flex:1;min-height:0;animation:bkopen .45s ease-out;filter:drop-shadow(0 10px 20px rgba(0,0,0,.35))}
 @keyframes bkopen{from{transform:scaleX(.3);opacity:0}to{transform:none;opacity:1}}
 .bkpage{overflow:auto;background:#f8f1dc;color:#2b2416;padding:10px 16px;border:3px double #b8963a;text-align:start}
 .bkpage:first-child{border-radius:0 10px 10px 0;border-left-width:1px;box-shadow:inset 18px 0 18px -14px rgba(0,0,0,.35)}
 .bkpage:last-child{border-radius:10px 0 0 10px;border-right-width:1px;box-shadow:inset -18px 0 18px -14px rgba(0,0,0,.35)}
 .bkpage h3{margin:0 0 6px;font-size:1.05rem;line-height:1.3;text-align:center;color:#7a5a12;font-family:"Noto Naskh Arabic","Segoe UI",serif}
-.bkidx{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}
-.bkidx button{display:flex;gap:6px;align-items:baseline;font:inherit;font-size:.78rem;line-height:1.25;background:none;border:0;border-bottom:1px dotted #c9b27a;padding:1px 0;color:inherit;cursor:pointer;text-align:start}
+.bkidx{display:grid;grid-template-columns:repeat(3,1fr);column-gap:12px}
+.bkidx button{display:flex;gap:6px;align-items:baseline;font:inherit;font-size:.84rem;line-height:1.35;background:none;border:0;border-bottom:1px dotted #c9b27a;padding:1px 0;color:inherit;cursor:pointer;text-align:start}
 .bkidx button:hover{color:#0f5c45;font-weight:700}
 .bkidx .n{min-width:1.8em;color:#7a5a12}
 .bkppl{display:flex;flex-direction:column;gap:10px}
@@ -316,7 +316,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .bkppl a:hover{border-color:#0f5c45;color:#0f5c45}
 .bkppl svg.ic{width:1.4rem;height:1.4rem;fill:none;stroke:#0f5c45;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .bkidx .v{margin-inline-start:auto;color:#7d6a45;font-size:.8rem}
-@media(max-width:700px){.bkslot{height:auto}.bkcover{height:auto;width:240px}.bkcover img{width:100%;height:auto}.bkpages{grid-template-columns:1fr}.bkpage{border-radius:10px!important;border-width:3px!important}}
+@media(max-width:700px){.bkslot{aspect-ratio:auto;height:auto}.bkcover{height:auto;width:100%}.bkopen{height:auto}.bkidx{grid-template-columns:1fr 1fr}.bkcover img{width:100%;height:auto}.bkpages{grid-template-columns:1fr}.bkpage{border-radius:10px!important;border-width:3px!important}}
 /* stats boxes: one height for every one-line box, one for every two-line box */
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,.lrow)>details:not(:only-of-type){box-sizing:border-box;min-height:38px;padding-top:0!important;padding-bottom:0!important}
 #statsBody :is(.kmini,#kWords,#kSurahs,#kAyat,.lrow)>details>summary{padding:4px 0!important;line-height:1.4}
@@ -395,7 +395,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
         <a class="bkarr" href="#places"><span class="bklab">الأماكن</span></a>
       </div>
       <div class="bkslot">
-        <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><img src="/mushaf.png" alt="المصحف الشريف" width="334" height="468"></button>
+        <button type="button" class="bkcover" data-bk="index" aria-label="افتح المصحف على الفهرس"><img src="/mushaf.jpg" alt="المصحف الشريف" width="596" height="373"></button>
         <div class="bkopen" hidden>
           <div class="bkpages"><div class="bkpage" id="bkR"></div><div class="bkpage" id="bkL"></div></div>
           <button type="button" class="btn" data-bk="close">إغلاق المصحف</button>
@@ -829,7 +829,7 @@ async function bookShow(mode) {   // mode: 'index', 'people', or false (closed)
   $('bkL').innerHTML = ''; $('bkR').innerHTML = '<p class="hint">جارٍ التحميل…</p>';
   try { if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { $('bkR').innerHTML = '<p class="hint">تعذّر تحميل قائمة السور.</p>'; return; }
-  const page = (a, title) => `<h3>${title}</h3><div class="bkidx">${a.map((s) => `<button type="button" data-n="${s.id}"><span class="n">${nA(s.id)}</span><span>${esc(s.ar)}</span><span class="v">${nA(s.verses)} آية</span></button>`).join('')}</div>`;
+  const page = (a, title) => `<h3>${title}</h3><div class="bkidx">${a.map((s) => `<button type="button" data-n="${s.id}"><span class="n">${nA(s.id)}</span><span>${esc(s.ar)}</span><span class="v" title="عدد الآيات">${nA(s.verses)}</span></button>`).join('')}</div>`;
   $('bkR').innerHTML = page(surahs.slice(0, 57), 'فهرس السور'); $('bkL').innerHTML = page(surahs.slice(57), 'فهرس السور (تتمة)');
   $('bk').dataset.mode = mode;
 }
