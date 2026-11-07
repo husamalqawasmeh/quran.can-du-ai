@@ -2968,7 +2968,7 @@ async function initTopic(name) {
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);
   if (PANEL_TOPICS.includes(name)) panelize(list);
-  if (name === 'prophets') list.querySelector('.mgroup:last-child>.mgrid').insertAdjacentHTML('afterbegin', '<div class="nabiv"><span class="vt">إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا</span> <span class="tag">سورة الأحزاب — الآية ٥٦</span></div>');   // the verse of salat on the Prophet, above his section's boxes
+  if (name === 'prophets') list.querySelector('.mgroup:last-child>.mgrid').insertAdjacentHTML('afterbegin', '<div class="nabiv"><span class="vt" data-ak="33:56">إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا</span> <span class="tag">سورة الأحزاب — الآية ٥٦</span></div>');   // the verse of salat on the Prophet, above his section's boxes
   if (name === 'names') sortNameCards();
   if (['jannah', 'jannah2', 'qiyamah'].includes(name)) {  // a little space after every few rows of boxes (four on the Jannah page, five elsewhere)
     const rows = name === 'jannah' ? 4 : 5;
