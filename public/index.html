@@ -290,6 +290,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
 .pb{height:12px;background:color-mix(in srgb,var(--cc) 16%,transparent);border-radius:6px;overflow:hidden}.pb i{display:block;height:100%;background:var(--cc);border-radius:6px}
 .pv{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.pv b{display:inline}.pv small{color:var(--muted);font-size:.78rem;font-weight:700}
 @media(max-width:700px){.pr{grid-template-columns:1fr 8em;grid-template-areas:"l v" "b b"}.pr .pl{grid-area:l}.pr .pv{grid-area:v}.pr .pb{grid-area:b}}
+.ftlist{margin:6px 0 12px;padding-inline-start:1.6em;line-height:1.9}.ftlist small{color:var(--muted)}#vaFeat{margin-top:14px}
 /* the settings page: its three parts open and close */
 .ucsec{border:2px solid var(--line);border-radius:12px;padding:0 14px;margin:0 0 10px}:is(.ucsec,.ucard)>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0}:is(.ucsec,.ucard)>summary::-webkit-details-marker{display:none}:is(.ucsec,.ucard)>summary::before{content:"◀";color:var(--accent);font-size:.85em}:is(.ucsec,.ucard)[open]>summary::before{content:"▼"}:is(.ucsec,.ucard)>summary h2{margin:0}.ucard>summary{padding:0}.ucard[open]>summary{margin-bottom:8px}.ucsec[open]{padding-bottom:12px}
 /* the book page (#book) */
@@ -372,6 +373,7 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
   <h1>صفحة المتطوعين للتدقيق</h1>
   <p class="sub">بنود في الموقع تحتاج حكماً من أهل العلم لا يقدر عليه الحساب الآلي. احكم على ما تعرفه، واترك ما لا تتيقن منه.</p>
   <div id="vaBody"><p class="hint">جارٍ التحميل…</p></div>
+  <div id="vaFeat"></div>
 </section>
 
 <!-- معايير التحليل اللغوي العميق -->
@@ -811,7 +813,7 @@ function route() {
   if (v === 'userconfig') fillUc();
   if (v === 'research') initResearch();
   if (v === 'book') bookShow(false);
-  if (v === 'validate') initValidate();
+  if (v === 'validate') { initValidate(); vaFeatures(); }
   autoExpand(v);
   window.scrollTo(0, 0);
 }
@@ -3158,14 +3160,15 @@ async function initResearch() {
   if (rsInit) return; rsInit = true;
   const body = $('rsBody');
   let R; try { R = await (await fetch('/research.json')).json(); } catch { rsInit = false; body.innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
-  const N = (n) => nA(n), all = RS.flatMap(([, l]) => l), cnt = (k) => all.filter((c) => c[2] === k).length;
+  const N = (n) => nA(n), open = (c) => c[2] !== 'd' && c[2] !== 'x', all = RS.flatMap(([, l]) => l).filter(open), cnt = (k) => all.filter((c) => c[2] === k).length;   // still open: not done, not «لا يُنصح به»
+  const done = RS.flatMap(([, l]) => l).filter((c) => c[2] === 'd').length, nope = RS.flatMap(([, l]) => l).filter((c) => c[2] === 'x');
   const tbl = (head, rows) => `<div class="tscroll"><table class="tbl"><tr>${head.map((h) => `<th>${h}</th>`).join('')}</tr>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
   const card = (t, html) => `<div class="card drvsec"><h2>${t}</h2>${html}</div>`;
   const S = R.structure, L = R.letters, G = R.grammar;
   const GL = GRAM_L;
   const diff = G.rows.filter(([k, , a, b]) => k !== 'verb' && Math.min(a, b) > 0 && Math.max(a, b) / Math.min(a, b) >= 1.6);
   body.innerHTML =
-    card('خلاصة المراجعة', `<p>راجعتُ المعايير المئة واحداً واحداً مقارنةً بما في الموقع. اضغط أي حالة لعرض معاييرها فقط:</p>
+    card('خلاصة المراجعة', `<p>راجعتُ المعايير المئة واحداً واحداً مقارنةً بما في الموقع. المنجز منها (${N(done)}) صار في <a href="#validate">قائمة ميزات الموقع في صفحة المتطوعين للتدقيق</a>، وما لا يُنصح به (${N(nope.length)}) في «قائمة المستبعد» أسفل هذه الصفحة. والباقي هنا ما لم يُنجز بعد:</p>
       <div class="rsfilter">${['all', 'd', 'i', 'n', 'x'].filter((k) => k === 'all' || cnt(k)).map((k) => `<button type="button" class="btn${k === 'all' ? ' on' : ''} rs-${k}" data-f="${k}">${k === 'all' ? 'الكل' : RS_ST[k][0]} (${N(k === 'all' ? all.length : cnt(k))})</button>`).join('')}</div>
       <ul class="rslegend">${Object.entries(RS_ST).filter(([k]) => cnt(k)).map(([k, [t, d]]) => `<li><span class="rsb rs-${k}">${t}</span> ${d}</li>`).join('')}</ul>`) +
     card('أسس منهجية يعتمدها الموقع', `<ul>
@@ -3175,7 +3178,8 @@ async function initResearch() {
       <li><b>الصرف والجذور:</b> «مدونة القرآن العربية» (Quranic Arabic Corpus) بأصل الكلمة وجذرها ووزنها.</li>
       <li><b>القراءات:</b> رواية حفص وحدها.</li>
       <li><b>الدلالة الإحصائية:</b> الأرقام وصف للنص لا استدلال؛ وكلما كثرت الفرضيات المختبرة كثرت المطابقات بالصدفة، فلا يُبنى عليها إعجاز عددي.</li></ul>`) +
-    `<div class="card drvsec"><h2>المعايير المئة وحالة كل منها</h2><div class="rsgroups">${RS.map(([g, l]) => `<div class="rsg"><h3 class="ptl">${esc(g)}</h3><ol class="rslist">${l.map(([n, t, k, note, href]) => `<li class="rsi" data-st="${k}"><span class="rsn">${N(n)}</span><span class="rst">${esc(t)}<small>${esc(note || '')}${href ? ` <a href="${href}">↗</a>` : ''}</small></span><span class="rsb rs-${k}">${RS_ST[k][0]}</span></li>`).join('')}</ol></div>`).join('')}</div></div>` +
+    `<div class="card drvsec"><h2>المعايير الباقية (${N(all.length)})</h2><div class="rsgroups">${RS.filter(([, l]) => l.some(open)).map(([g, l]) => `<div class="rsg"><h3 class="ptl">${esc(g)}</h3><ol class="rslist">${l.filter(open).map(([n, t, k, note, href]) => `<li class="rsi" data-st="${k}"><span class="rsn">${N(n)}</span><span class="rst">${esc(t)}<small>${esc(note || '')}${href ? ` <a href="${href}">↗</a>` : ''}</small></span><span class="rsb rs-${k}">${RS_ST[k][0]}</span></li>`).join('')}</ol></div>`).join('')}</div></div>` +
+    card(`قائمة المستبعد: مقترحات لا يُنصح بها (${N(nope.length)})`, `<p>تُراجع عليها أي اقتراحات جديدة: ما يشبه بنداً منها لا يُضاف إلى الموقع، للسبب المذكور معه.</p><ol class="rslist">${nope.map(([n, t, , note]) => `<li class="rsi"><span class="rsn">${N(n)}</span><span class="rst">${esc(t)}<small>${esc(note || '')}</small></span><span class="rsb rs-x">${RS_ST.x[0]}</span></li>`).join('')}</ol>`) +
     card('تحليلات جديدة ١: بنية السور والآيات (المعايير ١–٨، ٧٦)',
       tbl(['المقياس', 'الوسط', 'الوسيط', 'الانحراف المعياري'], [
         ['عدد الآيات في السورة', N(S.verses.mean), N(S.verses.median), N(S.verses.sd)],
@@ -3224,6 +3228,12 @@ async function loadVerified() {   // names with judged verses: how many are a na
   return vaVerified;
 }
 let vaInit = false;
+function vaFeatures() {   // the site's pages (the home tiles) and its done analyses (the criteria marked «منجز»), for the volunteers to check
+  const box = $('vaFeat'); if (box.firstChild) return;
+  const tiles = [...document.querySelectorAll('#v-home a.tile')], done = RS.map(([g, l]) => [g, l.filter((c) => c[2] === 'd')]).filter(([, l]) => l.length);
+  box.innerHTML = `<details class="card drvsec ucard"><summary><h2>🗂️ ميزات الموقع للتدقيق: الصفحات (${nA(tiles.length)})</h2></summary><p>كل صفحات الموقع كما في القائمة الرئيسية. افتح الصفحة وراجع نصوصها وآياتها، وأرسل ملاحظتك.</p><ol class="ftlist">${tiles.map((a) => `<li><a href="${a.getAttribute('href')}">${esc(a.querySelector('b').textContent)}</a>${a.querySelector(':scope>span') ? ` <small>${esc(a.querySelector(':scope>span').textContent)}</small>` : ''}</li>`).join('')}</ol></details>` +
+    `<details class="card drvsec ucard"><summary><h2>📊 ميزات الموقع للتدقيق: التحليلات المنجزة (${nA(done.reduce((a, [, l]) => a + l.length, 0))})</h2></summary><p>التحليلات اللغوية والإحصائية المنجزة في الموقع، مرتبة بحسب معايير التحليل اللغوي العميق، مع مكان كل منها.</p>${done.map(([g, l]) => `<h3 class="ptl">${esc(g)}</h3><ol class="ftlist">${l.map(([n, t, , note, href]) => `<li value="${n}">${href ? `<a href="${href}">${esc(t)}</a>` : esc(t)}${note ? ` <small>${esc(note)}</small>` : ''}</li>`).join('')}</ol>`).join('')}</details>`;
+}
 async function initValidate() {
   const body = $('vaBody');
   if (!vaInit) {
