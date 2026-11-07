@@ -1641,7 +1641,7 @@ async function initStats() {
     const lt = (head, a, id) => stab([head, 'المرات', 'النسبة'], byN(a).map(([c, n, p]) => [[`<b>${c}</b>`, c], [N(n), n], [N(p) + '٪', p]]), 1, 'desc', id);
     return `<p class="how"><b>إنتروبيا الحروف:</b> ${N(L.entropy)} بت للحرف، من حد أقصى ${N(L.maxEntropy)} لو تساوت الحروف الـ${N(L.alphabet)} في تكرارها. والفرق يعني أن بعض الحروف أكثر وروداً بكثير من غيرها (الألف واللام خاصة)، وهذا معتاد في العربية.</p>` +
       `<div class="lrow"><details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر الحروف أول الكلمة وآخرها</h4></summary><div class="rs2">${lt('أول الكلمة', L.first, 'lfirst')}${lt('آخر الكلمة', L.last, 'llast')}</div></details>` +
-      `<details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر الأزواج المتتالية من الحروف داخل الكلمة</h4></summary>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>` +
+      `<details class="pg pc-top lsub"><summary class="pgh"><h4>الأزواج المتتالية من حروف الكلمة</h4></summary><p class="how">الزوج حرفان متجاوران داخل كلمة واحدة؛ فكلمة «العلم» فيها أربعة أزواج: «ال» و«لع» و«عل» و«لم». تُعدّ الأزواج في كل كلمات القرآن، ولا يُعدّ ما بين آخر حرف في كلمة وأول حرف في الكلمة التي بعدها. «المرات» عدد ورود الزوج، و«النسبة» حصته من كل الأزواج.</p>${lt('الزوج', L.pairs, 'lpairs')}<p class="hint">«ال» وحدها ${N(L.pairs[0][2])}٪ من كل الأزواج، بسبب أداة التعريف.</p></details>` +
       `<details class="pg pc-top lsub"><summary class="pgh"><h4>أكثر السلاسل الثلاثية من الحروف</h4></summary>${lt('السلسلة', L.tri, 'ltri')}</details></div>`;
   };
   const gramPanel = () => {   // morphology and syntax markers, per 1,000 words in Makki and Madani surahs
