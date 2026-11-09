@@ -53,7 +53,7 @@ $('sJuz').onclick = (e) => { juzOn = !juzOn; $('sLegend').hidden = !juzOn; e.cur
 $('ssearch').oninput = () => surahs && renderSurahs();
 /* ---------- search boxes on the surahs screen: a surah by name, a text in the Quran, a subject in the Quran ---------- */
 const qNorm = (t) => String(t).replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g, '').replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/\s+/g, ' ').trim();
-let qText = null;
+let qText = null, qUth = null;   // plain text to search, Uthmani text (with tashkeel) to show
 const qShow = (title, html) => { const b = $('qres'); b.innerHTML = `<div class="qh"><span>${title}</span><button type="button" class="qx">✕ إغلاق</button></div>${html}`; b.hidden = false; };
 $('qres').addEventListener('click', (e) => { if (e.target.closest('.qx')) $('qres').hidden = true; });
 const surahName = (n) => (surahs && surahs[n - 1] ? surahs[n - 1].ar : String(n));
@@ -61,12 +61,12 @@ async function searchText(q) {
   const words = qNorm(q).split(' ').filter((w) => w.length > 1);
   if (!words.length) return;
   qShow('جارٍ البحث…', '');
-  try { if (!qText) qText = await (await fetch('/quran_text.json')).json(); } catch { qShow('تعذّر تحميل نص القرآن.', ''); return; }
+  try { if (!qText) [qText, qUth] = await Promise.all(['/quran_text.json', '/quran_uthmani.json'].map((f) => fetch(f).then((r) => r.json()))); } catch { qShow('تعذّر تحميل نص القرآن.', ''); return; }
   if (!surahs) try { surahs = await (await fetch('/api/surahs')).json(); } catch { /* names fall back to numbers */ }
   const hits = Object.entries(qText).filter(([, t]) => { const n = qNorm(t); return words.every((w) => n.includes(w)); })
     .sort(([a], [b]) => { const [s1, a1] = a.split(':').map(Number), [s2, a2] = b.split(':').map(Number); return s1 - s2 || a1 - a2; });
   const re = new RegExp('(' + words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
-  const rows = hits.slice(0, 200).map(([k, t]) => { const [sn, an] = k.split(':'); return `<div class="qr"><span class="tag">سورة ${esc(surahName(+sn))} — الآية ${nA(an)}:</span>${esc(qNorm(t)).replace(re, '<mark>$1</mark>')} <a class="qt" href="https://quran.com/${sn}/${an}" target="_blank" rel="noopener noreferrer">↗</a></div>`; });
+  const rows = hits.slice(0, 200).map(([k, t]) => { const [sn, an] = k.split(':'); return `<div class="qr"><span class="tag">سورة ${esc(surahName(+sn))} — الآية ${nA(an)}:</span>${qUth[k] ? hlAyah(qUth[k], (w) => [qNorm(w), qNorm(w.replace(/ٰ/g, 'ا'))].some((n) => n && words.some((x) => n.includes(x)))) : esc(qNorm(t)).replace(re, '<mark>$1</mark>')} <a class="qt" href="https://quran.com/${sn}/${an}" target="_blank" rel="noopener noreferrer">↗</a></div>`; });
   qShow(`نتائج البحث عن «${esc(q)}» في نص القرآن: ${nA(hits.length)} آية${hits.length > 200 ? ' (تظهر أول ٢٠٠)' : ''}`, rows.join('') || '<div class="qr">لا توجد آية تحتوي على هذه الكلمات.</div>');
 }
 const TOPIC_PAGES = () => [...Object.keys(TOPICS).filter((k) => VIEWS.includes(k) && k !== 'jannah2' && k !== 'others').map((k) => [k, TOPICS[k].items]), ['others', TOPICS.others ? TOPICS.others.items : []], ['miracles', MIRACLES]];

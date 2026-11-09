@@ -8,7 +8,7 @@ const vaDec = (ref) => vaRev[ref] || vaDecided(vaTally[ref]) || vaRule.get(ref) 
 const vaDecided = (t = {}) => { const a = t.allah || 0, o = t.other || 0; return Math.max(a, o) >= VA_MIN && a !== o ? (a > o ? 'allah' : 'other') : null; };
 async function vaLoad(text) {   // text: also the verses and surah names, for the page itself
   if (!vaOcc) { vaOcc = await (await fetch('/names_occ.json')).json(); vaRule = new Map(Object.entries(vaOcc).flatMap(([n, l]) => l.filter((x) => x[2]).map(([k, , r]) => [n + '|' + k, r > 0 ? 'allah' : 'other']))); }
-  if (text && !vaQ) [vaQ, vaSur] = await Promise.all([fetch('/quran_text.json').then((r) => r.json()), fetch('/api/surahs').then((r) => r.json())]);
+  if (text && !vaQ) [vaQ, vaSur] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/api/surahs').then((r) => r.json())]);   // shown with tashkeel; the name is found on the bare letters
   const who = prefs ? '&who=' + encodeURIComponent(prefs.uid) : '';
   const t = await (await fetch('/api/validate?item=names' + who)).json(); vaTally = t.tally || {}; vaMine = t.mine || {}; vaRev = t.rev || {}; vaTrusted = !!t.trusted;
 }
@@ -62,9 +62,10 @@ function vaDraw() {
   if (!names.includes(vaName)) vaName = names[0];   // a finished name leaves the list
   const strip = (t) => t.replace(/[ً-ٰٟـۖ-ۭ]/g, '').replace(/[إأآٱ]/g, 'ا');
   const stem = strip(vaName).replace(/^ال/, ''), re = new RegExp('(^|\\s)([وفبلك]?(?:ال|لل)?' + stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'ا?)(?=\\s|$)', 'g');   // the name as a whole word, with or without the article and a joined letter
+  const reW = new RegExp('^[وفبلك]?(?:ال|لل)?' + stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'ا?$');   // one word of the verse
   const vl = vaOcc[vaName], list = vl.filter(([k]) => !vaDec(vaName + '|' + k)), [d, t] = vaProg(vaName);
   const row = ([k, c]) => { const ref = vaName + '|' + k, tl = vaTally[ref] || {}, mine = vaMine[ref], dec = vaDec(ref), [su, a] = k.split(':');
-    return `<div class="varow${dec ? ' done' : ''}" data-ref="${esc(ref)}"><div class="vt vaq" data-ak="${k}">${esc(strip(vaQ[k] || '')).replace(re, '$1<mark>$2</mark>')}</div>
+    return `<div class="varow${dec ? ' done' : ''}" data-ref="${esc(ref)}"><div class="vt vaq" data-ak="${k}">${hlAyah(vaQ[k] || '', (w) => reW.test(strip(w)) || reW.test(strip(w.replace(/ٰ/g, 'ا'))))}</div>
       <div class="vameta"><span class="tag">${esc(vaSur?.[su - 1]?.ar || 'سورة ' + nA(su))} ${nA(a)}${c > 1 ? ` · يرد ${nA(c)} مرات` : ''}</span>
       ${[['allah', 'اسم لله'], ['other', 'لغير الله'], ['unsure', 'غير متأكد']].map(([v, l]) => `<button type="button" class="btn vab${mine === v ? ' on' : ''}" data-v="${v}"${prefs && vaTrusted ? '' : ' disabled'}>${l} <small>${nA(tl[v] || 0)}</small></button>`).join('')}
       ${dec ? `<span class="vadec">✓ حُسمت: ${dec === 'allah' ? 'اسم لله' : 'لغير الله'}</span>` : ''}</div></div>`; };

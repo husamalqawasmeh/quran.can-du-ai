@@ -480,15 +480,15 @@ async function initStats() {
       out.innerHTML = `<p class="how">${N(m.length)} كلمة${m.length > 200 ? '، تُعرض أول ٢٠٠' : ''}.</p><div class="tscroll">` + stab(['الكلمة', 'مرات الورود', 'ترتيبها في التكرار'], m.slice(0, 200).map(([w, n, r]) => [[`<span class="wlink" tabindex="0" role="button">${esc(w)}</span>`, w], [N(n), n], [N(r), r]]), 1, 'desc', 'words') + '</div>'; };
     ws.closest('details').addEventListener('toggle', async () => { if (WL) return; try { WL = await (await fetch('/words.json')).json(); await loadAF(); } catch { out.innerHTML = '<p class="hint">تعذّر التحميل.</p>'; return; } q.value = selGet('wq') || ''; h.checked = !!selGet('wh'); draw(); });
     /* a word of the table: a click opens, under its row, the verses it comes in (from the published text, matched the way the counts were made) */
-    let QT = null; const asW = (x) => x.replace(/[ً-ٰٟـۖ-ۭ]/g, '');
+    let QT = null, QU = null; const asW = (x) => x.replace(/[ً-ٰٟـۖ-ۭ]/g, '');
     out.addEventListener('click', async (e) => {
       const td = e.target.closest('table[data-id="words"] td:first-child'); if (!td || e.target.closest('.wpanel')) return;
       const tr = td.parentNode, was = tr.classList.contains('on'); out.querySelectorAll('.wpanel').forEach((x) => x.remove()); out.querySelectorAll('tr.on').forEach((x) => x.classList.remove('on')); if (was) return;
       const w = td.dataset.v, p = document.createElement('tr'); p.className = 'wpanel'; p.innerHTML = '<td colspan="3"><p class="hint">جارٍ التحميل…</p></td>'; tr.classList.add('on'); tr.after(p);
-      try { QT ||= await (await fetch('/quran_text.json')).json(); } catch { p.cells[0].innerHTML = '<p class="hint">تعذّر تحميل الآيات.</p>'; return; }
+      try { if (!QT) [QT, QU] = await Promise.all(['/quran_text.json', '/quran_uthmani.json'].map((f) => fetch(f).then((r) => r.json()))); } catch { p.cells[0].innerHTML = '<p class="hint">تعذّر تحميل الآيات.</p>'; return; }
       const ks = Object.keys(QT).filter((k) => QT[k].split(/\s+/).some((x) => asW(x) === w));
       p.cells[0].innerHTML = `<p class="how">«${esc(w)}» في ${N(ks.length)} آية${ks.length > 30 ? ' (تُعرض أول ٣٠)' : ''}. اضغط الآية لسماعها.</p>` +
-        ks.slice(0, 30).map((k) => { const [su, a] = k.split(':'); return `<div class="vt" data-ak="${k}"><span class="tag">سورة ${esc(S.surahs[su - 1].ar)} — الآية ${N(+a)}:</span> ${esc(QT[k])}</div>`; }).join('');
+        ks.slice(0, 30).map((k) => { const [su, a] = k.split(':'); return `<div class="vt" data-ak="${k}"><span class="tag">سورة ${esc(S.surahs[su - 1].ar)} — الآية ${N(+a)}:</span> ${esc(QU[k] || QT[k])}</div>`; }).join('');
     });
     out.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.wlink')) { e.preventDefault(); e.target.click(); } });
     q.oninput = () => { selSet('wq', q.value); draw(); }; h.onchange = () => { selSet('wh', h.checked); draw(); }; ws.querySelector('.wgo').onclick = () => { draw(); q.focus(); };

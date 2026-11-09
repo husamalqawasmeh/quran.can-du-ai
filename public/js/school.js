@@ -47,7 +47,7 @@ async function initSchool() {
   ensureReaders().then(() => fillEveryReader($('scReader')));
   scStats();
   if (scQT) return;
-  try { [scQT, scW1] = await Promise.all([fetch('/quran_text.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
+  try { [scQT, scW1] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { scQT = null; $('scBody').innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
   scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4);   // words that occur once in the Quran, with their verse
 }
@@ -75,9 +75,9 @@ function scMake(kind, lvl) {
     return mc(`<p>كم عدد آيات ${esc(scName(s))} تقريباً؟</p>`, nA(v), [...wrong].map(nA), null);
   }
   if (kind === 'blank') {
-    const ws = text.split(' '), idx = ws.map((w, i) => [w, i]).filter(([w]) => w.length >= 3), [w, i] = idx.length ? idx[scRand(idx.length)] : [ws[0], 0];
+    const ws = text.split(' '), idx = ws.map((w, i) => [w, i]).filter(([w]) => qNorm(w).length >= 3), [w, i] = idx.length ? idx[scRand(idx.length)] : [ws[0], 0];
     const shown = ws.map((x, j) => (j === i ? '<span class="scgap">_____</span>' : esc(x))).join(' ');
-    const wrong = [...new Set(scPick(keys, 30).map((k) => scQT[k].split(' ').filter((x) => x.length >= 3)).map((a) => a[scRand(a.length)]))].filter((x) => x && x !== w);   // words from other verses
+    const wrong = [...new Set(scPick(keys, 30).map((k) => scQT[k].split(' ').filter((x) => qNorm(x).length >= 3)).map((a) => a[scRand(a.length)]))].filter((x) => x && x !== w);   // words from other verses
     return mc(`<p>أكمل الفراغ في الآية (${esc(scName(s))}):</p><p class="scayah keep">${shown}</p>`, w, wrong);
   }
   if (kind === 'tf') {
@@ -95,7 +95,7 @@ function scMake(kind, lvl) {
   return { match: pairs, q: '<p>صِل كل كلمة بالسورة التي وردت فيها (كل كلمة وردت مرة واحدة فقط في القرآن):</p>' };
 }
 const scNorm = (t) => String(t).replace(/[ً-ْٰـ]/g, '').replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[«»()ﷺ.،]/g, '').replace(/^سوره\s+/, '').replace(/^ال/, '').replace(/\s+/g, ' ').trim();
-const scTypable = (x) => x.opts && x.opts.length > 2 && !/[(]/.test(x.right) && x.right.split(' ').length <= 3;
+const scTypable = (x) => x.kind !== 'blank' && x.opts && x.opts.length > 2 && !/[(]/.test(x.right) && x.right.split(' ').length <= 3;
 function scTypedOk(x, typed) {   // a near count is right too: the question says «تقريباً»
   if (x.kind === 'count') { const v = +scNorm(x.right), n = +scNorm(typed); return n > 0 && Math.abs(n - v) <= Math.max(2, Math.round(v * 0.1)); }
   return scNorm(typed) === scNorm(x.right);
