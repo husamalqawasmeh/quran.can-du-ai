@@ -24,7 +24,7 @@ async function mShow() {
   $('mMsg').textContent = `${nA(to - from + 1)} آية من ${nA(max)} آية في السورة.`;
   const hide = $('mHide').checked;
   $('mList').innerHTML = mVerses.filter((v) => v.n >= from && v.n <= to).map((v) =>
-    `<div class="vrow${hide ? ' hide' : ''}" data-n="${v.n}"><div class="top"><span class="num">${nA(v.n)}</span><div class="vt">${esc(v.text)}</div><button class="mbtn" title="سمّع هذه الآية" aria-label="سمّع الآية ${nA(v.n)}">🎤</button></div><div class="res"></div></div>`).join('');
+    `<div class="vrow${hide ? ' hide' : ''}" data-n="${v.n}"><div class="top"><span class="num">${nA(v.n)}</span><div class="vt">${esc(v.text)}</div><button class="mbtn" title="سمّع هذه الآية" aria-label="سمّع الآية ${nA(v.n)}">${ico('mic')}</button></div><div class="res"></div></div>`).join('');
   return true;
 }
 $('mLoad').onclick = mShow;
@@ -69,7 +69,7 @@ async function mRecite(row, b) {
   const api = { finish: () => { clearTimeout(timer); if (rec.state !== 'inactive') rec.stop(); }, cancel: () => { cancelled = true; api.finish(); } };
   mRec = api; rec.start(); b.classList.add('rec'); b.textContent = '⏹';
   row.querySelector('.res').textContent = 'أستمع إلى تسميعك… اضغط ⏹ عند الانتهاء.';
-  await stopped; stream.getTracks().forEach((x) => x.stop()); mRec = null; b.classList.remove('rec'); b.textContent = '🎤';
+  await stopped; stream.getTracks().forEach((x) => x.stop()); mRec = null; b.classList.remove('rec'); b.innerHTML = ico('mic');
   if (cancelled) return;
   const res = row.querySelector('.res'); res.textContent = 'جارٍ التحقق…';
   try {
@@ -78,6 +78,6 @@ async function mRecite(row, b) {
     const d = await r.json();
     if (!r.ok) { res.textContent = r.status === 429 ? d.error : 'تعذّر التحقق الآن.'; return; }
     res.innerHTML = d.words.map((w) => `<span class="${w.ok ? 'ok' : 'bad'}">${esc(w.w)}</span>`).join(' ') +
-      `<div class="tag">${d.score === 100 ? '🌟 ممتاز! ' : ''}نسبة الكلمات الصحيحة: ${nA(d.score)}٪ — سُمع: «${esc(d.heard)}»</div>`;
+      `<div class="tag">${d.score === 100 ? ico('star') + ' ممتاز! ' : ''}نسبة الكلمات الصحيحة: ${nA(d.score)}٪ — سُمع: «${esc(d.heard)}»</div>`;
   } catch { res.textContent = 'تعذّر التحقق الآن.'; }
 }

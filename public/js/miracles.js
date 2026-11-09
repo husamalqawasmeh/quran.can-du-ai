@@ -2,14 +2,14 @@
 'use strict';
 /* ---------- الإعجاز العلمي ---------- */
 const MIRACLE_GROUPS = [
-  { g: 'الإنسان والحياة', ic: '🧬' },
-  { g: 'الفلك والكون', ic: '🔭' },
-  { g: 'الأرض والجغرافيا', ic: '🌍' },
-  { g: 'البحار والمياه والجو', ic: '🌊' },
-  { g: 'الحيوان', ic: '🕷️' },
-  { g: 'التاريخ والآثار', ic: '🏺' },
-  { g: 'النبات والزراعة', ic: '🌿' },
-  { g: 'التحدي والإعجاز البياني', ic: '🏛️' },
+  { g: 'الإنسان والحياة', ic: 'dna' },
+  { g: 'الفلك والكون', ic: 'telescope' },
+  { g: 'الأرض والجغرافيا', ic: 'globe' },
+  { g: 'البحار والمياه والجو', ic: 'waves' },
+  { g: 'الحيوان', ic: 'bug' },
+  { g: 'التاريخ والآثار', ic: 'amphora' },
+  { g: 'النبات والزراعة', ic: 'leaf' },
+  { g: 'التحدي والإعجاز البياني', ic: 'quote' },
 ];
 const MIRACLES = [
   { g: 0, t: 'مراحل خلق الإنسان', note: 'تصف الآيات تطور الخلق من نطفة فعلقة فمضغة فعظام يكسوها اللحم؛ ويرى المهتمون أن هذا التسلسل يوافق ما عُرف لاحقاً عن أطوار الجنين.', keys: ['23:12', '23:13', '23:14'] },
@@ -100,13 +100,13 @@ async function initMiracles() {
     if (Array.isArray(extra)) {
       const pg = MIRACLE_GROUPS.length, pend = extra.filter((e) => e.pending && e.keys?.length);   // pending items: one group at the bottom, marked, until the admin decides
       for (const e of extra) if (!e.pending && e.g >= 0 && e.g < pg && e.keys?.length) MIRACLES.push({ g: e.g, t: e.t, note: e.note, keys: e.keys });
-      if (pend.length) { MIRACLE_GROUPS.push({ ic: '⏳', g: 'اقتراحات قيد المراجعة' }); pend.forEach((e) => MIRACLES.push({ g: pg, t: e.t, note: e.note, keys: e.keys, pending: true })); }
+      if (pend.length) { MIRACLE_GROUPS.push({ ic: 'hourglass', g: 'اقتراحات قيد المراجعة' }); pend.forEach((e) => MIRACLES.push({ g: pg, t: e.t, note: e.note, keys: e.keys, pending: true })); }
     }
   } catch { /* the built-in items are enough */ }
   { const i = MIRACLES.findIndex((m) => m.t === 'تحدي أن يُسلم أبو لهب'); if (i >= 0) MIRACLES.push(MIRACLES.splice(i, 1)[0]); }   // last in its group
   const FIRST_G = [7, 6, 5];                                                       // shown first: التحدي، النبات والزراعة، التاريخ والآثار
   const gOrder = [...FIRST_G, ...MIRACLE_GROUPS.map((_, i) => i).filter((i) => !FIRST_G.includes(i))];
-  $('mirList').innerHTML = gOrder.map((gi) => [MIRACLE_GROUPS[gi], gi]).map(([G, gi]) => `<div class="mgroup" id="mg-${gi}" style="--rows:${Math.max(1, Math.ceil(MIRACLES.filter((m) => m.g === gi).length / 4))}"><h3><span>${G.ic}</span>${esc(G.g)} <small class="cnt">(${nA(MIRACLES.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
+  $('mirList').innerHTML = gOrder.map((gi) => [MIRACLE_GROUPS[gi], gi]).map(([G, gi]) => `<div class="mgroup" id="mg-${gi}" style="--rows:${Math.max(1, Math.ceil(MIRACLES.filter((m) => m.g === gi).length / 4))}"><h3><span>${ico(G.ic)}</span>${esc(G.g)} <small class="cnt">(${nA(MIRACLES.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
     MIRACLES.map((m, i) => [m, i]).filter(([m]) => m.g === gi).map(([m, i]) => `<details class="lesson${m.pending ? ' pending' : ''}" data-i="${i}"><summary${m.fit ? ' class="fit"' : ''}>${esc(m.t)}${m.pending ? '<span class="pend">قيد المراجعة</span>' : ''}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
   $('mirList').addEventListener('toggle', async (e) => {
     const d = e.target; if (!d.open || d.dataset.done) return; d.dataset.done = 1;

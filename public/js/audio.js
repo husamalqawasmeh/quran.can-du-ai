@@ -32,7 +32,7 @@ const micError = (e) => (e.name === 'NotAllowedError' || e.name === 'SecurityErr
 
 /* ---------- القرّاء والمفضلة ---------- */
 let reciters = [];
-const links = (x) => (x.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${l.kind === 'audio' ? '🎧' : l.kind === 'video' ? '▶️' : '🎵'} ${esc(l.label)}</a>`).join('');
+const links = (x) => (x.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${ico(l.kind === 'audio' ? 'headphones' : l.kind === 'video' ? 'play' : 'music')} ${esc(l.label)}</a>`).join('');
 let favs = new Set();
 try { favs = new Set(JSON.parse(localStorage.getItem('qr_favs') || '[]')); } catch {}
 const saveFavs = () => { try { localStorage.setItem('qr_favs', JSON.stringify([...favs])); } catch {} $('favn').textContent = nA(favs.size); };

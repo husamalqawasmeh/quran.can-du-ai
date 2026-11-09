@@ -3,6 +3,7 @@
 const $ = (id) => document.getElementById(id);
 const nA = (n) => Number(n).toLocaleString('ar-EG');
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ico = (n, cls = 'gic') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${n}"/></svg>`;   // a line icon from the sprite in index.html
 const arName = (x) => (x.name_ar || x.name).replace(/^شيخ\s+/, '');
 
 /* ---------- المستخدم وإعداداته: في المتصفح فقط (على هذا الجهاز، أو لهذه الجلسة) ---------- */
