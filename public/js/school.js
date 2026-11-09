@@ -131,7 +131,7 @@ function scShow() {
   }
   if (scOpt.type && scTypable(x)) {   // the answer is typed, not chosen
     b.innerHTML = head + x.q + `<p>${tools}</p><form class="sctype"><input class="inp" id="scIn" autocomplete="off" aria-label="اكتب إجابتك" placeholder="اكتب إجابتك هنا"><button class="btn pri">تحقّق</button><button type="button" class="btn scidk">لا أعرف</button></form><p id="scFb"></p>`;
-    if (snd) { if (!blank) { b.classList.add('schide'); scPlay(x.key); } $('scPlay').onclick = () => scPlay(x.key); }
+    if (snd) { if (!blank) b.classList.add('schide'); $('scPlay').onclick = () => scPlay(x.key); }   // plays only when the button is pressed
     if ($('scClue')) $('scClue').onclick = () => { const r = x.right.replace(/^سورة /, ''); x.clued = true; $('scClue').disabled = true; $('scHint').textContent = x.kind === 'count' ? `بين ${nA(Math.floor(+scNorm(r) * 0.7))} و${nA(Math.ceil(+scNorm(r) * 1.3))}` : `تبدأ بـ«${r[0]}» وعدد حروفها ${nA(r.replace(/\s/g, '').length)}`; };
     b.querySelector('.sctype').onsubmit = (ev) => {
       ev.preventDefault(); const v = $('scIn').value.trim(); if (!v) return;
@@ -143,7 +143,7 @@ function scShow() {
     $('scIn').focus(); return;
   }
   b.innerHTML = head + x.q + `<p>${tools}</p><div class="scopts">${x.opts.map((o) => `<button type="button" class="btn">${esc(o)}</button>`).join('')}<button type="button" class="btn scidk">لا أعرف</button></div><p id="scFb"></p>`;
-  if (snd) { if (!blank) { b.classList.add('schide'); scPlay(x.key); } $('scPlay').onclick = () => scPlay(x.key); }
+  if (snd) { if (!blank) b.classList.add('schide'); $('scPlay').onclick = () => scPlay(x.key); }   // plays only when the button is pressed
   if ($('scClue')) {
     const canDrop = x.opts.length > 2;
     if (!canDrop && !x.hint) $('scClue').hidden = true;
@@ -164,7 +164,7 @@ function scShow() {
 }
 function scAnswer(x, hit, msg) {
   const b = $('scBody'); b.classList.remove('schide');
-  if (scOpt.snd && x.key && $('scPlay')) { $('scPlay').disabled = false; if (x.kind === 'blank') scPlay(x.key); }   // fill the blank: the recitation after answering
+  if (scOpt.snd && x.key && $('scPlay')) $('scPlay').disabled = false;   // fill the blank: the recitation can be heard after answering
   scScore += hit ? (x.clued ? 0.5 : 1) : 0;
   if (x.clued && hit) msg += ' (نصف درجة بسبب التلميح)';
   // ask again later: a wrong answer is kept; a kept question answered right is dropped
