@@ -22,7 +22,7 @@ document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
   if (!back) return;
   const wrap = document.createElement('div'); wrap.className = 'vactions'; back.replaceWith(wrap); wrap.append(back);
   const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'back'; wrap.append(btn);
-  const cards = () => [...view.querySelectorAll('.lesson')];
+  const cards = () => [...view.querySelectorAll('.lesson:not(.nolink)')];   // boxes without verses do not open
   const allOpen = () => { const c = cards(); return c.length > 0 && c.every((x) => x.open); };
   const label = () => { btn.innerHTML = allOpen() ? '<span class="tri" aria-hidden="true">▲</span> طيّ الكل' : '<span class="tri" aria-hidden="true">▼</span> فتح الكل'; };
   let token = 0;

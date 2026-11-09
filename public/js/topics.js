@@ -790,6 +790,7 @@ function panelize(list, is = (d) => d.classList.contains('lesson')) {
   };
   list.addEventListener('toggle', (e) => {
     const d = e.target; if (!d.classList || !is(d)) return;
+    if (d.classList.contains('nolink')) { if (d.open) d.open = false; return; }   // a box without verses never opens a panel
     if (!d._p) { d._p = document.createElement('div'); d._p.className = 'npanel'; [...d.children].slice(1).forEach((c) => d._p.append(c)); }
     if (d.open) place(d); else d._p.remove();
   }, true);
@@ -844,7 +845,7 @@ async function initTopic(name) {
     if (AF) list.insertAdjacentHTML('beforeend', `<p class="how afn afb">* ${afNote()}</p>`);   // the other written forms of «الله», as a note at the bottom
   }
   list.addEventListener('toggle', async (e) => {
-    const d = e.target; if (!d.open || d.dataset.done || !d.dataset.i) return; d.dataset.done = 1;
+    const d = e.target; if (!d.open || d.dataset.done || !d.dataset.i || d.classList.contains('nolink')) return; d.dataset.done = 1;
     const m = T.items[+d.dataset.i], box = d.querySelector('.exs');
     try {
       if (!m.keys.length) { box.innerHTML = name === 'names' ? '<div class="tag">لا موضع قرآني لهذا اللفظ؛ مصدره السنة.</div>' : ''; return; }
@@ -855,6 +856,7 @@ async function initTopic(name) {
   }, true);
   if (PANEL_TOPICS.includes(name)) panelize(list);
   if (name === 'prophets') list.querySelector('.mgroup:last-child>.mgrid').insertAdjacentHTML('afterbegin', '<div class="nabiv"><span class="vt" data-ak="33:56">إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا</span> <span class="tag">سورة الأحزاب — الآية ٥٦</span></div><p class="nabin">' + esc(T.items.find((m) => m.nabi).note) + ' ولم يُناد في القرآن باسمه قط، بل نودي «يا أيها النبي» و«يا أيها الرسول».</p>');   // the verse of salat on the Prophet, above his section's boxes
+  if (name === 'prophets') { const nb = list.querySelector('.lesson.nabi'); nb.classList.add('nolink'); nb.querySelectorAll(':scope>div').forEach((c) => c.remove()); }   // its note is shown in his section
   if (name === 'prophets') list.querySelector('.lesson.nabi>summary').addEventListener('click', (e) => { e.preventDefault(); list.querySelector('.nabiv').scrollIntoView({ behavior: 'smooth', block: 'center' }); });   // his box has no verses of its own: it leads to his section
   if (name === 'names') sortNameCards();
   if (['jannah', 'jannah2', 'qiyamah'].includes(name)) {  // a little space after every few rows of boxes (four on the Jannah page, five elsewhere)
