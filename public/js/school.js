@@ -59,7 +59,7 @@ function scMake(kind, lvl) {
   const keys = Object.keys(scQT).filter((k) => ok(+k.split(':')[0])), key = keys[scRand(keys.length)], s = +key.split(':')[0], text = scQT[key];
   const otherSurahs = (n) => scPick(surahs.map((x) => x.id).filter((x) => x !== s && ok(x)), n);
   const mc = (q, right, wrong, k = key) => ({ q, right, opts: scShuffle([right, ...wrong.slice(0, nOpt - 1)]), key: k });
-  const tf = (q, truth, k, hint) => ({ q: '<p>صواب أم خطأ؟</p>' + q, right: truth ? 'صواب' : 'خطأ', opts: ['صواب', 'خطأ'], key: k, hint });
+  const tf = (q, truth, k, hint, fix) => ({ q: '<p>صواب أم خطأ؟</p>' + q, right: truth ? 'صواب' : 'خطأ', opts: ['صواب', 'خطأ'], key: k, hint, fix: truth ? undefined : fix });   // fix: the true statement, shown when the statement is false
   if (SC_TOPICS[kind]) {   // an ayah from a topic page: which box of that page is it about?
     const [ask, keep = () => true, label = (m) => m.t] = SC_TOPICS[kind];
     const items = TOPICS[kind].items.filter((m) => keep(m) && m.keys && m.keys.some((k) => scQT[k])), m = items[scRand(items.length)];
@@ -82,11 +82,11 @@ function scMake(kind, lvl) {
   }
   if (kind === 'tf') {
     const v = surahs[s - 1].verses, r = scRand(4);
-    if (r === 0) { const m = scCoin(); return tf(`<p class="scstmt">${esc(scName(s))} سورة ${m ? 'مكية' : 'مدنية'}.</p>`, m === scMakki(s), null, `عدد آياتها ${nA(v)}`); }
-    if (r === 1) { const n = scCoin() ? v : Math.max(3, v + (scCoin() ? 1 : -1) * (1 + scRand(Math.max(3, Math.round(v * 0.3))))); return tf(`<p class="scstmt">عدد آيات ${esc(scName(s))} ${nA(n)} آية.</p>`, n === v, null, `عدد آياتها بين ${nA(Math.max(1, Math.floor(v * 0.7)))} و${nA(Math.ceil(v * 1.3))}`); }
-    if (r === 2) { const o = scCoin() ? s : otherSurahs(1)[0]; return tf(`<p class="scstmt">هذه الآية من ${esc(scName(o))}:</p>${scAyah(key)}`, o === s, key, `السورة ${scMakki(s) ? 'مكية' : 'مدنية'}`); }
+    if (r === 0) { const m = scCoin(); return tf(`<p class="scstmt">${esc(scName(s))} سورة ${m ? 'مكية' : 'مدنية'}.</p>`, m === scMakki(s), null, `عدد آياتها ${nA(v)}`, `${scName(s)} سورة ${scMakki(s) ? 'مكية' : 'مدنية'}.`); }
+    if (r === 1) { const n = scCoin() ? v : Math.max(3, v + (scCoin() ? 1 : -1) * (1 + scRand(Math.max(3, Math.round(v * 0.3))))); return tf(`<p class="scstmt">عدد آيات ${esc(scName(s))} ${nA(n)} آية.</p>`, n === v, null, `عدد آياتها بين ${nA(Math.max(1, Math.floor(v * 0.7)))} و${nA(Math.ceil(v * 1.3))}`, `عدد آيات ${scName(s)} ${nA(v)} آية.`); }
+    if (r === 2) { const o = scCoin() ? s : otherSurahs(1)[0]; return tf(`<p class="scstmt">هذه الآية من ${esc(scName(o))}:</p>${scAyah(key)}`, o === s, key, `السورة ${scMakki(s) ? 'مكية' : 'مدنية'}`, `هذه الآية من ${scName(s)}.`); }
     const m = scMake(['prophets', 'others', 'animals', 'places'][scRand(4)], lvl), c = scCoin() ? m.right : m.opts.find((o) => o !== m.right);
-    return tf(m.q.replace(/^<p>.*?<\/p>/, `<p class="scstmt">هذه الآية تتحدث عن: <b>${esc(c)}</b></p>`), c === m.right, m.key);
+    return tf(m.q.replace(/^<p>.*?<\/p>/, `<p class="scstmt">هذه الآية تتحدث عن: <b>${esc(c)}</b></p>`), c === m.right, m.key, undefined, `هذه الآية تتحدث عن: ${m.right}.`);
   }
   if (kind === 'mcq') { const [q, right, ...wrong] = SC_FACTS[scRand(SC_FACTS.length)]; return mc(`<p>${q}</p>`, right, scShuffle(wrong), null); }
   // match: words that occur only once, each to the surah it is in
@@ -176,6 +176,7 @@ function scAnswer(x, hit, msg) {
   if (scOpt.snd && x.key && $('scPlay')) $('scPlay').disabled = false;   // fill the blank: the recitation can be heard after answering
   scScore += hit ? (x.clued ? 0.5 : 1) : 0;
   if (x.clued && hit) msg += ' (نصف درجة بسبب التلميح)';
+  if (x.fix) msg += ' — والصواب: ' + x.fix;
   scW.asked = (scW.asked || 0) + 1; if (hit && !x.clued && !x.review) scW.first = (scW.first || 0) + 1;
   // ask again later: a wrong answer is kept; a kept question answered right is dropped
   const { review, id, clued, ...plain } = x;
