@@ -110,22 +110,27 @@ function scShow() {
   x.clued = false;
   if (x.match) {
     const names = scShuffle(x.match.map(([, t]) => t));
-    b.innerHTML = head + x.q + `<div class="scmatch">${x.match.map(([w], i) => `<label><b>${esc(w)}</b><select class="ucsel" data-i="${i}"><option value="">— اختر السورة —</option>${names.map((t) => `<option value="${t}">${esc(scName(t))}</option>`).join('')}</select></label>`).join('')}</div><p>${tools}</p><button type="button" class="btn pri" id="scCheck">تحقّق</button><p id="scFb"></p>`;
+    b.innerHTML = head + x.q + `<div class="scmatch">${x.match.map(([w], i) => `<label><b>${esc(w)}</b><select class="ucsel" data-i="${i}"><option value="">— اختر السورة —</option>${names.map((t) => `<option value="${t}">${esc(scName(t))}</option>`).join('')}</select></label>`).join('')}</div><p>${tools}</p><button type="button" class="btn pri" id="scCheck">تحقّق</button><button type="button" class="btn scidk" id="scIdk">لا أعرف</button><p id="scFb"></p>`;
     const sels = [...b.querySelectorAll('.scmatch select')];
     if ($('scClue')) $('scClue').onclick = () => {   // hint: fill one pair correctly
       const s = sels.find((e) => !e.disabled && +e.value !== x.match[+e.dataset.i][1]); if (!s) return;
       s.value = x.match[+s.dataset.i][1]; s.disabled = true; s.closest('label').classList.add('schint'); x.clued = true; $('scClue').disabled = true;
     };
+    $('scIdk').onclick = () => {   // show every pair
+      sels.forEach((s) => { s.value = x.match[+s.dataset.i][1]; s.disabled = true; s.closest('label').classList.add('schint'); });
+      $('scCheck').disabled = true; $('scIdk').disabled = true; if ($('scClue')) $('scClue').disabled = true;
+      scAnswer(x, false, 'هذه هي الإجابات الصحيحة');
+    };
     $('scCheck').onclick = () => {
       if (sels.some((s) => !s.value)) { $('scFb').textContent = 'صِل كل الكلمات أولاً.'; return; }
-      $('scCheck').disabled = true; if ($('scClue')) $('scClue').disabled = true;
+      $('scCheck').disabled = true; $('scIdk').disabled = true; if ($('scClue')) $('scClue').disabled = true;
       let good = 0; sels.forEach((s) => { const t = x.match[+s.dataset.i][1], hit = +s.value === t; good += hit; s.disabled = true; s.closest('label').classList.add(hit ? 'scok' : 'scbad'); if (!hit) s.closest('label').insertAdjacentHTML('beforeend', `<small>${esc(scName(t))}</small>`); });
       const all = good === sels.length; scAnswer(x, all, all ? 'إجابة صحيحة ✓' : `صحيح ${nA(good)} من ${nA(sels.length)}`);
     };
     return;
   }
   if (scOpt.type && scTypable(x)) {   // the answer is typed, not chosen
-    b.innerHTML = head + x.q + `<p>${tools}</p><form class="sctype"><input class="inp" id="scIn" autocomplete="off" aria-label="اكتب إجابتك" placeholder="اكتب إجابتك هنا"><button class="btn pri">تحقّق</button></form><p id="scFb"></p>`;
+    b.innerHTML = head + x.q + `<p>${tools}</p><form class="sctype"><input class="inp" id="scIn" autocomplete="off" aria-label="اكتب إجابتك" placeholder="اكتب إجابتك هنا"><button class="btn pri">تحقّق</button><button type="button" class="btn scidk">لا أعرف</button></form><p id="scFb"></p>`;
     if (snd) { if (!blank) { b.classList.add('schide'); scPlay(x.key); } $('scPlay').onclick = () => scPlay(x.key); }
     if ($('scClue')) $('scClue').onclick = () => { const r = x.right.replace(/^سورة /, ''); x.clued = true; $('scClue').disabled = true; $('scHint').textContent = x.kind === 'count' ? `بين ${nA(Math.floor(+scNorm(r) * 0.7))} و${nA(Math.ceil(+scNorm(r) * 1.3))}` : `تبدأ بـ«${r[0]}» وعدد حروفها ${nA(r.replace(/\s/g, '').length)}`; };
     b.querySelector('.sctype').onsubmit = (ev) => {
@@ -134,9 +139,10 @@ function scShow() {
       const hit = scTypedOk(x, v); $('scIn').classList.add(hit ? 'scok' : 'scbad');
       scAnswer(x, hit, hit ? 'إجابة صحيحة ✓' + (scNorm(v) !== scNorm(x.right) ? ' — الدقيق: ' + x.right : '') : 'الإجابة الصحيحة: ' + x.right);
     };
+    b.querySelector('.sctype .scidk').onclick = (ev) => { b.querySelectorAll('.sctype :is(input,button)').forEach((e) => (e.disabled = true)); if ($('scClue')) $('scClue').disabled = true; scAnswer(x, false, 'الإجابة الصحيحة: ' + x.right); };
     $('scIn').focus(); return;
   }
-  b.innerHTML = head + x.q + `<p>${tools}</p><div class="scopts">${x.opts.map((o) => `<button type="button" class="btn">${esc(o)}</button>`).join('')}</div><p id="scFb"></p>`;
+  b.innerHTML = head + x.q + `<p>${tools}</p><div class="scopts">${x.opts.map((o) => `<button type="button" class="btn">${esc(o)}</button>`).join('')}<button type="button" class="btn scidk">لا أعرف</button></div><p id="scFb"></p>`;
   if (snd) { if (!blank) { b.classList.add('schide'); scPlay(x.key); } $('scPlay').onclick = () => scPlay(x.key); }
   if ($('scClue')) {
     const canDrop = x.opts.length > 2;
@@ -151,7 +157,7 @@ function scShow() {
     const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
     const all = [...b.querySelectorAll('.scopts button')], hit = btn.textContent === x.right;
     all.forEach((a) => { a.disabled = true; if (a.textContent === x.right) a.classList.add('scok'); });
-    if (!hit) btn.classList.add('scbad');
+    if (!hit && !btn.classList.contains('scidk')) btn.classList.add('scbad');
     if ($('scClue')) $('scClue').disabled = true;
     scAnswer(x, hit, hit ? 'إجابة صحيحة ✓' : 'الإجابة الصحيحة: ' + x.right);
   };
