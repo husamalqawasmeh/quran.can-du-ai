@@ -6,6 +6,15 @@ const scRand = (n) => Math.floor(Math.random() * n);
 const scShuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = scRand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const scPick = (a, n) => scShuffle(a).slice(0, n);
 const SC_POOL = { easy: (s) => s === 1 || s >= 78, mid: (s) => s === 1 || s >= 36, hard: () => true };   // easy: الفاتحة وجزء عمّ
+const SC_TOPICS = {   // question, which boxes of the topic page to use, how a box is named in the choices
+  prophets: ['عن أي نبي تتحدث هذه الآية؟', (m) => m.g < 2],   // not the «محمد ﷺ في القرآن» wording boxes
+  others: ['عن أي شخصية تتحدث هذه الآية؟'],
+  animals: ['أي حيوان ورد في هذه الآية؟'],
+  places: ['أي مكان تشير إليه هذه الآية؟'],
+  food: ['أي طعام ورد في هذه الآية؟', (m) => m.g < 2 && !['فلينظر الإنسان إلى طعامه', 'يُسقى بماء واحد'].includes(m.t)],
+  akhlaq: ['عن أي خُلق تتحدث هذه الآية؟'],
+  duasp: ['من صاحب هذا الدعاء من الأنبياء؟', () => true, (m) => m.t.split(':')[0].replace(/ و.*/, '').trim()],
+};
 async function initSchool() {
   if (scQT) return;
   try { [scQT, scW1] = await Promise.all([fetch('/quran_text.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
@@ -19,6 +28,13 @@ function scMake(kind, lvl) {
   const keys = Object.keys(scQT).filter((k) => ok(+k.split(':')[0])), key = keys[scRand(keys.length)], s = +key.split(':')[0], text = scQT[key];
   const otherSurahs = (n) => scPick(surahs.map((x) => x.id).filter((x) => x !== s && ok(x)), n);
   const mc = (q, right, wrong) => ({ q, right, opts: scShuffle([right, ...wrong.slice(0, nOpt - 1)]) });
+  if (SC_TOPICS[kind]) {   // an ayah from a topic page: which box of that page is it about?
+    const [ask, keep = () => true, label = (m) => m.t] = SC_TOPICS[kind];
+    const items = TOPICS[kind].items.filter((m) => keep(m) && m.keys && m.keys.some((k) => scQT[k])), m = items[scRand(items.length)];
+    const ks = m.keys.filter((k) => scQT[k]), k = ks[scRand(ks.length)], right = label(m);
+    const wrong = [...new Set(scShuffle(items).filter((o) => !o.keys.includes(k)).map(label))].filter((x) => x !== right);
+    return mc(`<p>${ask}</p><p class="scayah">${esc(scQT[k])}</p><p class="tag">${esc(scName(+k.split(':')[0]))} — الآية ${nA(k.split(':')[1])}</p>`, right, wrong);
+  }
   if (kind === 'surah') return mc(`<p>في أي سورة وردت هذه الآية؟</p><p class="scayah">${esc(text)}</p>`, scName(s), otherSurahs(nOpt - 1).map(scName));
   if (kind === 'place') return { q: `<p>هل هذه الآية من سورة مكية أم مدنية؟</p><p class="scayah">${esc(text)}</p>`, right: scMakki(s) ? 'مكية' : 'مدنية', opts: ['مكية', 'مدنية'] };
   if (kind === 'count') {
