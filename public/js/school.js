@@ -33,10 +33,19 @@ const SC_FACTS = [   // general questions with fixed answers: [question, right, 
   ['أي نبي ذُكر اسمه في القرآن أكثر من غيره؟', 'موسى', 'إبراهيم', 'نوح', 'عيسى'],
 ];
 const scStoreGet = () => { try { const d = JSON.parse(store().getItem('qr_school') || 'null'); if (d && Array.isArray(d.w)) return d; } catch {} return { n: 0, w: [] }; };
-const scStoreSet = () => { try { store().setItem('qr_school', JSON.stringify(scW)); } catch {} };   // wrong answers to ask again: on this device only
+const scStoreSet = () => { try { store().setItem('qr_school', JSON.stringify(scW)); } catch {} };   // wrong answers to ask again, and the totals below: on this device only
+function scStats() {   // tests taken, questions answered, and right the first time (a new question, no hint)
+  const d = scW || scStoreGet(), ex = d.exams || 0, q = d.asked || 0, r = d.first || 0;
+  $('scStats').innerHTML = `<div class="scstat"><b>${nA(ex)}</b><span>اختبارات حتى الآن</span></div><div class="scstat"><b>${nA(q)}</b><span>أسئلة حتى الآن</span></div><div class="scstat"><b>${nA(r)}${q ? ` <small>(${nA(Math.round((r / q) * 100))}٪)</small>` : ''}</b><span>أُجيبت صحيحة من أول مرة</span></div><button type="button" class="btn" id="scReset"${ex || q ? '' : ' disabled'}>تصفير الإحصاءات</button>`;
+  $('scReset').onclick = () => {
+    if (!confirm('تصفير عدد الاختبارات والأسئلة والإجابات الصحيحة؟ (تبقى الأسئلة المحفوظة للمراجعة)')) return;
+    scW = scStoreGet(); scW.exams = scW.asked = scW.first = 0; scStoreSet(); scStats();
+  };
+}
 async function initSchool() {
   leaveHooks.push(() => scAudio.pause());
   ensureReaders().then(() => fillEveryReader($('scReader')));
+  scStats();
   if (scQT) return;
   try { [scQT, scW1] = await Promise.all([fetch('/quran_text.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { scQT = null; $('scBody').innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
@@ -101,7 +110,7 @@ function scShow() {
   if (scI >= scQ.length) {
     const due = scW.w.length;
     b.innerHTML = `<div class="aib"><h3>النتيجة: ${nA(scScore)} من ${nA(scQ.length)}</h3><p>${scScore === scQ.length ? 'ممتاز، بارك الله فيك!' : scScore >= scQ.length / 2 ? 'أحسنت، واصل المراجعة.' : 'لا بأس، أعد المحاولة وراجع السور.'}</p>${scOpt.adapt ? `<p>وصلت إلى المستوى: ${SC_LVL_AR[scLvl]}</p>` : ''}${due ? `<p class="tag">لديك ${nA(due)} من الأسئلة التي أخطأت فيها محفوظة؛ ستعود إليك بعد اختبارين إذا اخترت «أعد الأسئلة التي أخطأت فيها».</p>` : ''}<button type="button" class="btn pri" id="scAgain">اختبار جديد</button></div>`;
-    $('scAgain').onclick = () => { b.innerHTML = ''; $('scForm').hidden = false; };
+    $('scAgain').onclick = () => { b.innerHTML = ''; $('scForm').hidden = false; scStats(); };
     return;
   }
   const x = scQ[scI], snd = scOpt.snd && x.key, blank = x.kind === 'blank';
@@ -167,6 +176,7 @@ function scAnswer(x, hit, msg) {
   if (scOpt.snd && x.key && $('scPlay')) $('scPlay').disabled = false;   // fill the blank: the recitation can be heard after answering
   scScore += hit ? (x.clued ? 0.5 : 1) : 0;
   if (x.clued && hit) msg += ' (نصف درجة بسبب التلميح)';
+  scW.asked = (scW.asked || 0) + 1; if (hit && !x.clued && !x.review) scW.first = (scW.first || 0) + 1;
   // ask again later: a wrong answer is kept; a kept question answered right is dropped
   const { review, id, clued, ...plain } = x;
   if (hit && review) scW.w = scW.w.filter((e) => e.id !== id);
@@ -193,7 +203,7 @@ $('scForm').onsubmit = async (e) => {
   const f = e.target, kinds = [...f.querySelectorAll('[name=kind]:checked')].map((c) => c.value);
   if (!kinds.length) { $('scBody').innerHTML = '<p class="hint">اختر نوعاً واحداً من الأسئلة على الأقل.</p>'; return; }
   scOpt = { review: f.review.checked, adapt: f.adapt.checked, clue: f.clue.checked, snd: f.snd.checked, type: f.type.checked };
-  scLvl = f.lvl.value; scStreak = 0; scW = scStoreGet(); scW.n++;
+  scLvl = f.lvl.value; scStreak = 0; scW = scStoreGet(); scW.n++; scW.exams = (scW.exams || 0) + 1;
   const n = +f.n.value, due = scOpt.review ? scShuffle(scW.w.filter((w) => scW.n - w.n >= 2)).slice(0, Math.ceil(n / 3)) : [];   // asked again two tests after the mistake, up to a third of the test
   scQ = scShuffle([...due.map((w) => ({ ...w.x, review: true, id: w.id })), ...Array.from({ length: n - due.length }, (_, i) => scMakeK(kinds[i % kinds.length], scLvl))]);
   scStoreSet(); scI = 0; scScore = 0; f.hidden = true; scShow();
