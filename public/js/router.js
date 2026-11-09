@@ -1,7 +1,7 @@
 // navigation between the views, page headers, the mushaf (#book) page. One of the page's ordered scripts (see the <script> list at the end of index.html).
 'use strict';
 /* ---------- التنقل ---------- */
-const VIEWS = ['book', 'places', 'validate', 'research', 'userconfig', 'drv', 'jannah2', 'names', 'qiyamah', 'hafiz', 'jews', 'jesus', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'animals', 'food', 'akhlaq', 'family', 'water', 'falak', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'recite', 'learn', 'about', 'miracles'];
+const VIEWS = ['book', 'places', 'validate', 'research', 'userconfig', 'drv', 'jannah2', 'names', 'qiyamah', 'hafiz', 'jews', 'jesus', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'animals', 'food', 'akhlaq', 'family', 'water', 'falak', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'recite', 'learn', 'about', 'miracles', 'school'];
 let leaveHooks = [];
 /* title row on every inner screen: heading + description, with the green back button */
 document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
@@ -47,6 +47,7 @@ function route() {
   if (v === 'learn') initLearn();
   if (v === 'miracles') initMiracles();
   if (v === 'stats') initStats();
+  if (v === 'school') initSchool();
   if (TOPICS[v]) Promise.resolve(initTopic(v)).then(() => fitTitles($('v-' + v)));
   if (v === 'names' && topicInit.names) refreshNameBadges();
   if (v === 'userconfig') fillUc();
