@@ -528,7 +528,7 @@ TOPICS.prophets = {
   for (const m of TOPICS.prophets.items) {
     const ya = YA[m.t]; m.n = N[m.t];
     if (ya) { m.ya = ya.length; m.note += ` ونودي في القرآن «يا ${m.t}» ${nA(ya.length)} ${ya.length > 2 && ya.length < 11 ? 'مرات' : 'مرة'}، والآيات بعد ما سبق.`; m.keys = [...m.keys, ...ya.filter((k) => !m.keys.includes(k))]; }
-    if (m.t === 'محمد ﷺ') { m.nabi = true; m.note += ' ولم يُناد في القرآن باسمه قط، بل نودي «يا أيها النبي» و«يا أيها الرسول»؛ وتفصيل ذلك في القسم الخاص به أسفل الصفحة.'; }
+    if (m.t === 'محمد ﷺ') m.nabi = true;   // its note is shown in his section, under the verse of salat (see initTopic)
   }
   TOPICS.prophets.groups.push(['🌙', 'محمد ﷺ في القرآن']);
   const MQ = [   // n: how many times, shown on the box
@@ -854,7 +854,8 @@ async function initTopic(name) {
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);
   if (PANEL_TOPICS.includes(name)) panelize(list);
-  if (name === 'prophets') list.querySelector('.mgroup:last-child>.mgrid').insertAdjacentHTML('afterbegin', '<div class="nabiv"><span class="vt" data-ak="33:56">إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا</span> <span class="tag">سورة الأحزاب — الآية ٥٦</span></div>');   // the verse of salat on the Prophet, above his section's boxes
+  if (name === 'prophets') list.querySelector('.mgroup:last-child>.mgrid').insertAdjacentHTML('afterbegin', '<div class="nabiv"><span class="vt" data-ak="33:56">إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا</span> <span class="tag">سورة الأحزاب — الآية ٥٦</span></div><p class="nabin">' + esc(T.items.find((m) => m.nabi).note) + ' ولم يُناد في القرآن باسمه قط، بل نودي «يا أيها النبي» و«يا أيها الرسول».</p>');   // the verse of salat on the Prophet, above his section's boxes
+  if (name === 'prophets') list.querySelector('.lesson.nabi>summary').addEventListener('click', (e) => { e.preventDefault(); list.querySelector('.nabiv').scrollIntoView({ behavior: 'smooth', block: 'center' }); });   // his box has no verses of its own: it leads to his section
   if (name === 'names') sortNameCards();
   if (['jannah', 'jannah2', 'qiyamah'].includes(name)) {  // a little space after every few rows of boxes (four on the Jannah page, five elsewhere)
     const rows = name === 'jannah' ? 4 : 5;
