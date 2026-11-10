@@ -29,17 +29,12 @@ function renderSurahs() {
      <details class="vs" data-n="${s.id}"><summary>${ico('scroll-text')} نص السورة (${nA(s.verses)} آية)</summary><div class="vtext"><span class="tag">جارٍ التحميل…</span></div></details></div></details>`;
   if (sections) {
     const count = {}; for (let j = 1; j <= 30; j++) juzSurahs(j).forEach((s) => { count[s.id] = (count[s.id] || 0) + 1; });
-    const FLOW = 26;   // juz 1-26 hold few, long surahs: shown as one list with juz labels; 27-30 (many short surahs) keep a row per juz
+    // the whole Quran as one list, each surah once, with a juz number above the surah where each juz starts
     const jtags = (s) => {   // a square juz number above the surah, placed where the juz starts in it (ayah 1: at the start of the box)
-      const st = JUZ_START.map(([a, b], i) => [a, b, i + 1]).filter(([a, , j]) => a === s.id && j <= FLOW);
+      const st = JUZ_START.map(([a, b], i) => [a, b, i + 1]).filter(([a, , j]) => a === s.id);
       return st.map(([, b, j]) => `<span class="jtag" style="--x:${(((b - 1) / s.verses) * 100).toFixed(1)}%" title="يبدأ الجزء ${nA(j)}${b > 1 ? ` عند الآية ${nA(b)}` : ''}">${nA(j)}</span>`).join('');
     };
-    $('sgrid').innerHTML = `<div class="jflow">${surahs.filter((s) => juzOf(s.id) <= FLOW).map((s) => card(s, count[s.id] > 1, '', jtags(s))).join('')}</div>` + Array.from({ length: 30 - FLOW }, (_, k) => k + 1 + FLOW).map((j) => {
-      // surahs in reading order, four to a row; a short row is stretched to its end: the extra columns go to the surahs that continue into another juz (else to the last one)
-      const list = juzSurahs(j), pos = {}, five = true, nCols = 6;              // every juz: same-width boxes, six per row
-      list.forEach((s, k) => { pos[s.id] = [k % nCols + 1, 1, Math.floor(k / nCols) + 1]; });
-      return `<div class="jsec${j % 5 === 0 && j < 30 ? ' jbig' : ''}${five ? ' j6' : ''}"${five ? ` style="--n:${nCols}"` : ''}><span class="jnum" title="الجزء ${nA(j)}">${nA(j)}</span><div class="jgrid">${list.map((s) => card(s, count[s.id] > 1, `--c:${pos[s.id][0]};--s:${pos[s.id][1]};--r:${pos[s.id][2]}`)).join('')}</div></div>`;
-    }).join('');
+    $('sgrid').innerHTML = `<div class="jflow">${surahs.map((s) => card(s, count[s.id] > 1, '', jtags(s))).join('')}</div>`;
     return;
   }
   const ord = prefs && SORDER[prefs.sorder] && surahs[0].words ? SORDER[prefs.sorder] : null;
