@@ -107,7 +107,7 @@ label.up{color:var(--accent);cursor:pointer;text-decoration:underline}
 .tile svg.ic{width:1.6rem;height:1.6rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--accent);align-self:center}.home .tile.soon svg.ic{color:inherit}.homeplaces{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}button.tile{font:inherit;text-align:start;cursor:pointer;border:1px solid var(--line);border-radius:14px;background:var(--card)}.placetile.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.placetile .ic::after{content:" ◀";color:var(--accent);font-size:.7em}.placetile.on .ic::after{content:" ▼"}.kavg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}@media(max-width:1000px){.kavg{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.kavg{grid-template-columns:1fr 1fr}}.homeplaces .chip{display:inline-block;border:1px solid var(--stat-line);border-radius:99px;padding:4px 12px;background:var(--panel);font-size:.92rem}
 #kHapax .chip[data-k]{cursor:pointer}table[data-id="words"] td:first-child{cursor:pointer}.wlink{color:var(--title)}tr.on .wlink{font-weight:700}.wpanel td{white-space:normal;text-align:start}#kHapax .chip.on{border-color:var(--accent);color:var(--accent)}
 .htip{position:absolute;z-index:50;width:340px;max-width:calc(100vw - 16px);padding:8px 10px;border:1px solid var(--stat-line);border-radius:8px;background:var(--panel);box-shadow:0 6px 20px #0006;line-height:1.9}.htip .vt{cursor:pointer}.htip .hint{margin:4px 0 0}.homeplaces .chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}.homeplaces .ptl{margin:10px 0 4px;font-size:1rem}#sgrid .jgap{grid-column:1/-1;height:16px}#sgrid .srp{grid-column:1/-1;background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 16px}#sgrid .sr[open]{padding-bottom:0;border-color:var(--accent)}#sgrid .sr[open]>summary{color:var(--accent)}#sgrid .srp select{max-width:360px}
-#sgrid.juz{display:block}
+#sgrid.juz{display:block}#sgrid .jflow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px 12px;align-items:start;margin:14px 0 18px}@media(max-width:1000px){#sgrid .jflow{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:640px){#sgrid .jflow{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:380px){#sgrid .jflow{grid-template-columns:1fr}}#sgrid .jflow>.sr{position:relative}.jtag{position:absolute;top:-12px;z-index:1;pointer-events:none;white-space:nowrap;font-size:.72rem;font-weight:700;line-height:1.5;padding:0 8px;border:1px solid var(--accent);border-radius:99px;background:var(--bg);color:var(--accent)}.jt-top{right:14px}.jt-mid{left:50%;transform:translateX(-50%);border-color:#e0a030;color:#e0a030}
 #sgrid .jsec{border:2px solid var(--line);border-radius:16px;padding:10px;margin-bottom:14px;background:var(--card)}
 #sgrid .jsec{display:flex;gap:10px;align-items:flex-start}#sgrid .jsec>.jgrid{flex:1;min-width:0}@media(min-width:1001px){#sgrid .jsec.j6 .jgrid{grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}:is(#sgrid .jsec.j6,#sgrid) .sr{padding-inline:7px}:is(#sgrid .jsec.j6,#sgrid) .sr>summary{gap:4px;padding:2px 0;line-height:1.35}:is(#sgrid .jsec.j6,#sgrid) .sr .n{min-width:0;margin-inline-end:4px}:is(#sgrid .jsec.j6,#sgrid) .sr .nm{font-size:.92rem}:is(#sgrid .jsec.j6,#sgrid) .sr .m{font-size:.64rem}}
 #sgrid .jnum{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:2px solid var(--accent);border-radius:8px;color:var(--accent);font-weight:700;font-size:.95rem;background:var(--panel)}
@@ -762,21 +762,21 @@ button.back{border:0;cursor:pointer;font:inherit;font-weight:600;font-size:.85re
   <div id="statsBody"><p class="hint">جارٍ التحميل…</p></div>
 </section>
 </div>
-<script type="module" src="/js/modules.js?v=sc27nov09"></script>
-<script defer src="/js/core.js?v=sc27nov09"></script>
-<script defer src="/js/router.js?v=sc27nov09"></script>
-<script defer src="/js/gsignin.js?v=sc27nov09"></script>
-<script defer src="/js/audio.js?v=sc27nov09"></script>
-<script defer src="/js/surahs.js?v=sc27nov09"></script>
-<script defer src="/js/identify.js?v=sc27nov09"></script>
-<script defer src="/js/whisper.js?v=sc27nov09"></script>
-<script defer src="/js/ayah-audio.js?v=sc27nov09"></script>
-<script defer src="/js/memorize.js?v=sc27nov09"></script>
-<script defer src="/js/learn.js?v=sc27nov09"></script>
-<script defer src="/js/miracles.js?v=sc27nov09"></script>
-<script defer src="/js/stats.js?v=sc27nov09"></script>
-<script defer src="/js/topics.js?v=sc27nov09"></script>
-<script defer src="/js/research.js?v=sc27nov09"></script>
-<script defer src="/js/validate.js?v=sc27nov09"></script>
-<script defer src="/js/school.js?v=sc27nov09"></script>
-<script defer src="/js/names-counts.js?v=sc27nov09"></script></body></html>
+<script type="module" src="/js/modules.js?v=sc28nov09"></script>
+<script defer src="/js/core.js?v=sc28nov09"></script>
+<script defer src="/js/router.js?v=sc28nov09"></script>
+<script defer src="/js/gsignin.js?v=sc28nov09"></script>
+<script defer src="/js/audio.js?v=sc28nov09"></script>
+<script defer src="/js/surahs.js?v=sc28nov09"></script>
+<script defer src="/js/identify.js?v=sc28nov09"></script>
+<script defer src="/js/whisper.js?v=sc28nov09"></script>
+<script defer src="/js/ayah-audio.js?v=sc28nov09"></script>
+<script defer src="/js/memorize.js?v=sc28nov09"></script>
+<script defer src="/js/learn.js?v=sc28nov09"></script>
+<script defer src="/js/miracles.js?v=sc28nov09"></script>
+<script defer src="/js/stats.js?v=sc28nov09"></script>
+<script defer src="/js/topics.js?v=sc28nov09"></script>
+<script defer src="/js/research.js?v=sc28nov09"></script>
+<script defer src="/js/validate.js?v=sc28nov09"></script>
+<script defer src="/js/school.js?v=sc28nov09"></script>
+<script defer src="/js/names-counts.js?v=sc28nov09"></script></body></html>

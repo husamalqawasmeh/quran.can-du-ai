@@ -23,13 +23,19 @@ function renderSurahs() {
   const q = $('ssearch').value.trim().replace(/[ً-ٟ]/g, '').replace(/[إأآٱ]/g, 'ا');
   const sections = juzOn && !q;
   $('sgrid').classList.toggle('juz', sections);
-  const card = (s, shared, style) => `<details class="sr${shared ? ' jshare' : ''}"${style ? ` style="${style}"` : ''} data-n="${s.id}"><summary><span class="n">${nA(s.id)}</span><span class="nm">${esc(s.ar)}</span><span class="m">${s.place === 'makkah' ? 'مكية' : 'مدنية'} # ${nA(s.verses)} آية</span></summary>
+  const card = (s, shared, style, tags = '') => `<details class="sr${shared ? ' jshare' : ''}"${style ? ` style="${style}"` : ''} data-n="${s.id}"><summary>${tags}<span class="n">${nA(s.id)}</span><span class="nm">${esc(s.ar)}</span><span class="m">${s.place === 'makkah' ? 'مكية' : 'مدنية'} # ${nA(s.verses)} آية</span></summary>
      <div class="body"><a class="tag" href="https://quran.com/${s.id}" target="_blank" rel="noopener noreferrer" style="color:var(--acc)">${ico('book-open')} افتح السورة في المصحف (Quran.com)</a><br>
      <select aria-label="القارئ">${readerOptions()}</select><div class="tag msg"></div><audio controls preload="none" hidden></audio>
      <details class="vs" data-n="${s.id}"><summary>${ico('scroll-text')} نص السورة (${nA(s.verses)} آية)</summary><div class="vtext"><span class="tag">جارٍ التحميل…</span></div></details></div></details>`;
   if (sections) {
     const count = {}; for (let j = 1; j <= 30; j++) juzSurahs(j).forEach((s) => { count[s.id] = (count[s.id] || 0) + 1; });
-    $('sgrid').innerHTML = Array.from({ length: 30 }, (_, k) => k + 1).map((j) => {
+    const FLOW = 26;   // juz 1-26 hold few, long surahs: shown as one list with juz labels; 27-30 (many short surahs) keep a row per juz
+    const jtags = (s) => {   // a juz starting at the surah's first ayah: label above its name; starting inside it: label(s) in the middle
+      const st = JUZ_START.map(([a, b], i) => [a, b, i + 1]).filter(([a, , j]) => a === s.id && j <= FLOW);
+      const top = st.find(([, b]) => b === 1), mid = st.filter(([, b]) => b > 1).map(([, , j]) => nA(j));
+      return (top ? `<span class="jtag jt-top">الجزء ${nA(top[2])}</span>` : '') + (mid.length ? `<span class="jtag jt-mid" title="يبدأ الجزء ${mid.join(' و')} في أثناء هذه السورة">الجزء ${mid.join(' و')}</span>` : '');
+    };
+    $('sgrid').innerHTML = `<div class="jflow">${surahs.filter((s) => juzOf(s.id) <= FLOW).map((s) => card(s, count[s.id] > 1, '', jtags(s))).join('')}</div>` + Array.from({ length: 30 - FLOW }, (_, k) => k + 1 + FLOW).map((j) => {
       // surahs in reading order, four to a row; a short row is stretched to its end: the extra columns go to the surahs that continue into another juz (else to the last one)
       const list = juzSurahs(j), pos = {}, five = true, nCols = 6;              // every juz: same-width boxes, six per row
       list.forEach((s, k) => { pos[s.id] = [k % nCols + 1, 1, Math.floor(k / nCols) + 1]; });
