@@ -8,7 +8,7 @@ const vaDec = (ref) => vaRev[ref] || vaDecided(vaTally[ref]) || vaRule.get(ref) 
 const vaDecided = (t = {}) => { const a = t.allah || 0, o = t.other || 0; return Math.max(a, o) >= VA_MIN && a !== o ? (a > o ? 'allah' : 'other') : null; };
 async function vaLoad(text) {   // text: also the verses and surah names, for the page itself
   if (!vaOcc) { vaOcc = await (await fetch('/names_occ.json')).json(); vaRule = new Map(Object.entries(vaOcc).flatMap(([n, l]) => l.filter((x) => x[2]).map(([k, , r]) => [n + '|' + k, r > 0 ? 'allah' : 'other']))); }
-  if (text && !vaQ) [vaQ, vaSur] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/api/surahs').then((r) => r.json())]);   // shown with tashkeel; the name is found on the bare letters
+  if (text && !vaQ) [vaQ, vaSur] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), SURAHS]);   // shown with tashkeel; the name is found on the bare letters
   const who = prefs ? '&who=' + encodeURIComponent(prefs.uid) : '';
   const t = await (await fetch('/api/validate?item=names' + who)).json(); vaTally = t.tally || {}; vaMine = t.mine || {}; vaRev = t.rev || {}; vaTrusted = !!t.trusted;
 }

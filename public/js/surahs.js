@@ -1,7 +1,7 @@
 // the surahs page and its search boxes. One of the page's ordered scripts (see the <script> list at the end of index.html).
 'use strict';
 /* ---------- السور ---------- */
-let surahs = null;
+let surahs = SURAHS;   // built into the page (js/surah-data.js): no fetch
 const surahAudio = (rec, n) => {
   const a = (rec.links || []).find((l) => /cdn\.mp3quran\.net\/.*\/\d{3}\.mp3$/.test(l.url));
   return a ? a.url.replace(/\d{3}\.mp3$/, String(n).padStart(3, '0') + '.mp3') : null;
@@ -47,13 +47,10 @@ function renderSurahs() {
   $('sgrid').innerHTML = (ord ? surahs.slice().sort(ord) : surahs).filter((s) => !q || s.ar.replace(/[إأآٱ]/g, 'ا').includes(q) || String(s.id) === q || s.en.toLowerCase().includes(q.toLowerCase())).map((s) => card(s, false) + (!q && !ord && s.id % 24 === 0 && s.id < 114 ? '<div class="jgap s20"></div>' : '')).join('')
     || '<p class="hint">لا توجد نتائج.</p>';
 }
-async function loadSurahs() {
-  if (surahs) return;
-  $('sgrid').innerHTML = '<p class="hint">جارٍ التحميل…</p>';
-  try { surahs = await (await fetch('/api/surahs')).json(); if (!Array.isArray(surahs)) throw 0;
-    try { const st = await (await fetch('/stats.json')).json(); st.surahs.forEach((x) => Object.assign(surahs[x.id - 1], { words: x.words, letters: x.letters })); } catch { /* the mushaf order needs no sizes */ }
-    renderSurahs(); }
-  catch { surahs = null; $('sgrid').innerHTML = '<p class="hint">تعذّر تحميل قائمة السور.</p>'; }
+let sDrawn = false;
+async function loadSurahs() {   // the list is in the page already: drawn the first time the screen opens
+  if (sDrawn) return; sDrawn = true;
+  renderSurahs();
 }
 $('sJuz').onclick = (e) => { juzOn = !juzOn; $('sLegend').hidden = !juzOn; e.currentTarget.setAttribute('aria-pressed', juzOn); if (surahs) renderSurahs(); };
 $('ssearch').oninput = () => surahs && renderSurahs();
