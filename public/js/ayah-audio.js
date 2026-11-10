@@ -11,7 +11,7 @@ function fillEveryReader(sel) {
   sel.innerHTML = (f.length ? `<optgroup label="المفضلة">${f.map(opt).join('')}</optgroup>` : '') + `<optgroup label="القرّاء">${o.map(opt).join('')}</optgroup>`;
   sel.value = keep && rs.some((r) => r.id === keep) ? keep : (f[0] || rs.find((r) => r.id === 'r123') || rs[0] || {}).id || '';
 }
-/* ---------- القارئ الافتراضي: الضغط على أي آية في الموقع يشغّلها بصوته ---------- */
+/* ---------- القارئ الأساسي: الضغط على أي آية في الموقع يشغّلها بصوته ---------- */
 let defReader = ''; try { defReader = store().getItem('qr_reader') || ''; } catch {}
 const ayAudio = new Audio();
 const defRec = () => { const rs = everyReaders(); return rs.find((r) => r.id === defReader) || rs.find((r) => r.id === 'r123') || rs[0]; };
