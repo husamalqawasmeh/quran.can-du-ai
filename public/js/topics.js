@@ -847,7 +847,7 @@ TOPICS.money = {
     { g: 5, t: 'قارون', note: 'آتاه الله من الكنوز ما إن مفاتحه لتنوء بالعصبة، فخرج على قومه في زينته فخُسف به وبداره الأرض.', keys: ['28:76', '28:79'] },
   ],
 };
-const PANEL_TOPICS = ['numbers', 'jannah', 'jannah2', 'jesus', 'qiyamah', 'hafiz', 'names', 'places', 'food', 'akhlaq', 'family', 'water', 'falak', 'animals', 'others', 'sifat', 'jews', 'duasp', 'duasb', 'prophets'];      // topic pages whose boxes open as a full-width panel, verses as «سورة … — الآية …: text»
+const PANEL_TOPICS = ['numbers', 'jannah', 'jannah2', 'jesus', 'qiyamah', 'hafiz', 'names', 'places', 'food', 'akhlaq', 'family', 'water', 'falak', 'animals', 'others', 'sifat', 'jews', 'duasp', 'duasb', 'prophets', 'picks', 'money'];      // topic pages whose boxes open as a full-width panel, verses as «سورة … — الآية …: text»
 const topicInit = {};
 async function initTopic(name) {
   if (topicInit[name]) return; topicInit[name] = true;
