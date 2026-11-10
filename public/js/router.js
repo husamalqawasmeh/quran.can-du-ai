@@ -85,7 +85,7 @@ $('bk').addEventListener('click', async (e) => {
 /* topic pages: a box title too long for its box gets a little smaller, step by step, until it fits on one line */
 function fitTitles(view) {
   if (!view || view.hidden) return;
-  view.querySelectorAll('[id^="t-"] .lesson>summary').forEach((s) => {
+  view.querySelectorAll('[id^="t-"]:not(#t-picks) .lesson>summary').forEach((s) => {
     s.style.fontSize = ''; s.style.whiteSpace = 'nowrap';
     for (let k = 0.95; s.scrollWidth > s.clientWidth + 1 && k >= 0.75; k -= 0.05) s.style.fontSize = k + 'em';
     if (s.scrollWidth > s.clientWidth + 1) { s.style.fontSize = ''; s.style.whiteSpace = ''; }   // still too long: let it wrap at its normal size
