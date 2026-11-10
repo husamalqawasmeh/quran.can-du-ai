@@ -5,8 +5,9 @@ import * as volunteers from './routes/volunteers.js';
 import * as speech from './routes/speech.js';
 import * as content from './routes/content.js';
 import * as admin from './routes/admin.js';
+import * as chatbot from './routes/chat.js';
 
-const ROUTES = [reciters, volunteers, content, speech, admin];   // each answers its own /api/ paths, or returns null
+const ROUTES = [reciters, volunteers, content, speech, admin, chatbot];   // each answers its own /api/ paths, or returns null
 
 export default {
   // Every Friday 06:00 UTC (10:00 Dubai): the research agent looks for new miracle items and saves them as PENDING.
