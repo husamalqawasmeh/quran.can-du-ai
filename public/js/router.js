@@ -1,7 +1,7 @@
 // navigation between the views, page headers, the mushaf (#book) page. One of the page's ordered scripts (see the <script> list at the end of index.html).
 'use strict';
 /* ---------- التنقل ---------- */
-const VIEWS = ['book', 'places', 'validate', 'research', 'userconfig', 'drv', 'jannah2', 'names', 'qiyamah', 'hafiz', 'jews', 'jesus', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'animals', 'food', 'akhlaq', 'family', 'water', 'falak', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'recite', 'learn', 'about', 'miracles', 'school'];
+const VIEWS = ['book', 'places', 'validate', 'research', 'userconfig', 'drv', 'jannah2', 'names', 'qiyamah', 'hafiz', 'jews', 'jesus', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'animals', 'food', 'akhlaq', 'family', 'water', 'falak', 'jannah', 'management', 'stats', 'home', 'identify', 'readers', 'surahs', 'whisper', 'recite', 'learn', 'about', 'miracles', 'school', 'picks'];
 let leaveHooks = [];
 /* title row on every inner screen: heading + description, with the green back button */
 document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
@@ -17,7 +17,7 @@ document.querySelectorAll('.view:not(#v-home)').forEach((v) => {
   wrap.className = 'vactions'; back.replaceWith(wrap); wrap.append(back, $('sToggle'), $('sJuz'));
   wrap.closest('.vhead').insertAdjacentHTML('afterend', '<div class="slegend" id="sLegend" hidden><span><i class="sw share"></i>سورة تبدأ في جزء وتنتهي في الجزء الذي يليه</span><span><i class="sw one"></i>سورة تبدأ وتنتهي في الجزء نفسه</span></div>'); }
 /* expand all / collapse all, under the back button, on the pages made of expandable cards */
-['miracles', 'qiyamah', 'hafiz', 'jannah', 'jannah2', 'animals', 'places', 'food', 'akhlaq', 'family', 'water', 'falak', 'management', 'jesus', 'jews', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'learn', 'stats', 'names'].forEach((v) => {
+['miracles', 'qiyamah', 'hafiz', 'jannah', 'jannah2', 'animals', 'places', 'food', 'akhlaq', 'family', 'water', 'falak', 'management', 'jesus', 'jews', 'prophets', 'others', 'sifat', 'duasp', 'duasb', 'numbers', 'learn', 'stats', 'names', 'picks'].forEach((v) => {
   const view = document.getElementById('v-' + v), head = view && view.querySelector('.vhead'), back = head && head.querySelector('.back');
   if (!back) return;
   const wrap = document.createElement('div'); wrap.className = 'vactions'; back.replaceWith(wrap); wrap.append(back);
