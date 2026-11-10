@@ -11,3 +11,4 @@ data/opus/
 .claude/
 quran.sql
 .playwright-mcp/
+graphify-out/
