@@ -29,7 +29,7 @@ const SC_FACTS = [   // general questions with fixed answers: [question, right, 
   ['ما أطول آية في القرآن؟', 'آية الدَّين (البقرة ٢٨٢)', 'آية الكرسي (البقرة ٢٥٥)', 'آية النور (النور ٣٥)', 'آخر آية في البقرة (٢٨٦)'],
   ['كم مرة ورد اسم «محمد» ﷺ في القرآن؟', '٤', '٣', '٥', '٧'],
   ['في أي سورة ذُكر اسم زيد بن حارثة؟', 'الأحزاب', 'النور', 'الأنفال', 'التوبة'],
-  ['ما أول ما نزل من القرآن؟', 'اقرأ باسم ربك الذي خلق', 'الحمد لله رب العالمين', 'يا أيها المدثر', 'قل هو الله أحد'],
+  ['ما أول ما نزل من القرآن؟', 'ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ', 'ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ', 'يَـٰٓأَيُّهَا ٱلْمُدَّثِّرُ', 'قُلْ هُوَ ٱللَّهُ أَحَدٌ'],   // ayah openings, as written in the mushaf
   ['أي نبي ذُكر اسمه في القرآن أكثر من غيره؟', 'موسى', 'إبراهيم', 'نوح', 'عيسى'],
 ];
 const scStoreGet = () => { try { const d = JSON.parse(store().getItem('qr_school') || 'null'); if (d && Array.isArray(d.w)) return d; } catch {} return { n: 0, w: [] }; };
@@ -42,6 +42,10 @@ function scStats() {   // tests taken, questions answered, and right the first t
     scW = scStoreGet(); scW.exams = scW.asked = scW.first = 0; scStoreSet(); scStats();
   };
 }
+function scUthWord(w, k) {   // the word as it is written in its verse (Uthmani, with tashkeel); null when the spellings differ too much (40 of 8,625 words)
+  const n = qNorm(w), toks = (scQT[k] || '').split(' '), forms = (t) => [qNorm(t), qNorm(t.replace(/\u0670/g, 'ا'))], sk = (x) => x.replace(/[اءأإآؤئٔٱىي]/g, '');
+  return toks.find((t) => forms(t).includes(n)) || toks.find((t) => forms(t).some((v) => sk(v) === sk(n))) || null;
+}
 async function initSchool() {
   leaveHooks.push(() => scAudio.pause());
   ensureReaders().then(() => fillEveryReader($('scReader')));
@@ -49,7 +53,7 @@ async function initSchool() {
   if (scQT) return;
   try { [scQT, scW1] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { scQT = null; $('scBody').innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
-  scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4);   // words that occur once in the Quran, with their verse
+  scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4).map(([w, n, k]) => [scUthWord(w, k), n, k]).filter(([w]) => w);   // words that occur once in the Quran, as written (with tashkeel) in their verse
 }
 const scName = (s) => 'سورة ' + surahs[s - 1].ar;
 const scMakki = (s) => /^mak/i.test(surahs[s - 1].place || '');
