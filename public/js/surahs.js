@@ -30,10 +30,9 @@ function renderSurahs() {
   if (sections) {
     const count = {}; for (let j = 1; j <= 30; j++) juzSurahs(j).forEach((s) => { count[s.id] = (count[s.id] || 0) + 1; });
     const FLOW = 26;   // juz 1-26 hold few, long surahs: shown as one list with juz labels; 27-30 (many short surahs) keep a row per juz
-    const jtags = (s) => {   // a juz starting at the surah's first ayah: label above its name; starting inside it: label(s) in the middle
+    const jtags = (s) => {   // a square juz number above the surah, placed where the juz starts in it (ayah 1: at the start of the box)
       const st = JUZ_START.map(([a, b], i) => [a, b, i + 1]).filter(([a, , j]) => a === s.id && j <= FLOW);
-      const top = st.find(([, b]) => b === 1), mid = st.filter(([, b]) => b > 1).map(([, , j]) => nA(j));
-      return (top ? `<span class="jtag jt-top">الجزء ${nA(top[2])}</span>` : '') + (mid.length ? `<span class="jtag jt-mid" title="يبدأ الجزء ${mid.join(' و')} في أثناء هذه السورة">الجزء ${mid.join(' و')}</span>` : '');
+      return st.map(([, b, j]) => `<span class="jtag" style="--x:${(((b - 1) / s.verses) * 100).toFixed(1)}%" title="يبدأ الجزء ${nA(j)}${b > 1 ? ` عند الآية ${nA(b)}` : ''}">${nA(j)}</span>`).join('');
     };
     $('sgrid').innerHTML = `<div class="jflow">${surahs.filter((s) => juzOf(s.id) <= FLOW).map((s) => card(s, count[s.id] > 1, '', jtags(s))).join('')}</div>` + Array.from({ length: 30 - FLOW }, (_, k) => k + 1 + FLOW).map((j) => {
       // surahs in reading order, four to a row; a short row is stretched to its end: the extra columns go to the surahs that continue into another juz (else to the last one)
