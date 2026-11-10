@@ -93,10 +93,11 @@ function scMake(kind, lvl) {
     return tf(m.q.replace(/^<p>.*?<\/p>/, `<p class="scstmt">هذه الآية تتحدث عن: <b>${esc(c)}</b></p>`), c === m.right, m.key, undefined, `هذه الآية تتحدث عن: ${m.right}.`);
   }
   if (kind === 'mcq') { const [q, right, ...wrong] = SC_FACTS[scRand(SC_FACTS.length)]; return mc(`<p>${q}</p>`, right, scShuffle(wrong), null); }
-  // match: words that occur only once, each to the surah it is in
-  const pairs = []; const used = new Set();
-  for (const [w, , k] of scShuffle(scW1)) { const t = +k.split(':')[0]; if (ok(t) && !used.has(t)) { used.add(t); pairs.push([w, t, k]); } if (pairs.length === nOpt) break; }
-  return { match: pairs, q: '<p>صِل كل كلمة بالسورة التي وردت فيها (كل كلمة وردت مرة واحدة فقط في القرآن):</p>' };
+  // match: 1 to 4 words that occur only once, each to the surah it is in; one list of surahs for all, with surahs that fit none
+  const parts = 1 + scRand(4), pairs = [], used = new Set();
+  for (const [w, , k] of scShuffle(scW1)) { const t = +k.split(':')[0]; if (ok(t) && !used.has(t)) { used.add(t); pairs.push([w, t, k]); } if (pairs.length === parts) break; }
+  const extra = scPick(surahs.map((x) => x.id).filter((id) => ok(id) && !used.has(id)), Math.max(nOpt, parts + 2) - pairs.length);
+  return { match: pairs, choices: scShuffle([...used, ...extra]), q: pairs.length === 1 ? '<p>في أي سورة وردت هذه الكلمة؟ (وردت مرة واحدة فقط في القرآن)</p>' : `<p>صِل كل كلمة بالسورة التي وردت فيها (كل كلمة وردت مرة واحدة فقط في القرآن). يمكنك الإجابة عن بعضها فقط، ولكل كلمة صحيحة جزء من الدرجة.</p>` };
 }
 const scNorm = (t) => String(t).replace(/[ً-ْٰـ]/g, '').replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[«»()ﷺ.،]/g, '').replace(/^سوره\s+/, '').replace(/^ال/, '').replace(/\s+/g, ' ').trim();
 const scTypable = (x) => x.kind !== 'blank' && x.opts && x.opts.length > 2 && !/[(]/.test(x.right) && x.right.split(' ').length <= 3;
@@ -113,19 +114,20 @@ function scShow() {
   const b = $('scBody'); scAudio.pause(); b.classList.remove('schide');
   if (scI >= scQ.length) {
     const due = scW.w.length;
-    b.innerHTML = `<div class="aib"><h3>النتيجة: ${nA(scScore)} من ${nA(scQ.length)}</h3><p>${scScore === scQ.length ? 'ممتاز، بارك الله فيك!' : scScore >= scQ.length / 2 ? 'أحسنت، واصل المراجعة.' : 'لا بأس، أعد المحاولة وراجع السور.'}</p>${scOpt.adapt ? `<p>وصلت إلى المستوى: ${SC_LVL_AR[scLvl]}</p>` : ''}${due ? `<p class="tag">لديك ${nA(due)} من الأسئلة التي أخطأت فيها محفوظة؛ ستعود إليك بعد اختبارين إذا اخترت «أعد الأسئلة التي أخطأت فيها».</p>` : ''}<button type="button" class="btn pri" id="scAgain">اختبار جديد</button></div>`;
+    b.innerHTML = `<div class="aib"><h3>النتيجة: ${nA(Math.round(scScore * 100) / 100)} من ${nA(scQ.length)}</h3><p>${scScore === scQ.length ? 'ممتاز، بارك الله فيك!' : scScore >= scQ.length / 2 ? 'أحسنت، واصل المراجعة.' : 'لا بأس، أعد المحاولة وراجع السور.'}</p>${scOpt.adapt ? `<p>وصلت إلى المستوى: ${SC_LVL_AR[scLvl]}</p>` : ''}${due ? `<p class="tag">لديك ${nA(due)} من الأسئلة التي أخطأت فيها محفوظة؛ ستعود إليك بعد اختبارين إذا اخترت «أعد الأسئلة التي أخطأت فيها».</p>` : ''}<button type="button" class="btn pri" id="scAgain">اختبار جديد</button></div>`;
     $('scAgain').onclick = () => { b.innerHTML = ''; $('scForm').hidden = false; scStats(); };
     return;
   }
   const x = scQ[scI], snd = scOpt.snd && x.key, blank = x.kind === 'blank';
-  const head = `<p class="tag">السؤال ${nA(scI + 1)} من ${nA(scQ.length)} — الدرجة ${nA(scScore)}${scOpt.adapt ? ' — المستوى: ' + SC_LVL_AR[scLvl] : ''}${x.review ? ' — <b>سؤال للمراجعة</b>' : ''}</p>`;
+  const head = `<p class="tag">السؤال ${nA(scI + 1)} من ${nA(scQ.length)} — الدرجة ${nA(Math.round(scScore * 100) / 100)}${scOpt.adapt ? ' — المستوى: ' + SC_LVL_AR[scLvl] : ''}${x.review ? ' — <b>سؤال للمراجعة</b>' : ''}</p>`;
   const tools = (snd ? `<button type="button" class="mbtn" id="scPlay" aria-label="استمع إلى الآية"${blank ? ' disabled' : ''}>▶</button> ` : '') + (scOpt.clue ? '<button type="button" class="btn" id="scClue">تلميح</button>' : '') + '<span id="scHint" class="tag"></span>';
   x.clued = false;
   if (x.match) {
-    const names = scShuffle(x.match.map(([, t]) => t));
+    const names = x.choices || scShuffle(x.match.map(([, t]) => t));   // older saved questions have no extra surahs
     b.innerHTML = head + x.q + `<div class="scmatch">${x.match.map(([w], i) => `<label><b>${esc(w)}</b><select class="ucsel" data-i="${i}"><option value="">— اختر السورة —</option>${names.map((t) => `<option value="${t}">${esc(scName(t))}</option>`).join('')}</select></label>`).join('')}</div><p>${tools}</p><button type="button" class="btn pri" id="scCheck">تحقّق</button><button type="button" class="btn scidk" id="scIdk">لا أعرف</button><p id="scFb"></p>`;
     const sels = [...b.querySelectorAll('.scmatch select')];
-    if ($('scClue')) $('scClue').onclick = () => {   // hint: fill one pair correctly
+    if ($('scClue')) $('scClue').onclick = () => {   // hint: fill one pair correctly (one word: take away a wrong surah instead)
+      if (sels.length === 1) { const w = scShuffle([...sels[0].options].filter((o) => o.value && +o.value !== x.match[0][1]))[0]; if (w) w.remove(); x.clued = true; $('scClue').disabled = true; return; }
       const s = sels.find((e) => !e.disabled && +e.value !== x.match[+e.dataset.i][1]); if (!s) return;
       s.value = x.match[+s.dataset.i][1]; s.disabled = true; s.closest('label').classList.add('schint'); x.clued = true; $('scClue').disabled = true;
     };
@@ -135,10 +137,11 @@ function scShow() {
       scAnswer(x, false, 'هذه هي الإجابات الصحيحة');
     };
     $('scCheck').onclick = () => {
-      if (sels.some((s) => !s.value)) { $('scFb').textContent = 'صِل كل الكلمات أولاً.'; return; }
       $('scCheck').disabled = true; $('scIdk').disabled = true; if ($('scClue')) $('scClue').disabled = true;
-      let good = 0; sels.forEach((s) => { const t = x.match[+s.dataset.i][1], hit = +s.value === t; good += hit; s.disabled = true; s.closest('label').classList.add(hit ? 'scok' : 'scbad'); if (!hit) s.closest('label').insertAdjacentHTML('beforeend', `<small>${esc(scName(t))}</small>`); });
-      const all = good === sels.length; scAnswer(x, all, all ? 'إجابة صحيحة ✓' : `صحيح ${nA(good)} من ${nA(sels.length)}`);
+      let good = 0, skip = 0;   // a word left unanswered is not wrong, it just earns nothing
+      sels.forEach((s) => { const t = x.match[+s.dataset.i][1], hit = +s.value === t, none = !s.value; good += hit; skip += none; s.disabled = true; s.closest('label').classList.add(hit ? 'scok' : none ? 'scskip' : 'scbad'); if (!hit) s.closest('label').insertAdjacentHTML('beforeend', `<small>${none ? 'لم تُجب — ' : ''}${esc(scName(t))}</small>`); });
+      const all = good === sels.length;
+      scAnswer(x, all, all ? 'إجابة صحيحة ✓' : `صحيح ${nA(good)} من ${nA(sels.length)}${skip ? ` (لم تُجب عن ${nA(skip)})` : ''}`, good / sels.length);
     };
     return;
   }
@@ -175,11 +178,11 @@ function scShow() {
     scAnswer(x, hit, hit ? 'إجابة صحيحة ✓' : 'الإجابة الصحيحة: ' + x.right);
   };
 }
-function scAnswer(x, hit, msg) {
+function scAnswer(x, hit, msg, part = hit ? 1 : 0) {   // part: the share of the point earned (a matching question answered in part)
   const b = $('scBody'); b.classList.remove('schide');
   if (scOpt.snd && x.key && $('scPlay')) $('scPlay').disabled = false;   // fill the blank: the recitation can be heard after answering
-  scScore += hit ? (x.clued ? 0.5 : 1) : 0;
-  if (x.clued && hit) msg += ' (نصف درجة بسبب التلميح)';
+  scScore += part * (x.clued ? 0.5 : 1);
+  if (x.clued && part) msg += ' (نصف الدرجة بسبب التلميح)';
   if (x.fix) msg += ' — والصواب: ' + x.fix;
   scW.asked = (scW.asked || 0) + 1; if (hit && !x.clued && !x.review) scW.first = (scW.first || 0) + 1;
   // ask again later: a wrong answer is kept; a kept question answered right is dropped
