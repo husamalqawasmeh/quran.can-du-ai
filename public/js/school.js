@@ -1,7 +1,7 @@
 // the quiz page (#school): pick a level, a count, question kinds and options; all questions are drawn on the device from the static text files and the topic pages. One of the page's ordered scripts (see the <script> list at the end of index.html).
 'use strict';
 /* ---------- المدرسة ---------- */
-let scQT = null, scW1 = null, scQ = [], scI = 0, scScore = 0, scOpt = {}, scLvl = 'mid', scStreak = 0, scW = null;
+let scQT = null, scW1 = null, scUthOf = new Map(), scQ = [], scI = 0, scScore = 0, scOpt = {}, scLvl = 'mid', scStreak = 0, scW = null;
 const scAudio = new Audio();
 const scRand = (n) => Math.floor(Math.random() * n);
 const scCoin = () => Math.random() < 0.5;
@@ -53,7 +53,7 @@ async function initSchool() {
   if (scQT) return;
   try { [scQT, scW1] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { scQT = null; $('scBody').innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
-  scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4).map(([w, n, k]) => [scUthWord(w, k), n, k]).filter(([w]) => w);   // words that occur once in the Quran, as written (with tashkeel) in their verse
+  scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4).map(([w, n, k]) => { const u = scUthWord(w, k); if (u) scUthOf.set(w, u); return [u, n, k]; }).filter(([w]) => w);   // words that occur once in the Quran, as written (with tashkeel) in their verse
 }
 const scName = (s) => 'سورة ' + surahs[s - 1].ar;
 const scMakki = (s) => /^mak/i.test(surahs[s - 1].place || '');
@@ -95,7 +95,7 @@ function scMake(kind, lvl) {
   if (kind === 'mcq') { const [q, right, ...wrong] = SC_FACTS[scRand(SC_FACTS.length)]; return mc(`<p>${q}</p>`, right, scShuffle(wrong), null); }
   // match: words that occur only once, each to the surah it is in
   const pairs = []; const used = new Set();
-  for (const [w, , k] of scShuffle(scW1)) { const t = +k.split(':')[0]; if (ok(t) && !used.has(t)) { used.add(t); pairs.push([w, t]); } if (pairs.length === nOpt) break; }
+  for (const [w, , k] of scShuffle(scW1)) { const t = +k.split(':')[0]; if (ok(t) && !used.has(t)) { used.add(t); pairs.push([w, t, k]); } if (pairs.length === nOpt) break; }
   return { match: pairs, q: '<p>صِل كل كلمة بالسورة التي وردت فيها (كل كلمة وردت مرة واحدة فقط في القرآن):</p>' };
 }
 const scNorm = (t) => String(t).replace(/[ً-ْٰـ]/g, '').replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[إأآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[«»()ﷺ.،]/g, '').replace(/^سوره\s+/, '').replace(/^ال/, '').replace(/\s+/g, ' ').trim();
@@ -210,6 +210,14 @@ $('scForm').onsubmit = async (e) => {
   scOpt = { review: f.review.checked, adapt: f.adapt.checked, clue: f.clue.checked, snd: f.snd.checked, type: f.type.checked };
   scLvl = f.lvl.value; scStreak = 0; scW = scStoreGet(); scW.n++; scW.exams = (scW.exams || 0) + 1;
   const n = +f.n.value, due = scOpt.review ? scShuffle(scW.w.filter((w) => scW.n - w.n >= 2)).slice(0, Math.ceil(n / 3)) : [];   // asked again two tests after the mistake, up to a third of the test
-  scQ = scShuffle([...due.map((w) => ({ ...w.x, review: true, id: w.id })), ...Array.from({ length: n - due.length }, (_, i) => scMakeK(kinds[i % kinds.length], scLvl))]);
+  const TASH = /[\u064B-\u0652]/;
+  const upgrade = (x) => {   // a question saved before the ayahs had tashkeel
+    if (x.match) return { ...x, match: x.match.map(([w, t, k]) => [scUthOf.get(w) || w, t, k]) };
+    if (!x.key || TASH.test(x.q)) return x;
+    if (x.kind === 'blank') return null;   // its gap cannot be rebuilt
+    return { ...x, q: x.q.replace(/<p class="scayah">[^<]*<\/p>/, `<p class="scayah">${esc(scQT[x.key] || '')}</p>`) };
+  };
+  const dueX = due.map((w) => [w, upgrade(w.x)]).filter(([w, x]) => x || ((scW.w = scW.w.filter((e) => e.id !== w.id)), false));
+  scQ = scShuffle([...dueX.map(([w, x]) => ({ ...x, review: true, id: w.id })), ...Array.from({ length: n - dueX.length }, (_, i) => scMakeK(kinds[i % kinds.length], scLvl))]);
   scStoreSet(); scI = 0; scScore = 0; f.hidden = true; scShow();
 };
