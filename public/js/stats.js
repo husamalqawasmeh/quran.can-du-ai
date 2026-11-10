@@ -326,7 +326,7 @@ async function initStats() {
     p.innerHTML = `<p class="how">«${esc(k)}» مع «${esc(w)}»: ${N(c)} آية${c > keys.length ? ` (تُعرض أول ${N(keys.length)})` : ''}</p><p class="hint">جارٍ التحميل…</p>`;
     b.closest('.catrow').append(p);
     try {
-      let vs = []; for (let i = 0; i < keys.length; i += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + keys.slice(i, i + 8).join(','))).json());
+      let vs = await ayat(keys);
       p.querySelector('.hint').outerHTML = vs.map((v) => `<div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${N(v.ayah)}:</span> ${esc(v.text)}</div>`).join('');
     } catch { p.querySelector('.hint').textContent = 'تعذّر تحميل الآيات.'; }
   });
@@ -339,7 +339,7 @@ async function initStats() {
     const keys = b.dataset.k.split(','), p = document.createElement('div'); p.className = 'cpanel';
     p.innerHTML = '<p class="hint">جارٍ التحميل…</p>'; cell.append(p);
     try {
-      let vs = []; for (let i = 0; i < keys.length; i += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + keys.slice(i, i + 8).join(','))).json());
+      let vs = await ayat(keys);
       p.querySelector('.hint').outerHTML = vs.map((v) => `<div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${N(v.ayah)}:</span> ${esc(v.text)}</div>`).join('');
     } catch { p.querySelector('.hint').textContent = 'تعذّر تحميل الآيات.'; }
   });
@@ -355,7 +355,7 @@ async function initStats() {
     p.innerHTML = `<p class="how">«${esc(w)}»: ${N(c)} مرة في ${N(keys.length)}${keys.length === 30 ? ' آية أو أكثر (تُعرض أول ٣٠ آية)' : ' آية'}</p><p class="hint">جارٍ التحميل…</p>`;
     last.after(p);
     try {
-      let vs = []; for (let i = 0; i < keys.length; i += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + keys.slice(i, i + 8).join(','))).json());
+      let vs = await ayat(keys);
       p.querySelector('.hint').outerHTML = vs.map((v) => `<div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${N(v.ayah)}:</span> ${esc(v.text)}</div>`).join('');
     } catch { p.querySelector('.hint').textContent = 'تعذّر تحميل الآيات.'; }
   });
@@ -370,7 +370,7 @@ async function initStats() {
     p.innerHTML = `<p class="how">سورة ${esc(su.ar)} (${N(su.verses)} آية)</p><div class="vtext"><span class="tag">جارٍ التحميل…</span></div>`;
     b.closest('.catrow').append(p);
     try {
-      const vs = await (await fetch('/api/verses?s=' + n)).json(); if (!Array.isArray(vs)) throw 0;
+      const vs = await surahVerses(n); if (!Array.isArray(vs)) throw 0;
       p.querySelector('.vtext').innerHTML = (n === 1 || n === 9 ? '' : '<span class="bm">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>') +
         vs.map((v) => `<span class="ay" data-ak="${n}:${v.n}">${esc(v.text.trim())} <span class="no">﴿${N(v.n)}﴾</span></span>`).join(' ');
     } catch { p.querySelector('.vtext').innerHTML = '<span class="tag">تعذّر تحميل نص السورة.</span>'; }
@@ -438,7 +438,7 @@ async function initStats() {
     body.querySelector('.kexp[aria-controls="kHapax"]').addEventListener('click', () => { if (!hp.hidden) load(); });
     if (!hp.hidden) load();
     /* a word's verse: shown under the word while the pointer is on it; a click keeps it open, and a click on the verse plays it */
-    const AY = new Map(), ayah = (k) => AY.get(k) || AY.set(k, fetch('/api/ayat?keys=' + k).then((r) => r.json()).then((v) => v[0])).get(k);
+    const AY = new Map(), ayah = (k) => AY.get(k) || AY.set(k, ayat([k]).then((v) => v[0])).get(k);
     const tip = document.createElement('div'); tip.className = 'htip'; tip.hidden = true; document.body.append(tip);
     function tipOff() { tip.hidden = true; tip.on = null; tip.pin = false; out.querySelectorAll('.chip.on').forEach((x) => x.classList.remove('on')); }
     async function tipOn(c, pin) {

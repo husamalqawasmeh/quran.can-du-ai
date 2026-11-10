@@ -5,6 +5,11 @@ const nA = (n) => Number(n).toLocaleString('ar-EG');
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const ico = (n, cls = 'gic') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${n}"/></svg>`;   // a line icon from the sprite in index.html
 const hlAyah = (t, hit) => t.split(' ').map((w) => (hit(w) ? '<mark>' + esc(w) + '</mark>' : esc(w))).join(' ');   // mark the words of an ayah that pass a test
+/* the Quran text (Uthmani, with tashkeel) is a static file, loaded once and shared: ayahs never change, so no server call is needed for them */
+let QUP = null;
+const quranU = () => (QUP ||= fetch('/quran_uthmani.json').then((r) => { if (!r.ok) throw new Error('quran text ' + r.status); return r.json(); }).catch((e) => { QUP = null; throw e; }));
+const ayat = async (keys) => { const Q = await quranU(); return keys.map((k) => String(k).trim()).filter((k) => Q[k]).map((k) => { const [s, a] = k.split(':').map(Number); return { key: k, surah_ar: SURAHS[s - 1].ar, ayah: a, text: Q[k] }; }); };   // same shape as /api/ayat
+const surahVerses = async (n) => { const Q = await quranU(), out = []; for (let a = 1; Q[n + ':' + a]; a++) out.push({ n: a, text: Q[n + ':' + a] }); return out; };   // same shape as /api/verses
 const arName = (x) => (x.name_ar || x.name).replace(/^شيخ\s+/, '');
 
 /* ---------- المستخدم وإعداداته: في المتصفح فقط (على هذا الجهاز، أو لهذه الجلسة) ---------- */

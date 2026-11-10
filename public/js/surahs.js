@@ -131,7 +131,7 @@ $('sgrid').addEventListener('toggle', async (e) => {
   const d = e.target; if (!d.classList.contains('vs') || !d.open || d.dataset.done) return; d.dataset.done = 1;
   const n = +d.dataset.n, box = d.querySelector('.vtext');
   try {
-    const vs = await (await fetch('/api/verses?s=' + n)).json(); if (!Array.isArray(vs)) throw 0;
+    const vs = await surahVerses(n); if (!Array.isArray(vs)) throw 0;
     box.innerHTML = (n === 1 || n === 9 ? '' : '<span class="bm">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>') +
       vs.map((v) => `<span class="ay" data-n="${v.n}" data-ak="${n}:${v.n}">${esc(v.text.trim())} <span class="no">﴿${nA(v.n)}﴾</span></span>`).join(' ');
   } catch { delete d.dataset.done; box.innerHTML = '<span class="tag">تعذّر تحميل نص السورة.</span>'; }

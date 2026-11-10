@@ -23,7 +23,7 @@ async function initLearn() {
     const d = e.target; if (!d.open || d.dataset.done) return; d.dataset.done = 1;
     const l = LESSONS[+d.dataset.i], box = (d._p || d).querySelector('.exs'); if (!l.ex) return;
     try {
-      const vs = await (await fetch('/api/ayat?keys=' + l.ex.join(','))).json();
+      const vs = await ayat(l.ex);
       box.innerHTML = '<h3 class="tag" style="margin:6px 0">أمثلة من القرآن</h3>' + vs.map((v) =>
         `<div class="ex"><div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${esc(v.text)}</div><button class="mbtn" data-key="${esc(v.key)}" aria-label="استمع">▶</button></div>`).join('');
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الأمثلة.</div>'; }

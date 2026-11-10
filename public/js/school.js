@@ -51,7 +51,7 @@ async function initSchool() {
   ensureReaders().then(() => fillEveryReader($('scReader')));
   scStats();
   if (scQT) return;
-  try { [scQT, scW1] = await Promise.all([fetch('/quran_uthmani.json').then((r) => r.json()), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
+  try { [scQT, scW1] = await Promise.all([quranU(), fetch('/words.json').then((r) => r.json())]); if (!surahs) surahs = await (await fetch('/api/surahs')).json(); }
   catch { scQT = null; $('scBody').innerHTML = '<p class="hint">تعذّر تحميل البيانات.</p>'; return; }
   scW1 = scW1.filter(([w, n, k]) => n === 1 && k && w.length >= 4).map(([w, n, k]) => { const u = scUthWord(w, k); if (u) scUthOf.set(w, u); return [u, n, k]; }).filter(([w]) => w);   // words that occur once in the Quran, as written (with tashkeel) in their verse
 }

@@ -112,7 +112,7 @@ async function initMiracles() {
     const d = e.target; if (!d.open || d.dataset.done) return; d.dataset.done = 1;
     const m = MIRACLES[+d.dataset.i], box = d.querySelector('.exs');
     try {
-      const vs = await (await fetch('/api/ayat?keys=' + m.keys.join(','))).json();
+      const vs = await ayat(m.keys);
       box.innerHTML = vs.map((v) => `<div class="ex"><div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${esc(v.text)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);

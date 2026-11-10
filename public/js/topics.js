@@ -816,7 +816,7 @@ async function initTopic(name) {
     const rank = (t) => { const k = [...PROMISE, ...ENJOY].indexOf(t); if (k >= 0) return k; const f = FOOD.indexOf(t); return f >= 0 ? 1000 + f : 999; };
     T.items = T.items.map((m, i) => [m, i]).sort(([a, i], [b, j]) => rank(a.t) - rank(b.t) || i - j).map(([m]) => m);
   }
-  const NC = name === 'names' ? await loadNameCounts() : null, VF = name === 'names' ? await loadVerified() : {}; if (name === 'names') await loadAF();      // how many times each name's word occurs (see the statistics screen)
+  const [NC] = name === 'names' ? await Promise.all([loadNameCounts(), loadAF()]) : [null], VF = {};   // the volunteers' judgements (a server call) are added after the page is drawn: see refreshNameBadges below      // how many times each name's word occurs (see the statistics screen)
   list.innerHTML = T.groups.map((G, gi) => `<div class="mgroup"><h3><span>${G[0].startsWith('i:') ? `<svg class="gic" aria-hidden="true"><use href="#i-${G[0].slice(2)}"/></svg>` : G[0]}</span>${esc(G[1])} <small class="cnt">(${nA(T.items.filter((m) => m.g === gi).length)})</small></h3><div class="mgrid">` +
     T.items.map((m, i) => [m, i]).filter(([m]) => m.g === gi).sort(([a], [b]) => name === 'names' ? AMBIGUOUS.has(a.t) - AMBIGUOUS.has(b.t) : 0).map(([m, i]) => `<details class="lesson${m.wide ? ' wide' : ''}${m.tall ? ' tall' : ''}${m.pending ? ' pending' : ''}${m.nabi ? ' nabi' : ''}" data-i="${i}"><summary${name === 'names' && m.t.length > 11 ? ' class="fit"' : ''}>${name === 'prophets' && m.g < 2 ? `${esc(m.t.replace(' ﷺ', ''))}<span class="hon">${m.t.includes('ﷺ') ? 'ﷺ' : '﵇'}</span>` : esc(m.t)}${m.pending ? '<span class="pend">قيد المراجعة</span>' : ''}${name === 'prophets' ? '<span class="ncs">' : ''}${m.ya ? `<span class="nc ya" title="نودي باسمه بـ«يا» في القرآن">يا ×${nA(m.ya)}</span>` : ''}${m.n ? `<span class="nc" title="مرات ورود الاسم في القرآن">${nA(m.n)}</span>` : ''}${name === 'prophets' ? '</span>' : ''}${NC && m.g < 6 && NC[m.t] ? `<span class="nc" title="عدد مرات ورود اللفظ في القرآن${AMBIGUOUS.has(m.t) ? ' (يرد اللفظ لغير الله أيضاً)' : ''}">${VF[m.t] ? vfBadge(VF[m.t]) : `${AMBIGUOUS.has(m.t) ? '<span class="warn">⚠</span>' : ''}${nA(NC[m.t].n)}`}</span>` : ''}</summary><div>${esc(m.note)}</div><div class="exs"><div class="tag">جارٍ تحميل الآيات…</div></div></details>`).join('') + '</div></div>').join('');
   if (name === 'names') {                                   // last group on top (collapsed); the six main groups become vertical, collapsible columns
@@ -842,7 +842,8 @@ async function initTopic(name) {
     list.innerHTML = ''; list.append(top, inQ);
     const toInQ = n99 && n99.querySelector('.toInQ');   // the link in the note opens and scrolls to the names found in the Quran
     if (toInQ) toInQ.onclick = (e) => { e.preventDefault(); inQ.open = true; inQ.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-    if (AF) list.insertAdjacentHTML('beforeend', `<p class="how afn afb">* ${afNote()}</p>`);   // the other written forms of «الله», as a note at the bottom
+    if (AF) list.insertAdjacentHTML('beforeend', `<p class="how afn afb">* ${afNote()}</p>`);
+    refreshNameBadges();   // the newest judgements, without holding up the page   // the other written forms of «الله», as a note at the bottom
   }
   list.addEventListener('toggle', async (e) => {
     const d = e.target; if (!d.open || d.dataset.done || !d.dataset.i || d.classList.contains('nolink')) return; d.dataset.done = 1;
@@ -850,7 +851,7 @@ async function initTopic(name) {
     try {
       if (!m.keys.length) { box.innerHTML = name === 'names' ? '<div class="tag">لا موضع قرآني لهذا اللفظ؛ مصدره السنة.</div>' : ''; return; }
       let vs = [];
-      for (let k = 0; k < m.keys.length; k += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + m.keys.slice(k, k + 8).join(','))).json());
+      vs = await ayat(m.keys);
       box.innerHTML = (m.subs ? `<div class="subs">${m.subs.map(([w, ks]) => `<details class="subd" data-keys="${ks.join(',')}"><summary>«${esc(w)}» <small>${nA(ks.length)}</small></summary><div class="exs"></div></details>`).join('')}</div>` : '') + vs.map((v) => PANEL_TOPICS.includes(name) ? `<div class="ex"><div class="vt" data-ak="${esc(v.key)}"><span class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}:</span> ${name === 'numbers' ? hlNum(v.text) : esc(v.text)}</div></div>` : `<div class="ex"><div class="vt" data-ak="${esc(v.key)}">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
     } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
   }, true);
@@ -881,7 +882,7 @@ document.addEventListener('toggle', async (e) => {
   if (!(d instanceof HTMLDetailsElement) || !d.dataset.keys || !d.open || d.dataset.done) return;
   d.dataset.done = 1; const box = d.querySelector('.exs'), keys = d.dataset.keys.split(',');
   try {
-    let vs = []; for (let k = 0; k < keys.length; k += 8) vs = vs.concat(await (await fetch('/api/ayat?keys=' + keys.slice(k, k + 8).join(','))).json());
+    let vs = await ayat(keys);
     box.innerHTML = vs.map((v) => `<div class="ex"><div class="vt" data-ak="${esc(v.key)}">${esc(v.text)}</div><div class="tag">سورة ${esc(v.surah_ar)} — الآية ${nA(v.ayah)}</div></div>`).join('') || '<div class="tag">تعذّر تحميل الآيات.</div>';
   } catch { box.innerHTML = '<div class="tag">تعذّر تحميل الآيات.</div>'; }
 }, true);

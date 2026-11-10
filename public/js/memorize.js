@@ -17,7 +17,7 @@ async function mShow() {
   mStop();
   mSurah = +$('mSurah').value;
   $('mMsg').textContent = 'جارٍ تحميل الآيات…';
-  try { mVerses = await (await fetch('/api/verses?s=' + mSurah)).json(); if (!Array.isArray(mVerses)) throw 0; } catch { $('mMsg').textContent = 'تعذّر تحميل الآيات.'; return false; }
+  try { mVerses = await surahVerses(mSurah); if (!Array.isArray(mVerses)) throw 0; } catch { $('mMsg').textContent = 'تعذّر تحميل الآيات.'; return false; }
   const max = mVerses.length;
   let from = Math.min(Math.max(+$('mFrom').value || 1, 1), max), to = Math.min(Math.max(+$('mTo').value || from, from), max);
   $('mFrom').value = from; $('mTo').value = to; $('mFrom').max = $('mTo').max = max;
